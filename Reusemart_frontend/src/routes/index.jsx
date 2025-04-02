@@ -4,7 +4,8 @@ import { ToastContainer } from "react-toastify";
 import MainLayout from "../layouts/MainLayout";
 import PembeliLayout from "../layouts/PembeliLayout";
 
-import HomePage from "../pages/HomePage";
+import HomePage from "../pages/Alluser/HomePage";
+import DonationPage from "../pages/Alluser/DonationPage";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 
@@ -25,10 +26,10 @@ const router = createBrowserRouter([
       //   path: "/register",
       //   element: <RegisterPage />,
       // },
-      // {
-      //   path: "/donation",
-      //   element: <DonationPage />,
-      // },
+      {
+        path: "/donation",
+        element: <DonationPage />,
+      },
       // {
       //   path: "/categories",
       //   element: <CategoriesPage />,

@@ -1,10 +1,15 @@
 body {
     /* background: url("http://login.uajy.ac.id/ac_portal/default/res/img/201811081500210.png");
     background-repeat: repeat; */
-    background: rgba(231, 224, 218, 1);
+    /* background: rgba(231, 224, 218, 1); */
+    
     font-family: 'Roboto';
 }
 
 .hijau {
     color: rgba(4, 121, 2, 1) !important;
+}
+
+.abu83 {
+    color: rgba(83, 83, 83, 1) !important;
 }
