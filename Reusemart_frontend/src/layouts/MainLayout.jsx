@@ -7,10 +7,10 @@ import TopNavbar from "../components/TopNavbar";
 
 //mengatur route yang akan ditampilkan di navbar 
 const routes = [
-  { path: "/", name: "HOME" },
-  { path: "/donation", name: "DONATION" },
-  { path: "/categories", name: "CATEGORIES" },
-  { path: "/register", name: "GET STARTED" },
+  { path: "/", name: "BERANDA" },
+  { path: "/donasi", name: "DONASI" },
+  { path: "/kategori", name: "KATEGORI" },
+  { path: "/register", name: "BUAT AKUN" },
   {
     path: "/login",
     name: location.pathname === "/login" ? (
@@ -43,7 +43,6 @@ const routes = [
   }
 ];
 
-/* eslint-disable react/prop-types */ 
 const MainLayout = ({ children }) => {
   return (
     <div className="mt-4 pt-5">

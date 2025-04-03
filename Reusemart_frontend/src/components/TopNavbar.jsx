@@ -51,16 +51,17 @@ const TopNavbar = ({ routes }) => {
                                 <Form.Control
                                     type="search"
                                     placeholder="Search products here"
-                                    className="pe-4"
+                                    className="pe-5"
                                     aria-label="Search"
+                                    
                                     
                                     style={{
                                         paddingRight: '2.5rem',
-                                        borderColor: 'rgba(4, 121, 2, 1)',
-                                        borderRadius: '20px'
+                                        borderColor: 'rgba(83, 83, 83, 1)',
+                                        borderRadius: '20px',
                                     }}
                                 />
-                                <Button
+                                 <Button
                                     variant="link"
                                     className="position-absolute end-0 top-50 translate-middle-y bg-transparent border-0"
                                     style={{
@@ -71,6 +72,7 @@ const TopNavbar = ({ routes }) => {
                                 >
                                     <FaSearch />
                                 </Button>
+                               
                             </Form>
 
                             {/* Icons (Cart and Person) */}
