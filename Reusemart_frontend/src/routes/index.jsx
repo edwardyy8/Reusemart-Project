@@ -7,6 +7,7 @@ import PembeliLayout from "../layouts/PembeliLayout";
 import HomePage from "../pages/Alluser/HomePage";
 import DonationPage from "../pages/Alluser/DonationPage";
 import RegisterPage from "../pages/auth/RegisterPage";
+import LoginPage from "../pages/auth/LoginPage";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
         path: "/donasi",
         element: <DonationPage />,
       },
+      {
+        path: "/login",
+        element: <LoginPage />,
+      }
       // {
       //   path: "/categories",
       //   element: <CategoriesPage />,
