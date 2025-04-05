@@ -7,7 +7,7 @@ import InputFloatingForm from "./InputFloatingForm";
 
 // import { SignUp } from "../../api/apiAuth";
 
-const FormLogin = () => {
+const FormLupaPass2 = () => {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
   const [data, setData] = useState({
@@ -45,44 +45,35 @@ const FormLogin = () => {
 
   return (
     <Container className="mt-4 mb-5 p-5 rounded-3 w-50" style={{ border: '1px solid rgba(83, 83, 83, 1)', backgroundColor: 'rgba(241, 237, 233, 1)' }}>
-      <Form style={{ maxWidth: "800px", margin: "auto" }} onSubmit={Login}>
+      <Form style={{ maxWidth: "600px", margin: "auto" }} onSubmit={Login}>
         <Row className="g-5">
           <Col>
             <InputFloatingForm
-              type="email"
-              label="Email"
-              name="email"
-              onChange={handleChange}
-              placeholder="Masukkan Email"
-              required
-            />
-  
-            <InputFloatingForm
               type="password"
-              label="Kata Sandi"
+              label="Kata sandi baru"
               name="password"
               onChange={handleChange}
-              placeholder="Masukkan Password"
-              autoComplete="off"
+              placeholder="Masukkan kata sandi baru"
               required
-            />    
+            />
 
             <p className="text-start mt-2 abuForm">
-              Lupa Pasword? <Link to="/lupapassword">Klik disini!</Link>
+                Mohon masukkan password baru anda, lalu tekan tombol konfirmasi.
             </p>
 
             <div className="text-center">
-              <Button
-                type="submit"
-                className="mb-3 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
-                style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
-              >
-                LOGIN
-              </Button>
+                <Button
+                    type="submit"
+                    className="mt-3 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
+                    style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
+                    >
+                    KONFIRMASI
+                </Button>
             </div>
+            
 
-            <p className="text-center mb-0 abuForm">
-              Belum memiliki akun? <Link to="/register">Register!</Link>
+            <p className="text-center mt-3 mb-0 abuForm">
+              Ingat Kata Sandi? <Link to="/login">Login!</Link>
             </p>
 
           </Col>
@@ -93,4 +84,4 @@ const FormLogin = () => {
   );
 };
 
-export default FormLogin;
+export default FormLupaPass2;

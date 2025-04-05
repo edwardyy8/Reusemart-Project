@@ -8,6 +8,8 @@ import HomePage from "../pages/Alluser/HomePage";
 import DonationPage from "../pages/Alluser/DonationPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
+import LupaPassPage from "../pages/auth/LupaPassPage";
+import LupaPass2Page from "../pages/auth/LupaPass2Page";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 
@@ -35,7 +37,15 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage />,
-      }
+      },
+      {
+        path: "/lupaPassword",
+        element: <LupaPassPage />,
+      },
+      {
+        path: "/lupaPassword2",
+        element: <LupaPass2Page />,
+      },
       // {
       //   path: "/categories",
       //   element: <CategoriesPage />,

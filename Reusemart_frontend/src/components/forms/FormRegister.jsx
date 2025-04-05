@@ -54,6 +54,7 @@ const FormRegister = () => {
               name="username"
               onChange={handleChange}
               placeholder="Masukkan Username"
+              required  
             />
             
             <InputFloatingForm
@@ -61,11 +62,12 @@ const FormRegister = () => {
               label="Foto Profile"
               name="foto_profile"
               onChange={handleChange}
+              required
             />
   
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3" >
               <Form.Label className="abu83 h5">Role</Form.Label>
-              <Form.Select name="role" onChange={handleChange}>
+              <Form.Select name="role" onChange={handleChange} required>
                 <option value="">Pilih Role</option>
                 <option value="pembeli">Pembeli</option>
                 <option value="organisasi">Organisasi</option>
@@ -78,6 +80,7 @@ const FormRegister = () => {
               name="email"
               onChange={handleChange}
               placeholder="Masukkan Email"
+              required
             />
   
             <InputFloatingForm
@@ -87,6 +90,7 @@ const FormRegister = () => {
               onChange={handleChange}
               placeholder="Masukkan Password"
               autoComplete="off"
+              required
             />
   
             <InputFloatingForm
@@ -96,6 +100,7 @@ const FormRegister = () => {
               onChange={handleChange}
               placeholder="Konfirmasi Password"
               autoComplete="off"
+              required
             />
           </Col>
   
@@ -109,6 +114,7 @@ const FormRegister = () => {
                 name="alamat" 
                 onChange={handleChange}
                 placeholder="Masukkan alamat lengkap"
+                required
               />
             </Form.Group>
   
@@ -118,6 +124,7 @@ const FormRegister = () => {
               name="label_alamat"
               onChange={handleChange}
               placeholder="Contoh: Rumah, Kantor"
+              required
             />
   
             <InputFloatingForm
@@ -126,12 +133,13 @@ const FormRegister = () => {
               name="no_hp"
               onChange={handleChange}
               placeholder="Masukkan nomor handphone"
+              required
             />
             
             <div className="mt-4 pt-2"> 
               <label className="d-flex justify-content-start">
                 <Form.Check type="checkbox" onChange={handleCheck} />
-                <p className="ms-2 abu83">
+                <p className="ms-2 abuForm">
                   Saya telah membaca{" "}
                   <a href="">Ketentuan Layanan</a>
                 </p>
@@ -140,13 +148,13 @@ const FormRegister = () => {
               <Button
                 disabled={isDisabled}
                 type="submit"
-                className="mt-3 w-100 border-0 buttonSubmit btn-lg rounded-5"
+                className="mt-3 w-100 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
                 style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
               >
                 Daftar
               </Button>
   
-              <p className="text-center mt-2 abu83">
+              <p className="text-center mt-2 abuForm">
                 Sudah memiliki akun? <Link to="/login">Klik Disini!</Link>
               </p>
             </div>
