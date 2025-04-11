@@ -6,6 +6,7 @@ import PembeliLayout from "../layouts/PembeliLayout";
 
 import HomePage from "../pages/Alluser/HomePage";
 import DonationPage from "../pages/Alluser/DonationPage";
+import CategoriesPage from "../pages/Alluser/CategoriesPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
@@ -46,10 +47,14 @@ const router = createBrowserRouter([
         path: "/lupaPassword2",
         element: <LupaPass2Page />,
       },
-      // {
-      //   path: "/categories",
-      //   element: <CategoriesPage />,
-      // },
+      {
+        path: "/kategori",
+        element: <CategoriesPage />,
+      },
+      {
+        path: "/kategori/:id",
+        
+      },
     ],
   },
   // {

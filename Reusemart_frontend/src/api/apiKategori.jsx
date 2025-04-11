@@ -1,9 +1,9 @@
 import useAxios from ".";  
 
-// Mendapatkan semua donasi
-export const GetAllDonasis = async () => {
+// Mendapatkan semua barang
+export const GetAllBarangs = async () => {
   try {
-    const response = await useAxios.get("/donasi", {
+    const response = await useAxios.get("/barang", {
       headers: {
         "Content-Type": "application/json",
       //   Authorization: `Bearer ${sessionStorage.getItem("token")}`,

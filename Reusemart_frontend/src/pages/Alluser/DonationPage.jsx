@@ -67,7 +67,7 @@ const DonationPage = () => {
         <>
             <Container fluid className="py-3 shadow-sm my-3 abu83 px-5" style={{ backgroundColor: "rgba(252, 251, 249, 1)" }}>
                 <div className="d-flex align-items-center">
-                    <h5 className="mb-0">DONATION</h5>
+                    <h5 className="mb-0">DONASI</h5>
                     <BsCaretRightFill className="ms-2" />
                 </div>
             </Container>
@@ -79,7 +79,7 @@ const DonationPage = () => {
                         <Spinner
                             as="span"
                             animation="border"
-                            variant="primary"
+                            variant="success"
                             size="lg"
                             role="status"
                             aria-hidden="true"
