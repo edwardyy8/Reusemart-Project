@@ -11,14 +11,19 @@ const LoginPage = () => {
   const [token, setToken] = useState("");
   const navigate = useNavigate();
 
-//   useEffect(() => {
-//     const tokenDariSS = sessionStorage.getItem("token");
-//     setToken(tokenDariSS);
+  useEffect(() => {
+    const tokenDariSS = sessionStorage.getItem("token");
+    setToken(tokenDariSS);
     
-//     if (tokenDariSS) {
-//       navigate("/user");
-//     }
-//   }, [navigate]);
+    if (tokenDariSS) {
+      const userType = sessionStorage.getItem("user_type");
+
+      if (userType) {
+        navigate(`/${userType}`);
+      }
+      
+    }
+  }, [navigate]);
 
   return !token && (
     <Container className="mt-5">

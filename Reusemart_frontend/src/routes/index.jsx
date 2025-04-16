@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import MainLayout from "../layouts/MainLayout";
-import PembeliLayout from "../layouts/PembeliLayout";
+import PenitipLayout from "../layouts/PenitipLayout";
 
 import HomePage from "../pages/Alluser/HomePage";
 import DonationPage from "../pages/Alluser/DonationPage";
@@ -13,6 +13,8 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
 import LupaPass2Page from "../pages/auth/LupaPass2Page";
+
+import PenitipPage from "../pages/PenitipPage";
 
 
 import ProtectedRoutes from "./ProtectedRoutes";
@@ -59,24 +61,21 @@ const router = createBrowserRouter([
       },
     ],
   },
-  // {
-  //   path: "/Pembeli",
-  //   element: (
-  //     <ProtectedRoutes>
-  //       <PembeliLayout />
-  //     </ProtectedRoutes>
-  //   ),
-  //   children: [
-  //     {
-  //       path: "/Pembeli",
-  //       element: <DashboardPage />,
-  //     },
-  //     {
-  //       path: "/Pembeli/content",
-  //       element: <ContentPage />,
-  //     },
-  //   ],
-  // },
+  {
+    path: "/Penitip",
+    element: (
+      <ProtectedRoutes>
+        <PenitipLayout />
+      </ProtectedRoutes>
+    ),
+    children: [
+      {
+        path: "/Penitip",
+        element: <PenitipPage />,
+      },
+      
+    ],
+  },
 ]);
 
 const AppRouter = () => {

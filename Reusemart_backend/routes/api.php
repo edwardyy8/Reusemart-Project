@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\DonasiController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -14,3 +15,6 @@ Route::get('/donasi',[DonasiController::class,'index']);
 Route::get('/barang',[BarangController::class,'index']);
 Route::get('/barang/kategori/{id_kategori}',[BarangController::class,'findByKategori']);
 Route::get('/barang/sub/{id_kategori}',[BarangController::class,'findBySubKategori']);
+
+
+Route::post('/login',[AuthController::class,'login']);

@@ -13,6 +13,16 @@ const ProtectedRoutes = ({ children }) => {
     if (!tokenDariSS) {
       navigate("/");
     }
+
+    if (tokenDariSS) {
+      const userType = sessionStorage.getItem("user_type");
+
+      if (userType) {
+        navigate(`/${userType}`);
+      }
+      
+    }
+
   }, [navigate]);
 
   return token && (children ? children : <Outlet />);
