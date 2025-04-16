@@ -9,7 +9,7 @@ const routes = [
   { path: "/user/content", name: "My Videos" }
 ];
 
-const UserLayout = ({ children }) => {
+const PenitipLayout = ({ children }) => {
   return (
     <div className="mt-4 pt-5">
       <TopNavbar routes={routes} />
@@ -18,4 +18,4 @@ const UserLayout = ({ children }) => {
   );
 };
 
-export default UserLayout;
+export default PenitipLayout;

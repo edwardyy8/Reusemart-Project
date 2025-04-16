@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 import InputFloatingForm from "./InputFloatingForm";
 
-// import { SignUp } from "../../api/apiAuth";
+import { SignIn } from "../../api/apiAuth";
 
 const FormLogin = () => {
   const navigate = useNavigate();
@@ -32,9 +32,13 @@ const FormLogin = () => {
 
   const Login = (event) => {
     event.preventDefault();
-    SignUp(data)
+    SignIn(data)
       .then((res) => {
-        navigate("/");
+        sessionStorage.setItem("token", res.token);
+        sessionStorage.setItem("user", JSON.stringify(res.user));
+        sessionStorage.setItem("user_type", res.user_type);
+
+        navigate(`/${res.user_type}`);
         toast.success(res.message);
       })
       .catch((err) => {
