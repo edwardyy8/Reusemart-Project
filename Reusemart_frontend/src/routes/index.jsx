@@ -7,10 +7,13 @@ import PembeliLayout from "../layouts/PembeliLayout";
 import HomePage from "../pages/Alluser/HomePage";
 import DonationPage from "../pages/Alluser/DonationPage";
 import CategoriesPage from "../pages/Alluser/CategoriesPage";
+import KategoriUtamaPage from "../pages/Alluser/KategoriUtamaPage";
+
 import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
 import LupaPass2Page from "../pages/auth/LupaPass2Page";
+
 
 import ProtectedRoutes from "./ProtectedRoutes";
 
@@ -53,7 +56,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/kategori/:id",
-        
+        element: <KategoriUtamaPage />,
       },
     ],
   },
