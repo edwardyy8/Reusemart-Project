@@ -16,6 +16,8 @@ Route::get('/donasi',[DonasiController::class,'index']);
 Route::get('/barang',[BarangController::class,'index']);
 Route::get('/barang/kategori/{id_kategori}',[BarangController::class,'findByKategori']);
 Route::get('/barang/sub/{id_kategori}',[BarangController::class,'findBySubKategori']);
+Route::get('/barang/{id}', [BarangController::class, 'show']);
+
 
 
 Route::post('/login',[AuthController::class,'login']);
@@ -30,3 +32,9 @@ Route::middleware('auth:pegawai')->group(function () {
     Route::get('/getJabatan', [AuthController::class, 'getJabatan']);
    
 });
+
+Route::get('/penitip', [PenitipController::class, 'index']);
+Route::get('/penitip/{id}', [PenitipController::class, 'show']);
+
+
+

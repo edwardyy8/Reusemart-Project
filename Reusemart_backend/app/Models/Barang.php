@@ -25,14 +25,14 @@ class Barang extends Model
         'deskripsi',
         'tanggal_masuk',
         'berat_barang',
-        'foto_barang',    
+        'tanggal_donasi',
     ];
 
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'id_kategori');
     }
-    
+
     public function penitip()
     {
         return $this->belongsTo(Penitip::class, 'id_penitip');
@@ -56,5 +56,10 @@ class Barang extends Model
     public function donasi()
     {
         return $this->hasOne(Donasi::class, 'id_barang');
+    }
+
+    public function fotoBarang()
+    {
+        return $this->hasMany(FotoBarang::class, 'id_barang', 'id_barang');
     }
 }

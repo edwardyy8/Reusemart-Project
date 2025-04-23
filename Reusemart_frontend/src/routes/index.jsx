@@ -14,8 +14,10 @@ import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
 import LupaPass2Page from "../pages/auth/LupaPass2Page";
 
+
 import PenitipPage from "../pages/penitip/PenitipPage";
 import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
+import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
 
 
 import ProtectedRoutes from "./ProtectedRoutes";
@@ -65,9 +67,12 @@ const router = createBrowserRouter([
         path: "/kategori/:id",
         element: <KategoriUtamaPage />,
       },
+      {
+        path: "/barang/:id",
+        element: <DetailBarangPage />,
+      },
 
-
-      
+                                   
     ],
   },
   {
