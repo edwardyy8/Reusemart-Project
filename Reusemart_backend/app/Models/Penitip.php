@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Penitip extends Model
+class Penitip extends Authenticatable
 {
     use HasFactory, HasApiTokens;
 
@@ -23,8 +24,17 @@ class Penitip extends Model
         'no_ktp',
         'email',
         'password',
-        'is_top'
+        'is_top',
+        'foto_ktp'
     ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    public function getUserType() {
+        return 'penitip';
+    }
 
     public function barang()
     {

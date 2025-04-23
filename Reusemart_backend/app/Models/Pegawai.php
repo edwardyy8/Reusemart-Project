@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Pegawai extends Model
+class Pegawai extends Authenticatable
 {
     use HasFactory, HasApiTokens;
 
@@ -19,11 +20,20 @@ class Pegawai extends Model
         'id_pegawai',
         'id_jabatan',
         'nama_pegawai',
-        'email_pegawai',
-        'password_pegawai',
+        'email',
+        'password',
         'foto_profile',
         'tanggal_lahir',    
     ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    public function getUserType() {
+        return 'pegawai';
+    }
+
 
     public function jabatan()
     {

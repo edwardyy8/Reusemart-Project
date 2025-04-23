@@ -11,8 +11,6 @@ const FormLogin = () => {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
   const [data, setData] = useState({
-    name: "",
-    handle: "",
     email: "",
     password: "",
   });
@@ -35,10 +33,13 @@ const FormLogin = () => {
     SignIn(data)
       .then((res) => {
         sessionStorage.setItem("token", res.token);
-        sessionStorage.setItem("user", JSON.stringify(res.user));
-        sessionStorage.setItem("user_type", res.user_type);
 
-        navigate(`/${res.user_type}`);
+        if(res.user_type === "pegawai") {
+          console.log(res.jabatan);
+          navigate(`/${res.user_type}/${res.jabatan}`);
+        }else{
+          navigate(`/${res.user_type}`);
+        }
         toast.success(res.message);
       })
       .catch((err) => {

@@ -19,8 +19,22 @@ Route::get('/barang/sub/{id_kategori}',[BarangController::class,'findBySubKatego
 Route::get('/barang/{id}', [BarangController::class, 'show']);
 
 
+
+Route::post('/login',[AuthController::class,'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/getrole', [AuthController::class, 'getRole']);
+});
+
+
+Route::middleware('auth:pegawai')->group(function () {
+    Route::get('/getJabatan', [AuthController::class, 'getJabatan']);
+   
+});
+
 Route::get('/penitip', [PenitipController::class, 'index']);
 Route::get('/penitip/{id}', [PenitipController::class, 'show']);
 
 
-Route::post('/login',[AuthController::class,'login']);
+

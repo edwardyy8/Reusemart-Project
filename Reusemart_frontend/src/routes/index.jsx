@@ -13,16 +13,24 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
 import LupaPass2Page from "../pages/auth/LupaPass2Page";
+
+
+import PenitipPage from "../pages/penitip/PenitipPage";
+import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
 import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
-import PenitipPage from "../pages/PenitipPage";
 
 
 import ProtectedRoutes from "./ProtectedRoutes";
+import UnauthorizedPage from "../pages/Alluser/UnauthorizedPage";
 
 const router = createBrowserRouter([
   {
     path: "*",
     element: <div>Routes Not Found!</div>,
+  },
+  {
+    path: "/tidaksah",
+    element: <UnauthorizedPage />,
   },
   {
     element: <MainLayout />,
@@ -62,21 +70,27 @@ const router = createBrowserRouter([
       {
         path: "/barang/:id",
         element: <DetailBarangPage />,
-      }
+      },
+
+                                   
     ],
   },
   {
-    path: "/Penitip",
+    path: "/penitip",
     element: (
-      <ProtectedRoutes>
+      <ProtectedRoutes allowedRoles={['penitip']}>
         <PenitipLayout />
       </ProtectedRoutes>
     ),
     children: [
       {
-        path: "/Penitip",
+        path: "/penitip",
         element: <PenitipPage />,
       },
+      {
+        path: "/penitip/profile",
+        element: <ProfilePenitipPage />,
+      }
       
     ],
   },
