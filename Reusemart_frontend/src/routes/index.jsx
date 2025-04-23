@@ -18,11 +18,16 @@ import PenitipPage from "../pages/PenitipPage";
 
 
 import ProtectedRoutes from "./ProtectedRoutes";
+import UnauthorizedPage from "../pages/Alluser/UnauthorizedPage";
 
 const router = createBrowserRouter([
   {
     path: "*",
     element: <div>Routes Not Found!</div>,
+  },
+  {
+    path: "/tidaksah",
+    element: <UnauthorizedPage />,
   },
   {
     element: <MainLayout />,
@@ -59,12 +64,15 @@ const router = createBrowserRouter([
         path: "/kategori/:id",
         element: <KategoriUtamaPage />,
       },
+
+
+      
     ],
   },
   {
     path: "/Penitip",
     element: (
-      <ProtectedRoutes>
+      <ProtectedRoutes allowedRoles={['penitip']}>
         <PenitipLayout />
       </ProtectedRoutes>
     ),

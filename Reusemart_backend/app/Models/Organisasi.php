@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Organisasi extends Model
+class Organisasi extends Authenticatable
 {
     use HasFactory, HasApiTokens;
 
@@ -16,11 +17,19 @@ class Organisasi extends Model
     protected $fillable = [
         'id_organisasi',
         'nama_organisasi',
-        'email_organisasi',
-        'password_organisasi',
+        'email',
+        'password',
         'alamat_organisasi',
         'foto_profile'
     ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    public function getUserType() {
+        return 'organisasi';
+    }
 
     public function diskusi() {
         return $this->hasMany(Diskusi::class, 'id_organisasi');

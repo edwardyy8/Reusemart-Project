@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Pembeli extends Model
+class Pembeli extends Authenticatable
 {
     use HasFactory, HasApiTokens;
 
@@ -19,12 +20,20 @@ class Pembeli extends Model
     protected $fillable = [
         'id_pembeli',
         'nama_pembeli',
-        'email_pembeli',
-        'password_pembeli',
+        'email',
+        'password',
         'is_aktif',
         'poin_pembeli',
         'foto_profile'
     ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    public function getUserType() {
+        return 'pembeli';
+    }
 
     public function alamat()
     {
