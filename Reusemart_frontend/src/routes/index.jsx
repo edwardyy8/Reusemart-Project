@@ -14,7 +14,8 @@ import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
 import LupaPass2Page from "../pages/auth/LupaPass2Page";
 
-import PenitipPage from "../pages/PenitipPage";
+import PenitipPage from "../pages/penitip/PenitipPage";
+import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
 
 
 import ProtectedRoutes from "./ProtectedRoutes";
@@ -70,7 +71,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/Penitip",
+    path: "/penitip",
     element: (
       <ProtectedRoutes allowedRoles={['penitip']}>
         <PenitipLayout />
@@ -78,9 +79,13 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/Penitip",
+        path: "/penitip",
         element: <PenitipPage />,
       },
+      {
+        path: "/penitip/profile",
+        element: <ProfilePenitipPage />,
+      }
       
     ],
   },
