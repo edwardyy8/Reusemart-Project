@@ -5,20 +5,35 @@ import { toast } from "react-toastify";
 
 import InputFloatingForm from "./InputFloatingForm";
 
-// import { SignUp } from "../../api/apiAuth";
+import { SignUp } from "../../api/apiAuth";
 
 const FormRegister = () => {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
+  const [isOrganisasi, setIsOrganisasi] = useState(false);
   const [data, setData] = useState({
-    name: "",
-    handle: "",
+    username: "",
     email: "",
     password: "",
+    confirm_password: "",
+    role: "",
+    alamat: "",
+    label_alamat: "",
+    no_hp: "",
+    foto_profile: null
   });
 
   const handleChange = (event) => {
-    setData({ ...data, [event.target.name]: event.target.value });
+    const { name, value, type, files } = event.target;
+  
+    if (name === "role") {
+      setIsOrganisasi(value === "organisasi");
+    }
+  
+    setData({
+      ...data,
+      [name]: type === "file" ? files[0] : value
+    });
   };
 
   const handleCheck = (e) => {
@@ -54,7 +69,7 @@ const FormRegister = () => {
               name="username"
               onChange={handleChange}
               placeholder="Masukkan Username"
-              required  
+              
             />
             
             <InputFloatingForm
@@ -124,16 +139,16 @@ const FormRegister = () => {
               name="label_alamat"
               onChange={handleChange}
               placeholder="Contoh: Rumah, Kantor"
-              required
+              disabled={isOrganisasi}
             />
   
             <InputFloatingForm
-              type="tel"
+              type="text"
               label="Nomor HP"
               name="no_hp"
               onChange={handleChange}
               placeholder="Masukkan nomor handphone"
-              required
+              disabled={isOrganisasi}
             />
             
             <div className="mt-4 pt-2"> 

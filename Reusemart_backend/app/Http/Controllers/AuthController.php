@@ -17,7 +17,62 @@ use App\Models\Organisasi;
 class AuthController extends Controller
 {
     //
+    public function register(Request $request)
+    {
+        $registrationData = $request->all();
 
+        $required = [
+            'username' => 'required|max:60',
+            'email' => 'required|email:rfc|unique:penitip,email|unique:pembeli,email|unique:organisasi,email|unique:pegawai,email',
+            'password' => 'required|min:8|same:confirm_password',
+            'confirm_password' => 'required|min:8',
+            'role' => 'required|in:pembeli,organisasi',
+            'alamat' => 'required|string',
+            'foto_profile' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
+        ];
+
+        if ($registrationData['role'] === 'pembeli') {
+            $required['no_hp'] = 'required|string|max:15';
+            $required['label_alamat'] = 'nullable|string';
+        } else {
+            $required['no_hp'] = 'nullable|string|max:15';
+            $required['label_alamat'] = 'nullable|string';
+        }
+
+        $validate = Validator::make($registrationData, $required);
+
+        if ($validate->fails()) {
+            return response(['message' => $validate->errors()->first()], 400);
+        }
+
+        $uploadFolder = 'foto_profile';
+        $image = $request->file('foto_profile');
+        $image_uploaded_path = $image->store($uploadFolder, 'public');
+        $fotoProfile = basename($image_uploaded_path);
+
+        $insertData = [
+            'name' => $registrationData['username'],
+            'username' => $registrationData['username'],
+            'email' => $registrationData['email'],
+            'password' => bcrypt($registrationData['password']),
+            'alamat' => $registrationData['alamat'],
+            'no_hp' => $registrationData['no_hp'] ?? null,
+            'label_alamat' => $registrationData['label_alamat'] ?? null,
+            'foto_profile' => $fotoProfile,
+        ];
+
+        $user = $registrationData['role'] == 'pembeli'
+            ? Pembeli::create($insertData)
+            : Organisasi::create($insertData);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response([
+            'message' => 'Register Success',
+            'user' => $user,
+            'token' => $token
+        ], 200);
+    }
 
 
     public function login(Request $request)

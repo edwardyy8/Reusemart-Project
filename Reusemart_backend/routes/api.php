@@ -17,7 +17,7 @@ Route::get('/barang',[BarangController::class,'index']);
 Route::get('/barang/kategori/{id_kategori}',[BarangController::class,'findByKategori']);
 Route::get('/barang/sub/{id_kategori}',[BarangController::class,'findBySubKategori']);
 
-
+Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
