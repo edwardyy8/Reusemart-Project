@@ -25,15 +25,12 @@ const FormRegister = () => {
 
   const handleChange = (event) => {
     const { name, value, type, files } = event.target;
-  
-    if (name === "role") {
-      setIsOrganisasi(value === "organisasi");
-    }
-  
+
     setData({
       ...data,
-      [name]: type === "file" ? files[0] : value
+      [name]: type === "file" ? files[0] : value,
     });
+    // setData({ ...data, [event.target.name]: event.target.value });
   };
 
   const handleCheck = (e) => {
@@ -47,8 +44,12 @@ const FormRegister = () => {
 
   const Register = (event) => {
     event.preventDefault();
+    console.log(data);
+
     SignUp(data)
       .then((res) => {
+        sessionStorage.setItem("token", res.token);
+        
         navigate("/");
         toast.success(res.message);
       })
@@ -60,7 +61,7 @@ const FormRegister = () => {
 
   return (
     <Container className="mt-4 mb-5 py-4 rounded-3 w-75" style={{ border: '1px solid rgba(83, 83, 83, 1)', backgroundColor: 'rgba(241, 237, 233, 1)' }}>
-      <Form style={{ maxWidth: "800px", margin: "auto" }} onSubmit={Register}>
+      <Form style={{ maxWidth: "800px", margin: "auto" }} onSubmit={Register} encType="multipart/form-data">
         <Row className="g-5">
           <Col md={6}>
             <InputFloatingForm
@@ -129,7 +130,7 @@ const FormRegister = () => {
                 name="alamat" 
                 onChange={handleChange}
                 placeholder="Masukkan alamat lengkap"
-                required
+                
               />
             </Form.Group>
   
