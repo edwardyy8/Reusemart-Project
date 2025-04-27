@@ -7,6 +7,9 @@ use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PenitipController;
 
+use App\Http\Middleware\CekJabatan;
+use App\Http\Middleware\EnsureApiTokenIsValid;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -30,7 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:pegawai')->group(function () {
     Route::get('/getJabatan', [AuthController::class, 'getJabatan']);
-   
+
+    Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
+        ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);

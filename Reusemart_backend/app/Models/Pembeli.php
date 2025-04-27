@@ -57,4 +57,5 @@ class Pembeli extends Authenticatable
     {
         return $this->hasMany(Pemesanan::class, 'id_pembeli');
     }
+
 }

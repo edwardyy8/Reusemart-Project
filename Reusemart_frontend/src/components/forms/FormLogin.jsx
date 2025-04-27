@@ -7,9 +7,11 @@ import InputFloatingForm from "./InputFloatingForm";
 
 import { SignIn } from "../../api/apiAuth";
 
+
 const FormLogin = () => {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
+
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -33,14 +35,17 @@ const FormLogin = () => {
     SignIn(data)
       .then((res) => {
         sessionStorage.setItem("token", res.token);
+        
+        navigate(0);
 
-        if(res.user_type === "pegawai") {
-          console.log(res.jabatan);
-          navigate(`/${res.user_type}/${res.jabatan}`);
-        }else{
-          navigate(`/${res.user_type}`);
-        }
-        toast.success(res.message);
+        // toast.success(res.message); 
+        // if(res.user_type === "pegawai") {
+        //   console.log(res.jabatan);
+        //   navigate(`/${res.user_type}/${res.jabatan}`);
+        // }else{
+        //   navigate(`/${res.user_type}`);
+        // }
+        
       })
       .catch((err) => {
         console.log(err);
