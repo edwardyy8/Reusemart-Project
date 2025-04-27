@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class Pegawai extends Authenticatable
 {
@@ -16,6 +17,9 @@ class Pegawai extends Authenticatable
 
     protected $primaryKey = 'id_pegawai';
 
+    protected $keyType = 'string'; 
+    public $incrementing = false;
+
     protected $fillable = [
         'id_pegawai',
         'id_jabatan',
@@ -23,7 +27,8 @@ class Pegawai extends Authenticatable
         'email',
         'password',
         'foto_profile',
-        'tanggal_lahir',    
+        'tanggal_lahir',   
+        'createdAt' 
     ];
 
     protected $hidden = [
@@ -67,4 +72,6 @@ class Pegawai extends Authenticatable
     public function diskusi() {
         return $this->hasMany(Diskusi::class, 'id_pegawai');
     }
+
+
 }

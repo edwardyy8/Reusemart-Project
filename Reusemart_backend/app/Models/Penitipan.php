@@ -12,6 +12,8 @@ class Penitipan extends Model
     public $timestamps = false;
     public $table = 'penitipan';
     protected $primaryKey = 'id_penitipan';
+    protected $keyType = 'string'; 
+    public $incrementing = false;
     protected $fillable = [
         'id_penitipan',
         'id_penitip',

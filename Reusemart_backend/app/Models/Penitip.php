@@ -15,6 +15,9 @@ class Penitip extends Authenticatable
     public $table = 'penitip';
     protected $primaryKey = 'id_penitip';
 
+    protected $keyType = 'string'; 
+    public $incrementing = false;
+
     protected $fillable = [
         'id_penitip',
         'nama_penitip',
@@ -25,7 +28,8 @@ class Penitip extends Authenticatable
         'email',
         'password',
         'is_top',
-        'foto_ktp'
+        'foto_ktp',
+        'createdAt'
     ];
 
     protected $hidden = [
@@ -48,4 +52,6 @@ class Penitip extends Authenticatable
     public function penitipan(){
         return $this->hasMany(Penitipan::class, 'id_penitip');
     }
+
+
 }
