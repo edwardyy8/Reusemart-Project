@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 use App\Models\Pegawai;
 use App\Models\Pembeli;
 use App\Models\Penitip;
 use App\Models\Organisasi;
 
-
+$wibTime = Carbon::now('Asia/Jakarta');
 
 class AuthController extends Controller
 {
@@ -23,7 +24,7 @@ class AuthController extends Controller
             $registrationData = $request->all();
 
             $required = [
-                'username' => 'required|max:60',
+                'nama' => 'required|max:60',
                 'email' => 'required|email:rfc|unique:penitip,email|unique:pembeli,email|unique:organisasi,email|unique:pegawai,email',
                 'password' => 'required|min:8|same:confirm_password',
                 'confirm_password' => 'required|min:8',
@@ -33,9 +34,10 @@ class AuthController extends Controller
             ];
 
             if ($registrationData['role'] === 'pembeli') {
-                $required['no_hp'] = 'nullable|string|max:15';
+                $required['no_hp'] = 'required|string|max:15';
                 $required['label_alamat'] = 'nullable|string';
             } else {
+                
                 $required['no_hp'] = 'nullable|string|max:15';
                 $required['label_alamat'] = 'nullable|string';
             }
@@ -52,19 +54,21 @@ class AuthController extends Controller
             $fotoProfile = basename($image_uploaded_path);
 
             $insertData = [
-                'username' => $registrationData['username'],
+                'nama' => $registrationData['nama'],
                 'email' => $registrationData['email'],
                 'password' => bcrypt($registrationData['password']),
                 'alamat' => $registrationData['alamat'],
                 'no_hp' => $registrationData['no_hp'] ?? null,
                 'label_alamat' => $registrationData['label_alamat'] ?? null,
                 'foto_profile' => $fotoProfile,
+                'createdAt' => Carbon::now('Asia/Jakarta')
             ];
 
             if ($registrationData['role'] == 'pembeli') {
                 $insertData['is_aktif'] = 'Ya';
                 $insertData['poin_pembeli'] = 0;
             } else {
+                $insertData['id_organisasi'] = Organisasi::generateId();
                 $insertData['alamat_organisasi'] = $registrationData['alamat'];
             }
 
@@ -82,7 +86,8 @@ class AuthController extends Controller
             
             return response([
                 'message' => 'Register Failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ], 500);
         }
     }

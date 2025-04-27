@@ -67,7 +67,7 @@ const FormRegister = () => {
             <InputFloatingForm
               type="text"
               label="Username"
-              name="username"
+              name="nama"
               onChange={handleChange}
               placeholder="Masukkan Username"
               

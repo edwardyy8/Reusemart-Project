@@ -16,16 +16,34 @@ class Organisasi extends Authenticatable
     protected $primaryKey = 'id_organisasi';
     protected $fillable = [
         'id_organisasi',
-        'username',
+        'nama',
         'email',
         'password',
         'alamat_organisasi',
-        'foto_profile'
+        'foto_profile',
+        'createdAt'
     ];
 
     protected $hidden = [
         'password',
     ];
+    public static function generateId()
+    {
+        $latestOrg = Organisasi::orderBy('id_organisasi', 'desc')->first();
+        
+        if (!$latestOrg) {
+            return 'ORG1';
+        }
+
+        $lastNumber = (int) str_replace('ORG', '', $latestOrg->id_organisasi); 
+
+        do {
+            $lastNumber++;
+            $newId = 'ORG' . $lastNumber;
+        } while (Organisasi::where('id_organisasi', $newId)->exists());
+
+        return $newId;
+    }
 
     public function getUserType() {
         return 'organisasi';
