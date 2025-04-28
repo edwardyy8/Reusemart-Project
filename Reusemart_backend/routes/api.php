@@ -38,6 +38,13 @@ Route::middleware('auth:pegawai')->group(function () {
         ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
 });
 
+Route::middleware('auth:penitip')->group(function () {
+    Route::get('/penitip/penitipProfile', [PenitipController::class, 'getPenitipProfile']);
+
+    // Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
+    //     ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
+});
+
 Route::get('/penitip', [PenitipController::class, 'index']);
 Route::get('/penitip/{id}', [PenitipController::class, 'show']);
 

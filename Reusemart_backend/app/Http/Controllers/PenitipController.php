@@ -35,4 +35,19 @@ class PenitipController extends Controller
             'data' => $penitip,
         ]);
     }
+
+    public function getPenitipProfile(Request $request){
+        try {
+            $user = $request->user();
+            return response([
+                'penitip' => $user,
+            ]);
+            
+        } catch (\Exception $e) {
+            return response([
+                'message' => 'Failed to get penitip profile',
+                'error' => $e->getMessage()
+            ], 401);
+        }
+    }
 }
