@@ -22,7 +22,7 @@ Route::get('/barang/sub/{id_kategori}',[BarangController::class,'findBySubKatego
 Route::get('/barang/{id}', [BarangController::class, 'show']);
 
 
-
+Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 
 Route::middleware('auth:sanctum')->group(function () {

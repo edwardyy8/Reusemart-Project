@@ -5,20 +5,32 @@ import { toast } from "react-toastify";
 
 import InputFloatingForm from "./InputFloatingForm";
 
-// import { SignUp } from "../../api/apiAuth";
+import { SignUp } from "../../api/apiAuth";
 
 const FormRegister = () => {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
+  const [isOrganisasi, setIsOrganisasi] = useState(false);
   const [data, setData] = useState({
-    name: "",
-    handle: "",
+    username: "",
     email: "",
     password: "",
+    confirm_password: "",
+    role: "",
+    alamat: "",
+    label_alamat: "",
+    no_hp: "",
+    foto_profile: null
   });
 
   const handleChange = (event) => {
-    setData({ ...data, [event.target.name]: event.target.value });
+    const { name, value, type, files } = event.target;
+
+    setData({
+      ...data,
+      [name]: type === "file" ? files[0] : value,
+    });
+    // setData({ ...data, [event.target.name]: event.target.value });
   };
 
   const handleCheck = (e) => {
@@ -32,8 +44,12 @@ const FormRegister = () => {
 
   const Register = (event) => {
     event.preventDefault();
+    console.log(data);
+
     SignUp(data)
       .then((res) => {
+        sessionStorage.setItem("token", res.token);
+        
         navigate("/");
         toast.success(res.message);
       })
@@ -45,16 +61,16 @@ const FormRegister = () => {
 
   return (
     <Container className="mt-4 mb-5 py-4 rounded-3 w-75" style={{ border: '1px solid rgba(83, 83, 83, 1)', backgroundColor: 'rgba(241, 237, 233, 1)' }}>
-      <Form style={{ maxWidth: "800px", margin: "auto" }} onSubmit={Register}>
+      <Form style={{ maxWidth: "800px", margin: "auto" }} onSubmit={Register} encType="multipart/form-data">
         <Row className="g-5">
           <Col md={6}>
             <InputFloatingForm
               type="text"
               label="Username"
-              name="username"
+              name="nama"
               onChange={handleChange}
               placeholder="Masukkan Username"
-              required  
+              
             />
             
             <InputFloatingForm
@@ -114,7 +130,7 @@ const FormRegister = () => {
                 name="alamat" 
                 onChange={handleChange}
                 placeholder="Masukkan alamat lengkap"
-                required
+                
               />
             </Form.Group>
   
@@ -124,16 +140,16 @@ const FormRegister = () => {
               name="label_alamat"
               onChange={handleChange}
               placeholder="Contoh: Rumah, Kantor"
-              required
+              disabled={isOrganisasi}
             />
   
             <InputFloatingForm
-              type="tel"
+              type="text"
               label="Nomor HP"
               name="no_hp"
               onChange={handleChange}
               placeholder="Masukkan nomor handphone"
-              required
+              disabled={isOrganisasi}
             />
             
             <div className="mt-4 pt-2"> 

@@ -20,7 +20,7 @@ class Penitip extends Authenticatable
 
     protected $fillable = [
         'id_penitip',
-        'nama_penitip',
+        'nama',
         'rating_penitip',
         'saldo_penitip',
         'poin_penitip',

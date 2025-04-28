@@ -19,7 +19,7 @@ class Organisasi extends Authenticatable
 
     protected $fillable = [
         'id_organisasi',
-        'nama_organisasi',
+        'nama',
         'email',
         'password',
         'alamat_organisasi',
@@ -30,6 +30,23 @@ class Organisasi extends Authenticatable
     protected $hidden = [
         'password',
     ];
+    public static function generateId()
+    {
+        $latestOrg = Organisasi::orderBy('id_organisasi', 'desc')->first();
+        
+        if (!$latestOrg) {
+            return 'ORG1';
+        }
+
+        $lastNumber = (int) str_replace('ORG', '', $latestOrg->id_organisasi); 
+
+        do {
+            $lastNumber++;
+            $newId = 'ORG' . $lastNumber;
+        } while (Organisasi::where('id_organisasi', $newId)->exists());
+
+        return $newId;
+    }
 
     public function getUserType() {
         return 'organisasi';
