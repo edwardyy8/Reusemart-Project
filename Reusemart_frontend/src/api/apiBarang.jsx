@@ -29,3 +29,20 @@ export const GetBarangByCategory = async (id) => {
     throw error.response.data;
   }
 }
+
+// Mendapatkan barang dari id
+export const GetBarangById = async (id_barang) => {
+  try {
+    const response = await useAxios.get(`/barang/${id_barang}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+

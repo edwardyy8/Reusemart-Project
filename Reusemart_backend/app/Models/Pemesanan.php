@@ -12,6 +12,8 @@ class Pemesanan extends Model
     public $timestamps = false;
     public $table = 'pemesanan';
     protected $primaryKey = 'id_pemesanan';
+    protected $keyType = 'string'; 
+    public $incrementing = false;
     protected $fillable = [
         'id_pemesanan',
         'id_pembeli',

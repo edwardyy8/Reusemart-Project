@@ -44,7 +44,8 @@ const LoginPage = () => {
         } finally {
           setIsLoading(false);
         }
-      } else {
+
+      }else {
         setIsLoading(false);
       }
     };

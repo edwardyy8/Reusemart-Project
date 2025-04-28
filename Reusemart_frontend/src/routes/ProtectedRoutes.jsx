@@ -29,7 +29,7 @@ const ProtectedRoutes = ({ allowedRoles, children, allowedJabatan }) => {
         setUserType(res.user_type);
 
         if(res.user_type === "pegawai"){
-          const jabatanData = getJabatan();
+          const jabatanData = await getJabatan();
 
           setJabatan(jabatanData.jabatan);
 

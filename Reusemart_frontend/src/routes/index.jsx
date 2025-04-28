@@ -1,8 +1,10 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
+import NoPage from "../pages/Alluser/NoPage";
+import UnauthorizedPage from "../pages/Alluser/UnauthorizedPage";
+
 import MainLayout from "../layouts/MainLayout";
-import PenitipLayout from "../layouts/PenitipLayout";
 
 import HomePage from "../pages/Alluser/HomePage";
 import DonationPage from "../pages/Alluser/DonationPage";
@@ -14,16 +16,17 @@ import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
 import LupaPass2Page from "../pages/auth/LupaPass2Page";
 
-import PenitipPage from "../pages/PenitipPage";
 
+import PenitipPage from "../pages/penitip/PenitipPage";
+import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
+import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
 
 import ProtectedRoutes from "./ProtectedRoutes";
-import UnauthorizedPage from "../pages/Alluser/UnauthorizedPage";
 
 const router = createBrowserRouter([
   {
     path: "*",
-    element: <div>Routes Not Found!</div>,
+    element: <NoPage />,
   },
   {
     path: "/tidaksah",
@@ -64,26 +67,35 @@ const router = createBrowserRouter([
         path: "/kategori/:id",
         element: <KategoriUtamaPage />,
       },
-
-
-      
-    ],
-  },
-  {
-    path: "/Penitip",
-    element: (
-      <ProtectedRoutes allowedRoles={['penitip']}>
-        <PenitipLayout />
-      </ProtectedRoutes>
-    ),
-    children: [
       {
-        path: "/Penitip",
-        element: <PenitipPage />,
+        path: "/barang/:id",
+        element: <DetailBarangPage />,
       },
-      
+
+      {
+        path: "/penitip",
+        element: (
+          <ProtectedRoutes allowedRoles={['penitip']}>
+            <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "",
+            element: <PenitipPage />,
+          },
+          {
+            path: "profile",
+            element: <ProfilePenitipPage />,
+          }
+          
+        ],
+      },
+
+                                   
     ],
   },
+  
 ]);
 
 const AppRouter = () => {

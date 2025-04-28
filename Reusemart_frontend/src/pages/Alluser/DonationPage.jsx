@@ -109,7 +109,7 @@ const DonationPage = () => {
                                                     </Col>
                                                     <Col xs={12} md={4} className="d-flex align-items-center justify-content-end">
                                                         <div className="d-flex flex-row gap-3 align-items-center">
-                                                            <h5 className="mb-0">{donasi.nama_organisasi}</h5>
+                                                            <h5 className="mb-0">{donasi.nama}</h5>
                                                             <img src={reusemart} height="60" className="d-inline-block rounded-1" alt="Logo" />
                                                         </div>
                                                     </Col>
