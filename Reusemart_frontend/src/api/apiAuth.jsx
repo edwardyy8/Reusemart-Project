@@ -2,7 +2,15 @@ import useAxios from ".";
 
 const SignUp = async (data) => {
     try {
-        const response = await useAxios.post("/register", data); return response.data;
+        
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+         
+        const response = await useAxios.post("/register", formData); 
+        
+        return response.data;
     } catch (error) {
         throw error.response.data;
     }

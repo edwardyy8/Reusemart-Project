@@ -23,7 +23,7 @@ class Pegawai extends Authenticatable
     protected $fillable = [
         'id_pegawai',
         'id_jabatan',
-        'nama_pegawai',
+        'nama',
         'email',
         'password',
         'foto_profile',
