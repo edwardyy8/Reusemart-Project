@@ -1,40 +1,31 @@
 import { Button, Alert, Spinner, Form, Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import InputFloatingForm from "./InputFloatingForm";
 
-// import { SignUp } from "../../api/apiAuth";
+import { resetPassword } from "../../api/apiAuth";
 
-const FormLupaPass2 = () => {
+const FormResetPass = () => {
   const navigate = useNavigate();
-  const [isDisabled, setIsDisabled] = useState(true);
-  const [data, setData] = useState({
-    name: "",
-    handle: "",
-    email: "",
-    password: "",
-  });
 
-  const handleChange = (event) => {
-    setData({ ...data, [event.target.name]: event.target.value });
-  };
+  const { token } = useParams(); 
+  const [searchParams] = useSearchParams(); 
+  const email = searchParams.get('email');
 
-  const handleCheck = (e) => {
-    let isChecked = e.target.checked;
-    if (isChecked) {
-      setIsDisabled(false);
-    } else {
-      setIsDisabled(true);
-    }
-  };
+  const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  
 
-  const Login = (event) => {
+  const ResetPass = (event) => {
     event.preventDefault();
-    SignUp(data)
+
+    resetPassword(token, email, password, passwordConfirmation)
       .then((res) => {
-        navigate("/");
+        navigate("/login");
         toast.success(res.message);
       })
       .catch((err) => {
@@ -45,15 +36,32 @@ const FormLupaPass2 = () => {
 
   return (
     <Container className="mt-4 mb-5 p-5 rounded-3 w-50" style={{ border: '1px solid rgba(83, 83, 83, 1)', backgroundColor: 'rgba(241, 237, 233, 1)' }}>
-      <Form style={{ maxWidth: "600px", margin: "auto" }} onSubmit={Login}>
+      <Form style={{ maxWidth: "600px", margin: "auto" }} onSubmit={ResetPass}>
         <Row className="g-5">
           <Col>
+            <InputFloatingForm
+              type="email"
+              label="Email"
+              name="email"
+              value={email}
+              disabled={true}
+            />
+
             <InputFloatingForm
               type="password"
               label="Kata sandi baru"
               name="password"
-              onChange={handleChange}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Masukkan kata sandi baru"
+              required
+            />
+
+            <InputFloatingForm
+              type="password"
+              label="Konfirmasi kata sandi baru"
+              name="passwordConfirmation"
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              placeholder="Masukkan konfirmasi kata sandi baru"
               required
             />
 
@@ -67,11 +75,10 @@ const FormLupaPass2 = () => {
                     className="mt-3 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
                     style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
                     >
-                    KONFIRMASI
+                    Reset Kata Sandi
                 </Button>
             </div>
             
-
             <p className="text-center mt-3 mb-0 abuForm">
               Ingat Kata Sandi? <Link to="/login">Login!</Link>
             </p>
@@ -84,4 +91,4 @@ const FormLupaPass2 = () => {
   );
 };
 
-export default FormLupaPass2;
+export default FormResetPass;
