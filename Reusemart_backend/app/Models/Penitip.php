@@ -33,10 +33,6 @@ class Penitip extends Authenticatable
         'createdAt'
     ];
 
-    protected $hidden = [
-        'password',
-    ];
-
     public function getUserType() {
         return 'penitip';
     }

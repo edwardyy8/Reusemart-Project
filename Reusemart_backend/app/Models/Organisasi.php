@@ -29,9 +29,6 @@ class Organisasi extends Authenticatable
         'createdAt'
     ];
 
-    protected $hidden = [
-        'password',
-    ];
     public static function generateId()
     {
         $latestOrg = Organisasi::orderBy('id_organisasi', 'desc')->first();

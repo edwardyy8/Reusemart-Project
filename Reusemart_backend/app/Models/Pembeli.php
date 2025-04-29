@@ -28,10 +28,6 @@ class Pembeli extends Authenticatable
         'foto_profile'
     ];
 
-    protected $hidden = [
-        'password',
-    ];
-
     public function getUserType() {
         return 'pembeli';
     }
