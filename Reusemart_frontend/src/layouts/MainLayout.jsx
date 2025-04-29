@@ -148,7 +148,7 @@ const MainLayout = ({ children }) => {
           )
         }
       ];
-    } 
+
     // else if (userType === "pegawai") {
     //   if (jabatan === "admin") {
     //     return [
@@ -178,7 +178,7 @@ const MainLayout = ({ children }) => {
 
     //   ];
     // }
-    else {
+    } else {
       return [
         { path: "/", name: "BERANDA" },
         { path: "/donasi", name: "DONASI" },

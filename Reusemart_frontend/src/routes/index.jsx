@@ -21,6 +21,11 @@ import PenitipPage from "../pages/penitip/PenitipPage";
 import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
 import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
 
+import ManagePenitipPage from "../pages/CS/ManagePenitipPage";
+import ClaimMerchandisePage from "../pages/CS/ClaimMerchandisePage";
+import VerifikasiPage from "../pages/CS/VerifikasiPage";
+import TambahPenitipPage from "../pages/CS/TambahPenitipPage";
+
 import ProtectedRoutes from "./ProtectedRoutes";
 
 const router = createBrowserRouter([
@@ -91,7 +96,37 @@ const router = createBrowserRouter([
           
         ],
       },
-
+      {
+        path:  "/pegawai/Customer Service",
+        element: (
+          <ProtectedRoutes allowedRoles={['pegawai']} allowedJabatan={['Customer Service']}>
+            <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "",
+            element: <ManagePenitipPage />,
+          },
+          {
+            path: "verifikasi",
+            element: <VerifikasiPage />,
+          },
+          {
+            path: "managePenitip",
+            element: <ManagePenitipPage />,
+          },
+          {
+            path: "claimMerchandise",
+            element: <ClaimMerchandisePage />,
+          },
+          {
+            path: "managePenitip/tambahPenitip",
+            element: <TambahPenitipPage />,
+          },
+          
+        ],
+      },
                                    
     ],
   },

@@ -24,6 +24,7 @@ Route::get('/barang/{id}', [BarangController::class, 'show']);
 
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
+Route::post('/penitip',[PenitipController::class,'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);

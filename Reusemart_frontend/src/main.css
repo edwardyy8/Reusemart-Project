@@ -20,3 +20,14 @@ body {
 .abuForm {
     color: rgba(24, 36, 24, 0.40) !important;
 }
+
+.custom-tabs .nav-link {
+    color: gray !important;
+    background-color: transparent;
+  }
+  
+.custom-tabs .nav-link.active {
+    color: white !important;
+    background-color: rgba(4, 121, 2, 1) !important;
+}
+  

@@ -7,8 +7,8 @@ import InputFloatingForm from "../../components/forms/InputFloatingForm";
 
 const ProfilePenitipPage = () => {
   const [profileData, setProfileData] = useState(null);
-  // const [penjualanData, setPenjualanData] = useState([]);
-  // const [barangData, setBarangData] = useState([]);
+  const [penjualanData, setPenjualanData] = useState([]);
+  const [barangData, setBarangData] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,16 +18,16 @@ const ProfilePenitipPage = () => {
       const profile = await getProfileData();
       // const penjualan = await getPenjualanSaya();
       // const barang = await getBarangSaya();
-      setProfileData(profile.penitip);
-      if (!profile.penitip) {
+      setProfileData(profile);
+      if (!profile) {
         return (
           <Container className="mt-5 text-center">
             <Alert variant="warning">Data tidak ditemukan</Alert>
           </Container>
         );
       }
-      setPenjualanData(penjualan);
-      setBarangData(barang);
+      // setPenjualanData(penjualan);
+      // setBarangData(barang);
     } catch (err) {
       console.log(err);
       setError(err?.response?.data?.message || err.message || "Gagal memuat data");
@@ -38,7 +38,7 @@ const ProfilePenitipPage = () => {
 
   useEffect(() => {
     fetchProfile();
-  }, [profileData]);
+  }, []);
 
   if (loading) {
     return (
@@ -71,7 +71,7 @@ const ProfilePenitipPage = () => {
         <p className="text-muted">Poin Reward</p>
       </Container>
 
-      <Tabs defaultActiveKey="profile" className="mb-4 justify-content-center" fill>
+      <Tabs defaultActiveKey="profile" className="mb-4 justify-content-center custom-tabs" fill>
       <Tab eventKey="penjualan" title="Penjualan Saya">
           {penjualanData.length > 0 ? (
             <Row className="g-3">
@@ -100,18 +100,22 @@ const ProfilePenitipPage = () => {
             <h4>Nama Penitip</h4>
             <InputFloatingForm
               value={profileData?.nama}
+              disabled
             />
             <h4>Role</h4>
             <InputFloatingForm
               value="Penitip"
+              disabled
             />
             <h4>Email</h4>
             <InputFloatingForm
               value={profileData?.email}
+              disabled
             />
             <h4>Password</h4>
             <InputFloatingForm
               value={profileData?.password}
+              disabled
             />
             <h6 className="mt-2 mb-4 text-primary">
                 Ubah password? <Link to="/resetPassword">Klik Disini!</Link>
