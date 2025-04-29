@@ -31,10 +31,6 @@ class Pegawai extends Authenticatable
         'createdAt' 
     ];
 
-    protected $hidden = [
-        'password',
-    ];
-
     public function getUserType() {
         return 'pegawai';
     }

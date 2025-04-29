@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Pembeli extends Authenticatable
 {
-    use HasFactory, HasApiTokens;
+    use HasFactory, HasApiTokens, Notifiable;
 
     public $timestamps = false;
 
@@ -25,10 +26,6 @@ class Pembeli extends Authenticatable
         'is_aktif',
         'poin_pembeli',
         'foto_profile'
-    ];
-
-    protected $hidden = [
-        'password',
     ];
 
     public function getUserType() {
