@@ -121,7 +121,7 @@ const DetailBarangPage = () => {
                 />
               ))
             ) : (
-              <p>No additional photos available</p>
+              <p>Tidak ada foto lainnya</p>
             )}
           </Col>
           <Col md={4} className="d-flex justify-content-end align-items-center">
