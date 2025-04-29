@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Navbar, Container, Nav, Button, Form } from "react-bootstrap";
 import logo from "../assets/images/logoreuse.png";
-
 import { FaSearch } from 'react-icons/fa';
 
 const TopNavbar = ({ routes }) => {
-    
-
+    const [searchKeyword, setSearchKeyword] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -15,6 +13,14 @@ const TopNavbar = ({ routes }) => {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("user");
         navigate("/");
+    };
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (searchKeyword.trim() !== "") {
+            // Navigasi ke halaman pencarian dengan query yang dimasukkan
+            navigate(`/search?query=${encodeURIComponent(searchKeyword.trim())}`);
+        }
     };
 
     return (
@@ -40,28 +46,28 @@ const TopNavbar = ({ routes }) => {
                                             className={`hijau ${location.pathname === route.path ? "text-decoration-underline" : "text-decoration-none"}`}
                                         >
                                             {route.name}
-                                            
                                         </Button>
                                     </Nav.Link>
                                 ))}
                             </div>
 
                             {/* Search Bar */}
-                            <Form className="d-flex mx-lg-3 my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }}>
+                            <Form className="d-flex mx-lg-3 my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }} onSubmit={handleSearchSubmit}>
                                 <Form.Control
                                     type="search"
                                     placeholder="Search products here"
+                                    value={searchKeyword}
+                                    onChange={(e) => setSearchKeyword(e.target.value)}
                                     className="pe-5"
                                     aria-label="Search"
-                                    
-                                    
                                     style={{
                                         paddingRight: '2.5rem',
                                         borderColor: 'rgba(83, 83, 83, 1)',
                                         borderRadius: '20px',
                                     }}
                                 />
-                                 <Button
+                                <Button
+                                    type="submit"
                                     variant="link"
                                     className="position-absolute end-0 top-50 translate-middle-y bg-transparent border-0"
                                     style={{
@@ -72,7 +78,6 @@ const TopNavbar = ({ routes }) => {
                                 >
                                     <FaSearch />
                                 </Button>
-                               
                             </Form>
 
                             {/* Icons (Cart and Person) */}
@@ -87,7 +92,6 @@ const TopNavbar = ({ routes }) => {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
-            
         </>
     );
 };

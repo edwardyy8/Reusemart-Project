@@ -7,6 +7,8 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PenitipController;
+use App\Http\Controllers\FotoBarangController;
+use App\Http\Controllers\KategoriController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -52,4 +54,9 @@ Route::get('/penitip', [PenitipController::class, 'index']);
 Route::get('/penitip/{id}', [PenitipController::class, 'show']);
 
 
+Route::post('/fotobarang', [FotoBarangController::class, 'store']);
+Route::get('/fotobarang/barang/{id_barang}', [FotoBarangController::class, 'getByBarangId']);
+Route::delete('/fotobarang/{id}', [FotoBarangController::class, 'destroy']);
 
+Route::get('/kategori', [KategoriController::class, 'index']);
+Route::get('/kategori/{id}', [KategoriController::class, 'show']);
