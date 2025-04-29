@@ -7,8 +7,8 @@ import InputFloatingForm from "../../components/forms/InputFloatingForm";
 
 const ProfilePenitipPage = () => {
   const [profileData, setProfileData] = useState(null);
-  const [penjualanData, setPenjualanData] = useState([]);
-  const [barangData, setBarangData] = useState([]);
+  // const [penjualanData, setPenjualanData] = useState([]);
+  // const [barangData, setBarangData] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
