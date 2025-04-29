@@ -57,8 +57,6 @@ const ProfilePenitipPage = () => {
     );
   }
 
-
-
   return (
     <Container className="mt-5">
       <div className="text-center mb-4 d-flex flex-row justify-content-center align-items-center gap-3">
