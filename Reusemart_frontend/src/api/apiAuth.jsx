@@ -68,4 +68,25 @@ const getJabatan = async () => {
     }
 }
 
-export { SignUp, SignIn, LogOut, getRole, getJabatan };
+const forgotPassword = async (email, user_type) => {
+    try{
+        const response = await useAxios.post("/forgot-password", { email, user_type });
+        return response.data;
+    } catch (error) {
+        console.log(error.response.message);
+        throw error.response.data;
+    }
+};
+
+const resetPassword = async (token, email, password, password_confirmation) => {
+    try{
+        const response = await useAxios.post("/reset-password", { token, email, password, password_confirmation });
+        return response.data;
+    } catch (error) {
+        console.log(error.response.message);
+        throw error.response.data;
+    }
+};
+  
+
+export { SignUp, SignIn, LogOut, getRole, getJabatan, forgotPassword, resetPassword };

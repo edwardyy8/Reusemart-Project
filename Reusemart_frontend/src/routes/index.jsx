@@ -14,7 +14,7 @@ import KategoriUtamaPage from "../pages/Alluser/KategoriUtamaPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
-import LupaPass2Page from "../pages/auth/LupaPass2Page";
+import ResetPassPage from "../pages/auth/ResetPassPage";
 
 
 import PenitipPage from "../pages/penitip/PenitipPage";
@@ -40,6 +40,14 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
+        path: "/lupaPassword",
+        element: <LupaPassPage />,
+      },
+      {
+        path: "/password-reset/:token",
+        element: <ResetPassPage />,
+      },
+      {
         path: "/register",
         element: <RegisterPage />,
       },
@@ -50,14 +58,6 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage />,
-      },
-      {
-        path: "/lupaPassword",
-        element: <LupaPassPage />,
-      },
-      {
-        path: "/lupaPassword2",
-        element: <LupaPass2Page />,
       },
       {
         path: "/kategori",

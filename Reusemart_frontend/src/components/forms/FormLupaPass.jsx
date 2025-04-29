@@ -5,17 +5,14 @@ import { toast } from "react-toastify";
 
 import InputFloatingForm from "./InputFloatingForm";
 
-// import { SignUp } from "../../api/apiAuth";
+import { forgotPassword } from "../../api/apiAuth";
 
 const FormLupaPass = () => {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState(true);
-  const [data, setData] = useState({
-    name: "",
-    handle: "",
-    email: "",
-    password: "",
-  });
+ 
+  const [email, setEmail] = useState("");
+  const [user_type, setUserType] = useState("");
 
   const handleChange = (event) => {
     setData({ ...data, [event.target.name]: event.target.value });
@@ -30,11 +27,10 @@ const FormLupaPass = () => {
     }
   };
 
-  const Login = (event) => {
+  const ForgotPass = (event) => {
     event.preventDefault();
-    SignUp(data)
+    forgotPassword(email, user_type)
       .then((res) => {
-        navigate("/");
         toast.success(res.message);
       })
       .catch((err) => {
@@ -45,17 +41,28 @@ const FormLupaPass = () => {
 
   return (
     <Container className="mt-4 mb-5 p-5 rounded-3 w-50" style={{ border: '1px solid rgba(83, 83, 83, 1)', backgroundColor: 'rgba(241, 237, 233, 1)' }}>
-      <Form style={{ maxWidth: "600px", margin: "auto" }} onSubmit={Login}>
+      <Form style={{ maxWidth: "600px", margin: "auto" }} onSubmit={ForgotPass}>
         <Row className="g-5">
           <Col>
             <InputFloatingForm
               type="email"
               label="Email"
               name="email"
-              onChange={handleChange}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Masukkan Email"
               required
             />
+
+            <Form.Group className="mb-3 " >
+              <Form.Label className="abu83 h5">Role</Form.Label>
+              <Form.Select className="border-dark abu83" name="userType" onChange={(e) => setUserType(e.target.value)} required>
+                <option value="">Pilih Role</option>
+                <option value="pembeli">Pembeli</option>
+                <option value="organisasi">Organisasi</option>
+                <option value="penitip">Penitip</option>
+              </Form.Select>
+            </Form.Group>
+
 
             <p className="text-start mt-2 abuForm">
                 Masukkan email anda dan kami akan mengirimkan link verifikasi ke email tersebut.

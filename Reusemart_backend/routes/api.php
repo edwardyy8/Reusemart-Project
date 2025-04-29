@@ -1,11 +1,15 @@
 <?php
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PenitipController;
+
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
 
 use App\Http\Middleware\CekJabatan;
 use App\Http\Middleware\EnsureApiTokenIsValid;
@@ -23,7 +27,13 @@ Route::get('/barang/{id}', [BarangController::class, 'show']);
 
 
 Route::post('/register',[AuthController::class,'register']);
-Route::post('/login',[AuthController::class,'login']);
+
+Route::middleware('guest')->group(function () {
+    Route::post('/login',[AuthController::class,'login']);
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
+    Route::post('/reset-password', [NewPasswordController::class, 'store']);
+});
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
