@@ -40,10 +40,14 @@ const FormLogin = () => {
         if(res.user_type === "pegawai") {
           console.log(res.jabatan);
           navigate(`/${res.user_type}/${res.jabatan}`);
-          navigate(0);
+          setTimeout(() => {
+            navigate(0);
+          }, 1200);
         }else{
           navigate(`/${res.user_type}`);
-          navigate(0);
+          setTimeout(() => {
+            navigate(0);
+          }, 1200);
         }
         
       })

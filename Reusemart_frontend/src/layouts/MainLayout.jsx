@@ -11,6 +11,8 @@ import { Container, Spinner, Button } from "react-bootstrap";
 import { LogOut } from "../api/apiAuth";
 import { getFotoPegawai } from "../api/apiPegawai";
 
+import ModalLogout from "../components/modals/ModalLogout";
+
 const MainLayout = ({ children }) => {
   const location = useLocation();
   const [token,  setToken] = useState("");
@@ -249,9 +251,7 @@ const MainLayout = ({ children }) => {
           <div style={{ marginLeft: "250px" }}>
             <Container fluid className="ps-4 d-flex mb-3 ">
               <h2>Selamat Datang {jabatan} {namaPegawai} </h2>
-              <Button onClick={() => LogOut()} className="ms-auto me-3 border-0 btn-lg rounded-3 shadow-sm btnLogout">
-                Logout
-              </Button>
+              <ModalLogout />
               <img src={pathFotoPegawai} height="50" alt="Profile Pegawai" className="rounded-5 me-2" />
             </Container>
             <Container fluid className="borderHijauBwh mb-2" ></Container>
