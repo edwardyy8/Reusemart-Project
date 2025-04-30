@@ -177,7 +177,7 @@ const ManagePenitipPage = () => {
               </Col>
               <Col ms={6} className="d-flex flex-column align-items-end mt-5">
                 <img 
-                  src={`${import.meta.env.VITE_API_URL}/storage/${selectedPenitip.foto_ktp}`}
+                  src={`http://127.0.0.1:8000/storage/foto_ktp/${selectedPenitip.foto_ktp}`}
                   alt="Foto KTP" 
                   style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
                 />
