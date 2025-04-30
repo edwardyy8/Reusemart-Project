@@ -107,21 +107,21 @@ const FormEditPenitip = () => {
           <Form.Control type="file" name="foto_profile" accept="image/*" onChange={handleFileChange} />
         </Form.Group> */}
         <div className="d-flex flex-row gap-3">
-        <Button 
-            onClick={() => navigate("/pegawai/Customer Service/managePenitip")} 
-            className="w-50 border-0 btn-lg rounded-5 shadow-sm" 
-            variant="secondary"
-        >
-            Kembali
-        </Button>
-        <Button 
-            type="submit" 
-            disabled={!isChanged} 
-            className="w-50 border-0 buttonSubmit btn-lg rounded-5 shadow-sm" 
-            style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
-        >
-            Simpan
-        </Button>
+            <Button 
+                onClick={() => navigate("/pegawai/Customer Service/managePenitip")} 
+                className="w-50 border-0 btn-lg rounded-5 shadow-sm" 
+                variant="secondary"
+            >
+                Kembali
+            </Button>
+            <Button 
+                type="submit" 
+                disabled={!isChanged} 
+                className="w-50 border-0 buttonSubmit btn-lg rounded-5 shadow-sm" 
+                style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
+            >
+                Simpan
+            </Button>
         </div>
       </Form>
     </Container>
