@@ -47,7 +47,7 @@ const SearchResultPage = () => {
     return (
         <>
             {/* Main wrapper with flex layout */}
-            <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
+            <div className="d-flex mt-5 flex-column" style={{ minHeight: "100vh" }}>
                 <Container className="pt-5 mb-5 flex-grow-1">
                     <p><b>Produk yg ditemukan:</b> <em>{decodeURIComponent(queryParams.get("q"))}</em></p>
                     {isLoading ? (
