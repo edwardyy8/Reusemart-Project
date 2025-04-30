@@ -21,6 +21,7 @@ body {
     color: rgba(24, 36, 24, 0.40) !important;
 }
 
+
 .custom-tabs .nav-link {
     color: gray !important;
     background-color: transparent;
@@ -44,4 +45,33 @@ thead.custom-table {
 .modal-header .btn-close {
     filter: invert(1) !important;
     opacity: 1 !important;
+}
+
+.btnHijau {
+    background: rgba(4, 121, 2, 1) !important;
+    color: #fff !important;
+}
+
+.btnHijau:hover {
+    background: rgba(4, 121, 2, 0.8) !important;
+}
+
+.btnHoverHijau:hover {
+    background: rgba(4, 121, 2, 0.8) !important;
+    color: #fff !important;
+}
+
+.borderHijauBwh {
+    border-bottom: 2px solid rgba(4, 121, 2, 1) !important;
+    
+}
+
+.btnLogout {
+    background: rgba(255, 89, 89, 1) !important;
+    color: #fff !important;
+}
+
+.btnLogout:hover {
+    background: rgba(255, 89, 89, 0.8) !important;
+
 }

@@ -131,6 +131,25 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+
+        'penitips' => [
+            'provider' => 'penitips',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'pembelis' => [
+            'provider' => 'pembelis',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'organisasis' => [
+            'provider' => 'organisasis',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
     ],
 
     /*

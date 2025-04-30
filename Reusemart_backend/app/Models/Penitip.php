@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Penitip extends Authenticatable
 {
-    use HasFactory, HasApiTokens;
+    use HasFactory, HasApiTokens, Notifiable;
 
     public $timestamps = false;
     public $table = 'penitip';
@@ -32,6 +33,7 @@ class Penitip extends Authenticatable
         'createdAt'
     ];
 
+
     public static function generateId()
     {
         $latestPenitip = Penitip::orderBy('id_penitip', 'desc')->first();
@@ -49,6 +51,7 @@ class Penitip extends Authenticatable
 
         return $newId;
     }
+
 
     public function getUserType() {
         return 'penitip';

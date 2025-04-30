@@ -2,18 +2,51 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Navbar, Container, Nav, Button, Form } from "react-bootstrap";
 import logo from "../assets/images/logoreuse.png";
-
 import { FaSearch } from 'react-icons/fa';
+import Fuse from 'fuse.js';
+import { GetAllBarangs } from "../api/apiBarang";
 
 const TopNavbar = ({ routes }) => {
-    
-
     const navigate = useNavigate();
     const location = useLocation();
 
+    const [allBarangs, setAllBarangs] = useState([]);
+
+    useEffect(() => {
+        const fetchBarangs = async () => {
+            try {
+                const data = await GetAllBarangs();
+                setAllBarangs(data);
+            } catch (err) {
+                console.error("Gagal mengambil barang:", err);
+            }
+        };
+        fetchBarangs();
+    }, []);
+
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        const query = e.target.search.value.trim().toLowerCase();
+        if (!query) return;
+
+        const fuse = new Fuse(allBarangs, {
+            keys: ["nama_barang"],
+            threshold: 0.4,
+        });
+
+        const results = fuse.search(query);
+
+        if (results.length > 0) {
+            const suggestion = results[0].item.nama_barang;
+            navigate(`/search?q=${encodeURIComponent(suggestion)}`);
+        } else {
+            alert("Barang tidak ditemukan.");
+        }
+    };
+
     const logout = () => {
         sessionStorage.removeItem("token");
-        sessionStorage.removeItem("user");
         navigate("/");
     };
 
@@ -40,28 +73,52 @@ const TopNavbar = ({ routes }) => {
                                             className={`hijau ${location.pathname === route.path ? "text-decoration-underline" : "text-decoration-none"}`}
                                         >
                                             {route.name}
-                                            
                                         </Button>
                                     </Nav.Link>
                                 ))}
                             </div>
 
                             {/* Search Bar */}
-                            <Form className="d-flex mx-lg-3 my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }}>
+                            <Form
+                                className="d-flex mx-lg-3 my-2 my-lg-0 position-relative"
+                                style={{ minWidth: "300px" }}
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const query = e.target.search.value.trim().toLowerCase();
+                                    if (!query) return;
+
+                                    const fuse = new Fuse(allBarangs, {
+                                        keys: ["nama_barang"],
+                                        threshold: 0.4,
+                                    });
+
+                                    const results = fuse.search(query);
+
+                                    if (results.length > 0) {
+                                        const matchingNames = results.map((r) => r.item.nama_barang);
+                                        const queryParam = encodeURIComponent(matchingNames.join(","));
+                                        navigate(`/search?q=${queryParam}`);
+                                    } else {
+                                        alert("Barang tidak ditemukan.");
+                                    }
+
+                                }}
+
+                            >
                                 <Form.Control
+                                    name="search"
                                     type="search"
                                     placeholder="Search products here"
                                     className="pe-5"
                                     aria-label="Search"
-                                    
-                                    
                                     style={{
                                         paddingRight: '2.5rem',
                                         borderColor: 'rgba(83, 83, 83, 1)',
                                         borderRadius: '20px',
                                     }}
                                 />
-                                 <Button
+                                <Button
+                                    type="submit"
                                     variant="link"
                                     className="position-absolute end-0 top-50 translate-middle-y bg-transparent border-0"
                                     style={{
@@ -72,8 +129,8 @@ const TopNavbar = ({ routes }) => {
                                 >
                                     <FaSearch />
                                 </Button>
-                               
                             </Form>
+
 
                             {/* Icons (Cart and Person) */}
                             <div className="d-flex">
@@ -87,7 +144,6 @@ const TopNavbar = ({ routes }) => {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
-            
         </>
     );
 };
