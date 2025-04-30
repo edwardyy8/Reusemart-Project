@@ -39,7 +39,7 @@ const DetailBarangPage = () => {
 
   if (loading) {
     return (
-      <div className="text-center my-5">
+      <div className="text-center my-5 pt-5" style={{ marginTop: "5rem" }}>
         <Spinner animation="border" variant="success" />
         <p>Loading Detail Barang...</p>
       </div>
@@ -48,19 +48,19 @@ const DetailBarangPage = () => {
 
   if (!barang) {
     return (
-      <Container className="text-center my-5">
+      <Container className="text-center my-5 pt-5" style={{ marginTop: "5rem" }}>
         <h3>Barang tidak ditemukan</h3>
       </Container>
     );
   }
 
-  // Buat pisahin foto utama & foto lain
+  // Pisahkan foto utama dan foto lain
   const fotoUtama = fotoBarangList.length > 0 ? fotoBarangList[0].foto_barang : null;
-  // const fotoLainnya = fotoBarangList.slice(1); 
+  const fotoLainnya = fotoBarangList.slice(1); // Foto-foto lainnya selain foto utama
 
   return (
     <>
-      <Container className="my-5">
+      <Container className="my-5 pt-5">
         <Row className="g-4">
           {/* Foto Utama */}
           <Col md={4}>
@@ -80,7 +80,7 @@ const DetailBarangPage = () => {
               <Col md={8}>
                 <h2>{barang.nama_barang}</h2>
                 <p className="text-success">
-                  {barang.status_barang} - {barang.garansi === "Ya" ? "Garansi" : "Tidak Bergaransi"} - {barang.berat_barang}
+                  {barang.status_barang} - {barang.garansi === "Ya" ? "Garansi" : "Tidak Bergaransi"} - {barang.berat_barang} Kg
                 </p>
                 <h3>Rp {Number(barang.harga_barang).toLocaleString("id-ID")}</h3>
               </Col>
@@ -107,10 +107,10 @@ const DetailBarangPage = () => {
           </Col>
         </Row>
 
-        {/* Foto lainn masih ancorr */}
+        {/* Foto Lainnya */}
         <Row className="my-3">
           <Col md={8}>
-            {/* {fotoLainnya.length > 0 && (
+            {fotoLainnya.length > 0 ? (
               fotoLainnya.map((foto, index) => (
                 <img
                   key={index}
@@ -120,7 +120,9 @@ const DetailBarangPage = () => {
                   style={{ maxWidth: "150px" }}
                 />
               ))
-            )} */}
+            ) : (
+              <p>Tidak ada foto lainnya</p>
+            )}
           </Col>
           <Col md={4} className="d-flex justify-content-end align-items-center">
             <div className="d-flex gap-2 w-100">

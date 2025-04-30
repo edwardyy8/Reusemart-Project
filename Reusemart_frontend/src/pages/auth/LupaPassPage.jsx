@@ -11,14 +11,14 @@ const LupaPassPage = () => {
   const [token, setToken] = useState("");
   const navigate = useNavigate();
 
-//   useEffect(() => {
-//     const tokenDariSS = sessionStorage.getItem("token");
-//     setToken(tokenDariSS);
+  useEffect(() => {
+    const tokenDariSS = sessionStorage.getItem("token");
+    setToken(tokenDariSS);
     
-//     if (tokenDariSS) {
-//       navigate("/user");
-//     }
-//   }, [navigate]);
+    if (tokenDariSS) {
+      navigate("/user");
+    }
+  }, [navigate]);
 
   return !token && (
     <Container className="mt-5">

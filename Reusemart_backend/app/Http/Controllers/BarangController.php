@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
-use App\Models\FotoBarang;
+use Illuminate\Support\Facades\DB;
 
 class BarangController extends Controller
-{public function index()
+{
+    public function index()
     {
-        $barang = Barang::with('fotoBarang') // load foto
-            ->orderBy('barang.tanggal_masuk', 'desc')
+        $barang = Barang::with('fotoBarang')
+            ->orderBy('tanggal_masuk', 'desc')
             ->get();
 
         return response()->json([
@@ -85,37 +86,24 @@ class BarangController extends Controller
         ]);
     }
 
-
-    // Buat Tambah sama Edit foto di Admin nanti
-    public function store(Request $request)
+    public function search(Request $request)
     {
-        $request->validate([
-            'id_barang' => 'required|string|exists:barang,id_barang',
-            'foto_barang' => 'required|image|max:2048', // batasin 2MB
-        ]);
+        $query = strtolower($request->input('q'));
+        $threshold = 3; // maksimal jarak typo, misalnya laptopp vs laptop = 1
 
-        $path = $request->file('foto_barang')->store('foto_barang', 'public');
+        $barang = Barang::with('fotoBarang')->get();
 
-        $foto = FotoBarang::create([
-            'id_barang' => $request->id_barang,
-            'foto_barang' => $path,
-        ]);
+        $filtered = $barang->filter(function ($item) use ($query, $threshold) {
+            $distance = levenshtein(strtolower($item->nama_barang), $query);
+            return $distance <= $threshold || str_contains(strtolower($item->nama_barang), $query);
+        });
 
         return response()->json([
-            'message' => 'Foto barang berhasil ditambahkan',
+            'message' => 'Levenshtein fuzzy search result',
             'status' => 'success',
-            'data' => $foto,
+            'data' => array_values($filtered->toArray())
         ]);
     }
 
-    public function destroy($id)
-    {
-        $foto = FotoBarang::findOrFail($id);
-        $foto->delete();
 
-        return response()->json([
-            'message' => 'Foto barang berhasil dihapus',
-            'status' => 'success',
-        ]);
-    }
 }

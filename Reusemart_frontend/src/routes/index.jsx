@@ -10,16 +10,18 @@ import HomePage from "../pages/Alluser/HomePage";
 import DonationPage from "../pages/Alluser/DonationPage";
 import CategoriesPage from "../pages/Alluser/CategoriesPage";
 import KategoriUtamaPage from "../pages/Alluser/KategoriUtamaPage";
+import SearchResultPage from "../pages/Alluser/SearchResultsPage";
 
 import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
-import LupaPass2Page from "../pages/auth/LupaPass2Page";
+import ResetPassPage from "../pages/auth/ResetPassPage";
 
 
 import PenitipPage from "../pages/penitip/PenitipPage";
 import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
 import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
+
 
 import ManagePenitipPage from "../pages/CS/ManagePenitipPage";
 import ClaimMerchandisePage from "../pages/CS/ClaimMerchandisePage";
@@ -27,7 +29,11 @@ import VerifikasiPage from "../pages/CS/VerifikasiPage";
 import TambahPenitipPage from "../pages/CS/TambahPenitipPage";
 import EditPenitipPage from "../pages/CS/EditPenitipPage";
 
+import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
+
+
 import ProtectedRoutes from "./ProtectedRoutes";
+import ProtectedFromPegawai from "./ProtectedFromPegawai";
 
 const router = createBrowserRouter([
   {
@@ -43,39 +49,53 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <HomePage />,
-      },
-      {
-        path: "/register",
-        element: <RegisterPage />,
-      },
-      {
-        path: "/donasi",
-        element: <DonationPage />,
-      },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
-      {
-        path: "/lupaPassword",
-        element: <LupaPassPage />,
-      },
-      {
-        path: "/lupaPassword2",
-        element: <LupaPass2Page />,
-      },
-      {
-        path: "/kategori",
-        element: <CategoriesPage />,
-      },
-      {
-        path: "/kategori/:id",
-        element: <KategoriUtamaPage />,
-      },
-      {
-        path: "/barang/:id",
-        element: <DetailBarangPage />,
+        element: (
+          <ProtectedFromPegawai>
+            <Outlet />
+          </ProtectedFromPegawai>
+        ),
+        children: [
+          {
+            path: "/",
+            element: <HomePage />,
+          },
+          {
+            path: "/lupaPassword",
+            element: <LupaPassPage />,
+          },
+          {
+            path: "/password-reset/:token",
+            element: <ResetPassPage />,
+          },
+          {
+            path: "/register",
+            element: <RegisterPage />,
+          },
+          {
+            path: "/donasi",
+            element: <DonationPage />,
+          },
+          {
+            path: "/login",
+            element: <LoginPage />,
+          },
+          {
+            path: "/kategori",
+            element: <CategoriesPage />,
+          },
+          {
+            path: "/kategori/:id/:subkategoriName",
+            element: <KategoriUtamaPage />,
+          },
+          {
+            path: "/search",
+            element: <SearchResultPage />,
+          },
+          {
+            path: "/barang/:id",
+            element: <DetailBarangPage />,
+          }
+        ],
       },
 
       {
@@ -97,11 +117,12 @@ const router = createBrowserRouter([
           
         ],
       },
+
       {
         path:  "/pegawai/Customer Service",
         element: (
           <ProtectedRoutes allowedRoles={['pegawai']} allowedJabatan={['Customer Service']}>
-            <Outlet />
+          <Outlet />
           </ProtectedRoutes>
         ),
         children: [
@@ -129,6 +150,26 @@ const router = createBrowserRouter([
             path: "managePenitip/editPenitip/:id",
             element: <EditPenitipPage />,
           },
+        ],
+      },
+
+
+      {
+        path: "/pegawai/Admin",
+        element: (
+          <ProtectedRoutes allowedRoles={['pegawai']} allowedJabatan={['Admin']}>
+          <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "",
+            element: <KelolaOrganisasiPage />,
+          },
+          {
+            path: "kelolaOrganisasi",
+            element: <KelolaOrganisasiPage />,
+          }
         ],
       },
                                    

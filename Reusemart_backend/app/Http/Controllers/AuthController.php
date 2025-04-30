@@ -95,7 +95,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {   
-
         $loginData = $request->all();
 
         $validate = Validator::make($loginData, [
@@ -122,7 +121,7 @@ class AuthController extends Controller
                 $token = $user->createToken('Authentication Token')->plainTextToken;
               
                 return response([
-                    'message' => 'Selamat datang, ' . ($user->nama_penitip ?? $user->nama_organisasi ?? $user->nama_pembeli ?? $user->nama_pegawai),
+                    'message' => 'Selamat datang, ' . ($user->nama_penitip ?? $user->nama_organisasi ?? $user->nama),
                     'token' => $token,
                     'user_type' => $type,
                     'jabatan' => $user->jabatan->nama_jabatan ?? null,
@@ -158,11 +157,21 @@ class AuthController extends Controller
 
     public function getJabatan(Request $request)
     {
-        $user = $request->user();
+        try{
+            $user = $request->user();
 
-        return response([
-            'jabatan' => $user->jabatan->nama_jabatan,
-        ]);
+            return response([
+                'jabatan' => $user->jabatan->nama_jabatan,
+                'nama_pegawai' => $user->nama,
+                'foto_profile' => $user->foto_profile,
+            ]);
+        }
+        catch (\Exception $e) {
+            return response([
+                'message' => 'Gagal untuk mendapatkan jabatan',
+                'error' => $e->getMessage()
+            ], 401);
+        }
     }
 
     public function resetPassPegawai (Request $request)
