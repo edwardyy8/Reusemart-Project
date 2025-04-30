@@ -21,7 +21,10 @@ import PenitipPage from "../pages/penitip/PenitipPage";
 import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
 import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
 
+import KelolaOrganisasiPage from "../pages/pegawai/admin/KelolaOrganisasiPage";
+
 import ProtectedRoutes from "./ProtectedRoutes";
+import ProtectedFromPegawai from "./ProtectedFromPegawai";
 
 const router = createBrowserRouter([
   {
@@ -37,39 +40,49 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <HomePage />,
-      },
-      {
-        path: "/lupaPassword",
-        element: <LupaPassPage />,
-      },
-      {
-        path: "/password-reset/:token",
-        element: <ResetPassPage />,
-      },
-      {
-        path: "/register",
-        element: <RegisterPage />,
-      },
-      {
-        path: "/donasi",
-        element: <DonationPage />,
-      },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
-      {
-        path: "/kategori",
-        element: <CategoriesPage />,
-      },
-      {
-        path: "/kategori/:id",
-        element: <SearchResultsPage />,
-      },
-      {
-        path: "/barang/:id",
-        element: <DetailBarangPage />,
+        element: (
+          <ProtectedFromPegawai>
+            <Outlet />
+          </ProtectedFromPegawai>
+        ),
+        children: [
+          {
+            path: "/",
+            element: <HomePage />,
+          },
+          {
+            path: "/lupaPassword",
+            element: <LupaPassPage />,
+          },
+          {
+            path: "/password-reset/:token",
+            element: <ResetPassPage />,
+          },
+          {
+            path: "/register",
+            element: <RegisterPage />,
+          },
+          {
+            path: "/donasi",
+            element: <DonationPage />,
+          },
+          {
+            path: "/login",
+            element: <LoginPage />,
+          },
+          {
+            path: "/kategori",
+            element: <CategoriesPage />,
+          },
+          {
+            path: "/kategori/:id",
+            element: <SearchResultsPage />,
+          },
+          {
+            path: "/barang/:id",
+            element: <DetailBarangPage />,
+          }
+        ],
       },
 
       {
@@ -89,6 +102,25 @@ const router = createBrowserRouter([
             element: <ProfilePenitipPage />,
           }
           
+        ],
+      },
+
+      {
+        path: "/pegawai/Admin",
+        element: (
+          <ProtectedRoutes allowedRoles={['pegawai']} allowedJabatan={['Admin']}>
+            <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "",
+            element: <KelolaOrganisasiPage />,
+          },
+          {
+            path: "kelolaOrganisasi",
+            element: <KelolaOrganisasiPage />,
+          }
         ],
       },
 

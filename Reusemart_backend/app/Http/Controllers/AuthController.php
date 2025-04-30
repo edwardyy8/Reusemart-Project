@@ -162,6 +162,8 @@ class AuthController extends Controller
 
             return response([
                 'jabatan' => $user->jabatan->nama_jabatan,
+                'nama_pegawai' => $user->nama,
+                'foto_profile' => $user->foto_profile,
             ]);
         }
         catch (\Exception $e) {

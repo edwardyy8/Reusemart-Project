@@ -36,15 +36,15 @@ const FormLogin = () => {
       .then((res) => {
         sessionStorage.setItem("token", res.token);
         
-        navigate(0);
-
-        // toast.success(res.message); 
-        // if(res.user_type === "pegawai") {
-        //   console.log(res.jabatan);
-        //   navigate(`/${res.user_type}/${res.jabatan}`);
-        // }else{
-        //   navigate(`/${res.user_type}`);
-        // }
+        toast.success(res.message); 
+        if(res.user_type === "pegawai") {
+          console.log(res.jabatan);
+          navigate(`/${res.user_type}/${res.jabatan}`);
+          navigate(0);
+        }else{
+          navigate(`/${res.user_type}`);
+          navigate(0);
+        }
         
       })
       .catch((err) => {
