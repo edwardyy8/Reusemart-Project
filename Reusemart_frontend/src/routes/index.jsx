@@ -9,7 +9,8 @@ import MainLayout from "../layouts/MainLayout";
 import HomePage from "../pages/Alluser/HomePage";
 import DonationPage from "../pages/Alluser/DonationPage";
 import CategoriesPage from "../pages/Alluser/CategoriesPage";
-import SearchResultsPage from "../pages/Alluser/SearchResultsPage";
+import KategoriUtamaPage from "../pages/Alluser/KategoriUtamaPage";
+import SearchResultPage from "../pages/Alluser/SearchResultsPage";
 
 import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
@@ -75,8 +76,12 @@ const router = createBrowserRouter([
             element: <CategoriesPage />,
           },
           {
-            path: "/kategori/:id",
-            element: <SearchResultsPage />,
+            path: "/kategori/:id/:subkategoriName",
+            element: <KategoriUtamaPage />,
+          },
+          {
+            path: "/search",
+            element: <SearchResultPage />,
           },
           {
             path: "/barang/:id",
