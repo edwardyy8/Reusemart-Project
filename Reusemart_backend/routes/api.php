@@ -8,6 +8,11 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PenitipController;
+use App\Http\Controllers\FotoBarangController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\MerchandiseController;
+use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\JabatanController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -55,4 +60,18 @@ Route::get('/penitip', [PenitipController::class, 'index']);
 Route::get('/penitip/{id}', [PenitipController::class, 'show']);
 
 
+Route::post('/fotobarang', [FotoBarangController::class, 'store']);
+Route::get('/fotobarang/barang/{id_barang}', [FotoBarangController::class, 'getByBarangId']);
+Route::delete('/fotobarang/{id}', [FotoBarangController::class, 'destroy']);
 
+Route::get('/kategori', [KategoriController::class, 'index']);
+Route::get('/kategori/{id}', [KategoriController::class, 'show']);
+
+Route::get('/merchandise', [MerchandiseController::class, 'index']);
+Route::get('/merchandise/{id}', [MerchandiseController::class, 'show']);
+
+Route::get('/pegawai', [PegawaiController::class, 'index']);
+Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
+
+Route::get('/jabatan', [JabatanController::class, 'index']);
+Route::get('/jabatan/{id}', [JabatanController::class, 'show']);
