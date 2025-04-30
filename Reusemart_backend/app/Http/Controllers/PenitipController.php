@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Penitip;
 use Illuminate\Http\Request;
+use Storage;
 
 class PenitipController extends Controller
 {

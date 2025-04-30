@@ -27,11 +27,11 @@ import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage
 import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
 
 
-import ManagePenitipPage from "../pages/CS/ManagePenitipPage";
-import ClaimMerchandisePage from "../pages/CS/ClaimMerchandisePage";
-import VerifikasiPage from "../pages/CS/VerifikasiPage";
-import TambahPenitipPage from "../pages/CS/TambahPenitipPage";
-import EditPenitipPage from "../pages/CS/EditPenitipPage";
+import ManagePenitipPage from "../pages/AllPegawai/CS/ManagePenitipPage";
+import ClaimMerchandisePage from "../pages/AllPegawai/CS/ClaimMerchandisePage";
+import VerifikasiPage from "../pages/AllPegawai/CS/VerifikasiPage";
+import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
+import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
 
 
 
