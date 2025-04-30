@@ -29,6 +29,7 @@ Route::get('/barang',[BarangController::class,'index']);
 Route::get('/barang/kategori/{id_kategori}',[BarangController::class,'findByKategori']);
 Route::get('/barang/sub/{id_kategori}',[BarangController::class,'findBySubKategori']);
 Route::get('/barang/{id}', [BarangController::class, 'show']);
+Route::get('/barang/search', [BarangController::class, 'search']);
 
 
 Route::post('/register',[AuthController::class,'register']);
