@@ -191,14 +191,14 @@ const MainLayout = ({ children }) => {
           
     //     ];
 //       } 
-    else if (jabatan === "Customer Service") {
+      else if (jabatan === "Customer Service") {
         return [
           { path: "/pegawai/Customer Service/verifikasi", name: "Verifikasi Bukti Bayar" },
           { path: "/pegawai/Customer Service/managePenitip", name: "Kelola Penitip" },
           { path: "/pegawai/Customer Service/claimMerchandise", name: "Kelola Klaim Merchandise" },
         ];
       }
-    }
+    
     // else if (userType === "pembeli") {
     //   return [
 
