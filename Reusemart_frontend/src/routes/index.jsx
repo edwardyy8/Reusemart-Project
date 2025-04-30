@@ -21,7 +21,7 @@ import PenitipPage from "../pages/penitip/PenitipPage";
 import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
 import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
 
-import KelolaOrganisasiPage from "../pages/pegawai/admin/KelolaOrganisasiPage";
+import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProtectedFromPegawai from "./ProtectedFromPegawai";
