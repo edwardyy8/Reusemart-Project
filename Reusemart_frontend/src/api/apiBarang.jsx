@@ -26,3 +26,12 @@ export const GetBarangById = async (id_barang) => {
     throw error.response?.data || error;
   }
 };
+
+export const SearchBarang = async (query) => {
+  try {
+    const response = await useAxios.get(`/barang/search?q=${query}`);
+    return response.data.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
