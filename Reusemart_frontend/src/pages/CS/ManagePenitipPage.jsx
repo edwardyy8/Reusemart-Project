@@ -20,7 +20,12 @@ const ManagePenitipPage = () => {
 
   const fetchPenitip = async () => {
     const data = await GetAllPenitip();
-    setPenitipList(data);
+    const sortedData = data.sort((a, b) => {
+      const numA = parseInt(a.id_penitip.replace(/[^\d]/g, ""));
+      const numB = parseInt(b.id_penitip.replace(/[^\d]/g, ""));
+      return numA - numB;
+    });
+    setPenitipList(sortedData);
   };
 
   useEffect(() => {
@@ -81,7 +86,7 @@ const ManagePenitipPage = () => {
             />
         </Col>
         <Col xs="auto">
-            <Button variant="success" onClick={() => navigate("/pegawai/Customer Service/managePenitip/tambahPenitip")}>+ Tambah</Button>
+            <Button className="border-0" style={{ backgroundColor: "rgba(4, 121, 2, 1)" }} onClick={() => navigate("/pegawai/Customer Service/managePenitip/tambahPenitip")}>+ Tambah</Button>
         </Col>
       </Row>
 
