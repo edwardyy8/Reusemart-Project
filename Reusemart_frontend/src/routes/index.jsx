@@ -21,7 +21,8 @@ import PenitipPage from "../pages/penitip/PenitipPage";
 import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
 import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
 
-import KelolaOrganisasiPage from "../pages/pegawai/admin/KelolaOrganisasiPage";
+import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
+import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProtectedFromPegawai from "./ProtectedFromPegawai";
@@ -120,6 +121,10 @@ const router = createBrowserRouter([
           {
             path: "kelolaOrganisasi",
             element: <KelolaOrganisasiPage />,
+          },
+          {
+            path: "kelolaOrganisasi/:id",
+            element: <EditOrganisasiPage />,
           }
         ],
       },
