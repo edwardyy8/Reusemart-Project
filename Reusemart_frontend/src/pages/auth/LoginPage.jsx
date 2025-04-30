@@ -25,7 +25,6 @@ const LoginPage = () => {
       if (tokenDariSS) {
         try {
           const res = await getRole();
-
           if (res.user_type) {
             if(res.user_type === "pegawai"){
               const jabatanData = await getJabatan();

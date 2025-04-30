@@ -33,6 +33,26 @@ class Penitip extends Authenticatable
         'createdAt'
     ];
 
+
+    public static function generateId()
+    {
+        $latestPenitip = Penitip::orderBy('id_penitip', 'desc')->first();
+        
+        if (!$latestPenitip) {
+            return 'T1';
+        }
+
+        $lastNumber = (int) str_replace('T', '', $latestPenitip->id_penitip); 
+
+        do {
+            $lastNumber++;
+            $newId = 'T' . $lastNumber;
+        } while (Penitip::where('id_penitip', $newId)->exists());
+
+        return $newId;
+    }
+
+
     public function getUserType() {
         return 'penitip';
     }

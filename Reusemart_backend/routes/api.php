@@ -34,12 +34,14 @@ Route::get('/barang/search', [BarangController::class, 'search']);
 
 Route::post('/register',[AuthController::class,'register']);
 
+
 Route::middleware('guest')->group(function () {
     Route::post('/login',[AuthController::class,'login']);
     
 });
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
 Route::post('/reset-password', [NewPasswordController::class, 'store']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -54,11 +56,25 @@ Route::middleware('auth:pegawai')->group(function () {
         ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
 
     Route::get('/pegawai/foto-profile/{filename}', [PegawaiController::class, 'getFotoProfile']);
+  
+    Route::middleware(CekJabatan::class.':Customer Service')->group(function () {
+      
+      Route::post('/penitip',[PenitipController::class,'store']);
+      
+    };
+});
+
+Route::middleware('auth:penitip')->group(function () {
+    Route::get('/penitip/penitipProfile', [PenitipController::class, 'getPenitipProfile']);
+    
+    // Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
+    //     ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);
 Route::get('/penitip/{id}', [PenitipController::class, 'show']);
-
+Route::put('/penitip/{id}', [PenitipController::class, 'update']);
+Route::delete('/penitip/{id}', [PenitipController::class, 'destroy']);
 
 Route::post('/fotobarang', [FotoBarangController::class, 'store']);
 Route::get('/fotobarang/barang/{id_barang}', [FotoBarangController::class, 'getByBarangId']);

@@ -1,5 +1,5 @@
 import { Button, Alert, Spinner, Form, Container, Row, Col } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -41,6 +41,19 @@ const FormRegister = () => {
       setIsDisabled(true);
     }
   };
+
+  useEffect(() => {
+    if (data.role === "organisasi") {
+      setData(prevData => ({
+        ...prevData,
+        label_alamat: "",
+        no_hp: ""
+      }));
+      setIsOrganisasi(true);
+    } else {
+      setIsOrganisasi(false);
+    }
+  }, [data.role]);
 
   const Register = (event) => {
     event.preventDefault();
@@ -138,6 +151,7 @@ const FormRegister = () => {
               type="text"
               label="Label Alamat"
               name="label_alamat"
+              value={data.label_alamat} 
               onChange={handleChange}
               placeholder="Contoh: Rumah, Kantor"
               disabled={isOrganisasi}
@@ -147,6 +161,7 @@ const FormRegister = () => {
               type="text"
               label="Nomor HP"
               name="no_hp"
+              value={data.no_hp} 
               onChange={handleChange}
               placeholder="Masukkan nomor handphone"
               disabled={isOrganisasi}
