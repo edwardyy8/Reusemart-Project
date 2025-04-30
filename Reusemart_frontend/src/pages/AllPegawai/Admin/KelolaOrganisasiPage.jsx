@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Alert, Col, Container, Row, Spinner, Stack, Button, Table, Form } from "react-bootstrap";
+import { Alert, Col, Container, Row, Spinner, Stack, Button, Table, Form, Pagination } from "react-bootstrap";
 
 import { GetAllOrganisasi } from "../../../api/apiOrganisasi";
 
@@ -13,14 +13,27 @@ import ModalShowOrg from "../../../components/modals/organisasi/ModalShowOrg";
 import ModalDeleteOrg from "../../../components/modals/organisasi/ModalDeleteOrg";
 
 
-
-
 const KelolaOrganisasiPage = () => {
     const [organisasis, setOrganisasis] = useState([]);
     const [jumlah, setJumlah] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState("");
     const [filteredOrganisasis, setFilteredOrganisasis] = useState([]);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const dataToDisplay = searchKeyword ? filteredOrganisasis : organisasis;
+
+    const totalPages = Math.ceil(dataToDisplay.length / itemsPerPage);
+    const currentItems = dataToDisplay.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     const fetchAllOrganisasi = () => {
         setIsLoading(true);
@@ -43,7 +56,8 @@ const KelolaOrganisasiPage = () => {
 
     const handleSearchChange = (e) => {
         e.preventDefault();
-        
+
+        setCurrentPage(1);
         const keyword = e.target.value;
         setSearchKeyword(keyword);
     
@@ -123,29 +137,77 @@ const KelolaOrganisasiPage = () => {
                                 <p className="mb-0">Loading...</p>
                             </div>
                         ) : (
-                            
-                            <Table>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nama Organisasi</th>
-                                        <th className="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {(filteredOrganisasis.length > 0 || searchKeyword !== "" ? filteredOrganisasis : organisasis).map((organisasi) => (
-                                        <tr key={organisasi.id_organisasi}>
-                                            <td>{organisasi.id_organisasi}</td>
-                                            <td>{organisasi.nama}</td>
-                                            <td className="d-flex justify-content-center" >
-                                                <ModalShowOrg organisasi={organisasi}/>
-                                                <Button onClick={() => navigate(`/pegawai/Admin/kelolaOrganisasi/${organisasi.id_organisasi}`)} className="me-2"><FaRegPenToSquare size={20} /></Button>
-                                                <ModalDeleteOrg organisasi={organisasi} onClose={fetchAllOrganisasi} />
-                                            </td>
+                            <>
+                                <Table>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nama Organisasi</th>
+                                            <th className="text-center">Action</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
+                                    </thead>
+                                    <tbody>
+                                        {currentItems.map((organisasi) => (
+                                            <tr key={organisasi.id_organisasi}>
+                                                <td>{organisasi.id_organisasi}</td>
+                                                <td>{organisasi.nama}</td>
+                                                <td className="d-flex justify-content-center" >
+                                                    <ModalShowOrg organisasi={organisasi}/>
+                                                    <Button onClick={() => navigate(`/pegawai/Admin/kelolaOrganisasi/${organisasi.id_organisasi}`)} className="me-2"><FaRegPenToSquare size={20} /></Button>
+                                                    <ModalDeleteOrg organisasi={organisasi} onClose={fetchAllOrganisasi} />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+
+                                {dataToDisplay.length > itemsPerPage && (
+                                    <div className="d-flex justify-content-center mt-3">
+                                        <Pagination>
+                                            <Pagination.First 
+                                            onClick={() => handlePageChange(1)} 
+                                            disabled={currentPage === 1} 
+                                            />
+                                            <Pagination.Prev 
+                                            onClick={() => handlePageChange(currentPage - 1)} 
+                                            disabled={currentPage === 1} 
+                                            />
+                                            
+                                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                            let pageNum;
+                                            if (totalPages <= 5) {
+                                                pageNum = i + 1;
+                                            } else if (currentPage <= 3) {
+                                                pageNum = i + 1;
+                                            } else if (currentPage >= totalPages - 2) {
+                                                pageNum = totalPages - 4 + i;
+                                            } else {
+                                                pageNum = currentPage - 2 + i;
+                                            }
+                                            
+                                            return (
+                                                <Pagination.Item
+                                                key={pageNum}
+                                                active={pageNum === currentPage}
+                                                onClick={() => handlePageChange(pageNum)}
+                                                >
+                                                {pageNum}
+                                                </Pagination.Item>
+                                            );
+                                            })}
+
+                                            <Pagination.Next 
+                                                onClick={() => handlePageChange(currentPage + 1)} 
+                                                disabled={currentPage === totalPages} 
+                                            />
+                                            <Pagination.Last 
+                                                onClick={() => handlePageChange(totalPages)} 
+                                                disabled={currentPage === totalPages} 
+                                            />
+                                        </Pagination>
+                                    </div>
+                                )}
+                            </>
                         )
                     )}
 
