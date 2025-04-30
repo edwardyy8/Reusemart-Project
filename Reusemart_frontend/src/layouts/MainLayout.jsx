@@ -117,10 +117,10 @@ const MainLayout = ({ children }) => {
     else if (userType === "pegawai") {
       if (jabatan === "Admin") {
         return [
-          { path: "/pegawai/admin/kelolaJabatan", name: "Kelola Jabatan" },
-          { path: "/pegawai/admin/kelolaPegawai", name: "Kelola Pegawai" },
-          { path: "/pegawai/admin/kelolaOrganisasi", name: "Kelola Organisasi" },
-          { path: "/pegawai/admin/kelolaMerchandise", name: "Kelola Merchandise" },
+          { path: "/pegawai/Admin/kelolaJabatan", name: "Kelola Jabatan" },
+          { path: "/pegawai/Admin/kelolaPegawai", name: "Kelola Pegawai" },
+          { path: "/pegawai/Admin/kelolaOrganisasi", name: "Kelola Organisasi" },
+          { path: "/pegawai/Admin/kelolaMerchandise", name: "Kelola Merchandise" },
         ];
       }
     //  else if (jabatan === "Gudang") {
