@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
+use Illuminate\Support\Facades\DB;
 
 class BarangController extends Controller
 {
@@ -84,4 +85,25 @@ class BarangController extends Controller
             'data' => $barang,
         ]);
     }
+
+    public function search(Request $request)
+    {
+        $query = strtolower($request->input('q'));
+        $threshold = 3; // maksimal jarak typo, misalnya laptopp vs laptop = 1
+
+        $barang = Barang::with('fotoBarang')->get();
+
+        $filtered = $barang->filter(function ($item) use ($query, $threshold) {
+            $distance = levenshtein(strtolower($item->nama_barang), $query);
+            return $distance <= $threshold || str_contains(strtolower($item->nama_barang), $query);
+        });
+
+        return response()->json([
+            'message' => 'Levenshtein fuzzy search result',
+            'status' => 'success',
+            'data' => array_values($filtered->toArray())
+        ]);
+    }
+
+
 }

@@ -29,3 +29,85 @@ export const GetPenitipById = async (id_penitip) => {
     throw error.response.data;
   }
 };
+
+export const getProfileData = async () => {
+  try{
+    const response = await useAxios.get(`/penitip/penitipProfile`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return response.data.penitip;
+  } catch (error){
+    throw error.response.data;
+  }
+};
+
+export const getSalesData = async (id_penitip) => {
+  try{
+    const response = await useAxios.get(`/penitip/${id_penitip}`, {
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return response.data.data;
+  } catch (error){
+    throw error.response.data;
+  }
+};
+
+export const getPenitipanData = async (id_penitip) => {
+  try{
+    const response = await useAxios.get(`/penitip/${id_penitip}`, {
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return response.data.data;
+  } catch (error){
+    throw error.response.data;
+  }
+};
+
+export const deletePenitipById = async (id_penitip) => {
+  try {
+    const response = await useAxios.delete(`/penitip/${id_penitip}`, {
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return response.data.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const createPenitip = async (data) => {
+  try{
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+    });
+    const response = await useAxios.post("/penitip", formData);
+
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+  
+};
+
+export const updatePenitipById = async (id, data) => {
+  const token = sessionStorage.getItem("token");
+  const response = await useAxios.post(`penitip/${id}?_method=PUT`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Authorization": `Bearer ${token}`
+    }
+  });
+  return response.data;
+};

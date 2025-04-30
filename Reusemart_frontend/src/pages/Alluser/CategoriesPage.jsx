@@ -58,44 +58,44 @@ const CategoriesPage = () => {
 
     return (
         <>
-            <Container fluid className="d-flex" style={{ minHeight: "100vh", backgroundColor: "rgba(252, 251, 249, 1)" }}>
+            <Container fluid className="mt-5 d-flex" style={{ minHeight: "100vh", backgroundColor: "rgba(252, 251, 249, 1)" }}>
                 {/* Sidebar kategori */}
                 <div className="p-3 shadow-sm" style={{ width: "250px", backgroundColor: "#ffffff" }}>
-                    <h5 className="mb-4 mt-4">KATEGORI</h5>
+                <h5 className="mb-4 mt-4">KATEGORI</h5>
 
-                    {isLoadingKategori ? (
-                        <p>Loading kategori...</p>
-                    ) : (
-                        <Accordion alwaysOpen>
-                            {Object.entries(groupedKategoris).map(([mainId, mainKategori], idx) => (
-                                <Accordion.Item eventKey={idx.toString()} key={mainId}>
-                                    <Accordion.Header>{mainKategori.nama_kategori || "Kategori"}</Accordion.Header>
-                                    <Accordion.Body>
-                                        {mainKategori.subcategories.length > 0 ? (
-                                            mainKategori.subcategories.map((sub) => (
-                                                <div
-                                                    key={sub.id_kategori}
-                                                    className="mb-2"
-                                                    onClick={() => navigate(`/kategori/${sub.id_kategori}`)}
-                                                    style={{ cursor: "pointer", color: "#555" }}
-                                                >
-                                                    - {sub.nama_kategori}
-                                                </div>
-                                            ))
-                                        ) : (
+                {isLoadingKategori ? (
+                    <p>Loading kategori...</p>
+                ) : (
+                    <Accordion alwaysOpen>
+                        {Object.entries(groupedKategoris).map(([mainId, mainKategori], idx) => (
+                            <Accordion.Item eventKey={idx.toString()} key={mainId}>
+                                <Accordion.Header>{mainKategori.nama_kategori || "Kategori"}</Accordion.Header>
+                                <Accordion.Body>
+                                    {mainKategori.subcategories.length > 0 ? (
+                                        mainKategori.subcategories.map((sub) => (
                                             <div
-                                                onClick={() => navigate(`/kategori/${mainKategori.id_kategori}`)}
+                                                key={sub.id_kategori}
+                                                className="mb-2"
+                                                onClick={() => navigate(`/kategori/${sub.id_kategori}/${sub.nama_kategori}`)}  // Pass subcategory name to the next page
                                                 style={{ cursor: "pointer", color: "#555" }}
                                             >
-                                                (Tidak ada subkategori)
+                                                - {sub.nama_kategori}
                                             </div>
-                                        )}
-                                    </Accordion.Body>
-                                </Accordion.Item>
-                            ))}
-                        </Accordion>
-                    )}
-                </div>
+                                        ))
+                                    ) : (
+                                        <div
+                                            onClick={() => navigate(`/kategori/${mainKategori.id_kategori}`)}
+                                            style={{ cursor: "pointer", color: "#555" }}
+                                        >
+                                            (Tidak ada subkategori)
+                                        </div>
+                                    )}
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        ))}
+                    </Accordion>
+                )}
+            </div>
 
                 {/* Konten produk */}
                 <Container fluid className="p-5">
