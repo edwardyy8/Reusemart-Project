@@ -1,8 +1,7 @@
 import { Container } from "react-bootstrap";
-import FormEditPenitip from "../../components/forms/FormEditPenitip";
+import FormEditPenitip from "../../../components/forms/FormEditPenitip";
 
-import reusemart from "../../assets/images/titlereuse.png";
-
+import reusemart from "../../../assets/images/titlereuse.png";
 
 const EditPenitipPage = () => {
   return (
