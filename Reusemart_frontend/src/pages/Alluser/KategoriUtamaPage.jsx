@@ -38,9 +38,10 @@ const KategoriUtamaPage = () => {
                     backgroundColor: "rgba(252, 251, 249, 1)", // Ensuring background covers entire page
                 }}
             >
+                <br/>
                 <Container
                     fluid
-                    className="py-3 shadow-sm my-3 abu83 px-5"
+                    className="py-3 shadow-sm my-3 mt-5 abu83 px-5"
                     style={{ flexGrow: 0 }} // Ensures no extra space is added here
                 >
                     <div className="d-flex align-items-center">
