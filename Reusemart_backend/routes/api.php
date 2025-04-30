@@ -36,10 +36,10 @@ Route::post('/register',[AuthController::class,'register']);
 
 Route::middleware('guest')->group(function () {
     Route::post('/login',[AuthController::class,'login']);
-    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
-    Route::post('/reset-password', [NewPasswordController::class, 'store']);
+    
 });
-
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
+Route::post('/reset-password', [NewPasswordController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -52,6 +52,8 @@ Route::middleware('auth:pegawai')->group(function () {
 
     Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
         ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
+
+    Route::get('/pegawai/foto-profile/{filename}', [PegawaiController::class, 'getFotoProfile']);
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);

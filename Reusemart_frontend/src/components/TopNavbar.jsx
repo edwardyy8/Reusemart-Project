@@ -47,7 +47,6 @@ const TopNavbar = ({ routes }) => {
 
     const logout = () => {
         sessionStorage.removeItem("token");
-        sessionStorage.removeItem("user");
         navigate("/");
     };
 

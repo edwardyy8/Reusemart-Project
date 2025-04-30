@@ -3,20 +3,27 @@ import { useState, useEffect } from "react";
 import { BsPerson, BsPersonFill, BsCart } from 'react-icons/bs';
 
 import TopNavbar from "../components/TopNavbar"; 
+import SideBarPegawai from "../components/SideBarPegawai"; 
 import { getRole, getJabatan } from "../api/apiAuth";
 
-import { Container, Spinner } from "react-bootstrap";
+import { Container, Spinner, Button } from "react-bootstrap";
+
+import { LogOut } from "../api/apiAuth";
+import { getFotoPegawai } from "../api/apiPegawai";
 
 const MainLayout = ({ children }) => {
   const location = useLocation();
   const [token,  setToken] = useState("");
   const [userType, setUserType] = useState("");
   const [jabatan, setJabatan] = useState("");
+  const [namaPegawai, setNamaPegawai] = useState("");
+  const [fotoPegawai, setFotoPegawai] = useState("");
+  const [pathFotoPegawai, setPathFotoPegawai] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
  
 
   useEffect(() => {
-    const fetchRole = async () => { 
+    const fetchRoleDanFoto = async () => { 
       setIsLoading(true);
 
       const tokenDariSS = sessionStorage.getItem("token");
@@ -31,6 +38,13 @@ const MainLayout = ({ children }) => {
           const jabatanData = await getJabatan();
 
           setJabatan(jabatanData.jabatan);
+          setNamaPegawai(jabatanData.nama_pegawai);
+          setFotoPegawai(jabatanData.foto_profile);
+
+          const fotoPegawaiLaravel = await getFotoPegawai(jabatanData.foto_profile);
+          
+          const fileFoto =  URL.createObjectURL(fotoPegawaiLaravel);
+          setPathFotoPegawai(fileFoto);
         }
       } catch (err) { 
         console.log(err);
@@ -40,8 +54,14 @@ const MainLayout = ({ children }) => {
       }
     };
 
-    fetchRole();
-  }, []);
+    fetchRoleDanFoto();
+
+    return () => {
+      if (pathFotoPegawai) {
+        URL.revokeObjectURL(pathFotoPegawai);
+      }
+    };
+  }, [token]);
 
   if (isLoading) { 
     return(
@@ -92,25 +112,29 @@ const MainLayout = ({ children }) => {
         }
       ];
     } 
-    // else if (userType === "pegawai") {
-    //   if (jabatan === "admin") {
+    else if (userType === "pegawai") {
+      if (jabatan === "Admin") {
+        return [
+          { path: "/pegawai/admin/kelolaJabatan", name: "Kelola Jabatan" },
+          { path: "/pegawai/admin/kelolaPegawai", name: "Kelola Pegawai" },
+          { path: "/pegawai/admin/kelolaOrganisasi", name: "Kelola Organisasi" },
+          { path: "/pegawai/admin/kelolaMerchandise", name: "Kelola Merchandise" },
+        ];
+      }
+    //  else if (jabatan === "Gudang") {
     //     return [
           
     //     ];
-    //   } else if (jabatan === "gudang") {
+    //   } else if (jabatan === "Owner") {
     //     return [
           
     //     ];
-    //   } else if (jabatan === "owner") {
-    //     return [
-          
-    //     ];
-    //   } else if (jabatan === "cs") {
+    //   } else if (jabatan === "Customer Service") {
     //     return [
           
     //     ];
     //   }
-    // }
+    }
     // else if (userType === "pembeli") {
     //   return [
 
@@ -156,9 +180,29 @@ const MainLayout = ({ children }) => {
   const routes = getRoutes();
 
   return (
-    <div className="mt-4 pt-5">
-      <TopNavbar routes={routes} />
-      {children ? children : <Outlet />}
+    <div className="pt-4">
+      {userType === "pegawai" ? (
+        <>
+          <SideBarPegawai routes={routes} />
+          <div style={{ marginLeft: "250px" }}>
+            <Container fluid className="ps-4 d-flex mb-3 ">
+              <h2>Selamat Datang {jabatan} {namaPegawai} </h2>
+              <Button onClick={() => LogOut()} className="ms-auto me-3 border-0 btn-lg rounded-3 shadow-sm btnLogout">
+                Logout
+              </Button>
+              <img src={pathFotoPegawai} height="50" alt="Profile Pegawai" className="rounded-5 me-2" />
+            </Container>
+            <Container fluid className="borderHijauBwh mb-2" ></Container>
+            {children ? children : <Outlet />}  
+          </div>
+        </>
+      ) : (
+        <>
+          <TopNavbar routes={routes} />
+          {children ? children : <Outlet />} 
+        </>
+      )}
+      
     </div>
   );
 };
