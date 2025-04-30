@@ -45,7 +45,7 @@ class Penitip extends Authenticatable
         do {
             $lastNumber++;
             $newId = 'T' . $lastNumber;
-        } while (Organisasi::where('id_penitip', $newId)->exists());
+        } while (Penitip::where('id_penitip', $newId)->exists());
 
         return $newId;
     }

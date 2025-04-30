@@ -100,3 +100,14 @@ export const createPenitip = async (data) => {
   }
   
 };
+
+export const updatePenitipById = async (id, data) => {
+  const token = sessionStorage.getItem("token");
+  const response = await useAxios.post(`penitip/${id}?_method=PUT`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Authorization": `Bearer ${token}`
+    }
+  });
+  return response.data;
+};

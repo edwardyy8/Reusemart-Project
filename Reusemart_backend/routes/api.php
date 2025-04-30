@@ -41,13 +41,14 @@ Route::middleware('auth:pegawai')->group(function () {
 
 Route::middleware('auth:penitip')->group(function () {
     Route::get('/penitip/penitipProfile', [PenitipController::class, 'getPenitipProfile']);
-
+    
     // Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
     //     ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);
 Route::get('/penitip/{id}', [PenitipController::class, 'show']);
-
+Route::put('/penitip/{id}', [PenitipController::class, 'update']);
+Route::delete('/penitip/{id}', [PenitipController::class, 'destroy']);
 
 

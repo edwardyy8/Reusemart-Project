@@ -30,4 +30,18 @@ body {
     color: white !important;
     background-color: rgba(4, 121, 2, 1) !important;
 }
-  
+
+thead.custom-table {
+    --bs-table-bg: rgba(4, 121, 2, 1) !important;
+    --bs-table-color: white !important;
+}
+
+.modal-header {
+    color: white !important;
+    background-color: rgba(4, 121, 2, 1) !important;
+}
+
+.modal-header .btn-close {
+    filter: invert(1) !important;
+    opacity: 1 !important;
+}

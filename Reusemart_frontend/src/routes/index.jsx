@@ -25,6 +25,7 @@ import ManagePenitipPage from "../pages/CS/ManagePenitipPage";
 import ClaimMerchandisePage from "../pages/CS/ClaimMerchandisePage";
 import VerifikasiPage from "../pages/CS/VerifikasiPage";
 import TambahPenitipPage from "../pages/CS/TambahPenitipPage";
+import EditPenitipPage from "../pages/CS/EditPenitipPage";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 
@@ -124,7 +125,10 @@ const router = createBrowserRouter([
             path: "managePenitip/tambahPenitip",
             element: <TambahPenitipPage />,
           },
-          
+          {
+            path: "managePenitip/editPenitip/:id",
+            element: <EditPenitipPage />,
+          },
         ],
       },
                                    

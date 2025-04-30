@@ -12,7 +12,7 @@ const FormPenitip = () => {
   const [isDisabled, setIsDisabled] = useState(true);
   const [data, setData] = useState({
     nama: "",
-    noKtp: "",
+    no_ktp: "",
     email: "",
     password: "",
     confirm_password: "",
@@ -37,7 +37,7 @@ const FormPenitip = () => {
     createPenitip(data)
       .then((res) => {
         toast.success(res.message || "Berhasil Menambahkan Penitip");
-        navigate("pegawai/Customer Service/managePenitip");
+        navigate("/pegawai/Customer Service/managePenitip");
       })
       .catch((err) => {
         console.log(err);
@@ -62,7 +62,7 @@ const FormPenitip = () => {
             <InputFloatingForm
               type="text"
               label="Nomor KTP"
-              name="noKtp"
+              name="no_ktp"
               onChange={handleChange}
               placeholder="Masukkan Nomor KTP Penitip"
               required

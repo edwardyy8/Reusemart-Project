@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Container, Table, Button, Card, Row, Col, Form, Modal } from "react-bootstrap";
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination } from "react-bootstrap";
+import { FaEye} from "react-icons/fa";
+import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
 import { useNavigate, Outlet } from "react-router-dom";
 import reusemart from "../../assets/images/titlereuse.png";
 import { GetAllPenitip, deletePenitipById } from "../../api/apiPenitip"; // Sesuaikan dengan path API Anda
@@ -14,6 +15,9 @@ const ManagePenitipPage = () => {
   const [selectedPenitip, setSelectedPenitip] = useState(null);
   const navigate = useNavigate();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const fetchPenitip = async () => {
     const data = await GetAllPenitip();
     setPenitipList(data);
@@ -25,22 +29,32 @@ const ManagePenitipPage = () => {
 
   const handleDelete = async () => {
     if (!selectedPenitip) return;
-    await deletePenitipById(selectedPenitip.id);
+    await deletePenitipById(selectedPenitip.id_penitip);
     setShowDelete(false);
     fetchPenitip();
   };
 
-  const totalTopSeller = penitipList.filter((p) => p.is_top="Ya").length;
+  const totalTopSeller = penitipList.filter((p) => p.is_top==="Ya").length;
+
+  const filteredData = penitipList.filter((p) => 
+    p.nama.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const currentItems = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <Container className="mt-5">
-      {/* <div className="text-center mb-3 d-flex flex-row justify-content-center align-items-center gap-3">
-        <img src={reusemart} alt="ReuseMart" />
-        <h1 className="mt-1 pb-1 hijau">Selamat Datang CS {csName} </h1>
-      </div> */}
-
       <Row className="mb-4 d-flex gap-2">
         <Col md={3}>
-          <Card bg="success" text="white">
+          <Card style={{backgroundColor:"rgba(4, 121, 2, 1"}} text="white">
             <Card.Body>
               <Card.Title>Jumlah Penitip</Card.Title>
               <h3>{penitipList.length}</h3>
@@ -71,30 +85,28 @@ const ManagePenitipPage = () => {
         </Col>
       </Row>
 
-      <Table bordered hover>
-        <thead className="table-success">
+      <Table bordered hover >
+        <thead className="custom-table">
           <tr>
-            <th>ID</th>
-            <th>Nama Penitip</th>
-            <th>Action</th>
+            <th style={{ border: 'none' }}>ID Penitip</th>
+            <th style={{ border: 'none' }}>Nama Penitip</th>
+            <th className="text-center" style={{ border: 'none' }}>Action</th>
           </tr>
         </thead>
         <tbody>
-          {penitipList
-            .filter((p) => p.nama.toLowerCase().includes(searchTerm.toLowerCase()))
-            .map((penitip) => (
+          {currentItems.map((penitip) => (
               <tr key={penitip.id}>
-                <td>{penitip.id_penitip}</td>
-                <td>{penitip.nama}</td>
-                <td className="d-flex gap-3">
+                <td style={{ border: 'none' }}>{penitip.id_penitip}</td>
+                <td style={{ border: 'none' }}>{penitip.nama}</td>
+                <td style={{ border: 'none' }} className="d-flex justify-content-center gap-3 align-items-center">
                   <Button variant="success" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDetail(true); }}>
                     <FaEye />
                   </Button>
-                  <Button variant="primary" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowEdit(true); }}>
-                    <FaEdit />
+                  <Button variant="primary" size="sm" onClick={() => navigate(`/pegawai/Customer Service/managePenitip/editPenitip/${penitip.id_penitip}`)}>
+                    <FaRegPenToSquare />
                   </Button>
                   <Button variant="danger" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDelete(true); }}>
-                    <FaTrash />
+                    <FaRegTrashCan />
                   </Button>
                 </td>
               </tr>
@@ -102,19 +114,76 @@ const ManagePenitipPage = () => {
         </tbody>
       </Table>
 
-      {/* Modal Detail */}
+      {filteredData.length > itemsPerPage && (
+        <div className="d-flex justify-content-center mt-3">
+          <Pagination>
+            <Pagination.First 
+              onClick={() => handlePageChange(1)} 
+              disabled={currentPage === 1} 
+            />
+            <Pagination.Prev 
+              onClick={() => handlePageChange(currentPage - 1)} 
+              disabled={currentPage === 1} 
+            />
+            
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              
+              return (
+                <Pagination.Item
+                  key={pageNum}
+                  active={pageNum === currentPage}
+                  onClick={() => handlePageChange(pageNum)}
+                >
+                  {pageNum}
+                </Pagination.Item>
+              );
+            })}
+
+            <Pagination.Next 
+              onClick={() => handlePageChange(currentPage + 1)} 
+              disabled={currentPage === totalPages} 
+            />
+            <Pagination.Last 
+              onClick={() => handlePageChange(totalPages)} 
+              disabled={currentPage === totalPages} 
+            />
+          </Pagination>
+        </div>
+      )}
+
       <Modal show={showDetail} onHide={() => setShowDetail(false)}>
         <Modal.Header closeButton>
           <Modal.Title >Detail Penitip</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedPenitip && (
-            <ul>
-              <li>{selectedPenitip.nama}</li>
-              <li>ID Penitip: {selectedPenitip.id_penitip}</li>
-              <li>No KTP: {selectedPenitip.no_ktp}</li>
-              <li>Email: {selectedPenitip.email}</li>
-            </ul>
+            <>
+            <Row>
+              <Col md={6} className="gap-4">
+                <h3><b>{selectedPenitip.nama}</b></h3>
+                <p className="mb-0">ID Penitip: {selectedPenitip.id_penitip}</p>
+                <p className="mb-0">No KTP: {selectedPenitip.no_ktp}</p>
+                <p>Email: {selectedPenitip.email}</p>
+              </Col>
+              <Col ms={6} className="d-flex flex-column align-items-end mt-5">
+                <img 
+                  src={`${import.meta.env.VITE_API_URL}/storage/${selectedPenitip.foto_ktp}`}
+                  alt="Foto KTP" 
+                  style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
+                />
+              </Col>
+            </Row>
+            </>
           )}
         </Modal.Body>
       </Modal>
