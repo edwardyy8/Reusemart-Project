@@ -135,9 +135,19 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        
-        return response()->json(['message' => 'Logged out']);
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json(['message' => 'User tidak terautentikasi'], 401);
+            }
+
+            $user->currentAccessToken()->delete();
+            
+            return response()->json(['message' => 'Berhasil Logout'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Gagal Logout', 'error' => $e->getMessage()], 500);
+        }
     }
 
     public function getRole(Request $request) {

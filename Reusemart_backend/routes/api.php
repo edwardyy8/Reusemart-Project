@@ -12,6 +12,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\MerchandiseController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\OrganisasiController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -34,12 +35,14 @@ Route::get('/barang/search', [BarangController::class, 'search']);
 
 Route::post('/register',[AuthController::class,'register']);
 
+
 Route::middleware('guest')->group(function () {
     Route::post('/login',[AuthController::class,'login']);
     
 });
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
 Route::post('/reset-password', [NewPasswordController::class, 'store']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -49,16 +52,35 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:pegawai')->group(function () {
     Route::get('/getJabatan', [AuthController::class, 'getJabatan']);
-
-    Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
-        ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
-
     Route::get('/pegawai/foto-profile/{filename}', [PegawaiController::class, 'getFotoProfile']);
+
+    Route::middleware(CekJabatan::class.':Admin')->group(function () {
+        Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
+        ->middleware(EnsureApiTokenIsValid::class);
+
+        Route::get('/getAllOrganisasi', [OrganisasiController::class, 'getAllOrganisasi']);
+        Route::delete('/deleteOrganisasi/{id}', [OrganisasiController::class, 'deleteOrganisasi']);
+        Route::post('/editOrganisasi/{id}', [OrganisasiController::class, 'editOrganisasi']);
+        Route::get('/getOrganisasi/{id}', [OrganisasiController::class, 'getOrganisasi']);
+
+    });
+  
+    Route::middleware(CekJabatan::class.':Customer Service')->group(function () {
+      
+      Route::post('/penitip',[PenitipController::class,'store']);
+      
+    });
+});
+
+Route::middleware('auth:penitip')->group(function () {
+    Route::get('/penitip/penitipProfile', [PenitipController::class, 'getPenitipProfile']);
+
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);
 Route::get('/penitip/{id}', [PenitipController::class, 'show']);
-
+Route::put('/penitip/{id}', [PenitipController::class, 'update']);
+Route::delete('/penitip/{id}', [PenitipController::class, 'destroy']);
 
 Route::post('/fotobarang', [FotoBarangController::class, 'store']);
 Route::get('/fotobarang/barang/{id_barang}', [FotoBarangController::class, 'getByBarangId']);

@@ -1,5 +1,5 @@
-import { Outlet, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
 import { BsPerson, BsPersonFill, BsCart } from 'react-icons/bs';
 
 import TopNavbar from "../components/TopNavbar"; 
@@ -10,6 +10,8 @@ import { Container, Spinner, Button } from "react-bootstrap";
 
 import { LogOut } from "../api/apiAuth";
 import { getFotoPegawai } from "../api/apiPegawai";
+
+import ModalLogout from "../components/modals/ModalLogout";
 
 const MainLayout = ({ children }) => {
   const location = useLocation();
@@ -86,6 +88,72 @@ const MainLayout = ({ children }) => {
     ); 
   }
 
+  function ProfileDropdown({ active }) {
+    const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setOpen(false);
+        }
+      };
+  
+      if (open) {
+        document.addEventListener("mousedown", handleClickOutside);
+      } else {
+        document.removeEventListener("mousedown", handleClickOutside);
+      }
+
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [open]);
+  
+    const handleToggle = (e) => {
+      e.stopPropagation();
+      setOpen(!open);
+    };
+  
+    return (
+      <div ref={dropdownRef} style={{ position: "relative" }}>
+        <div onClick={handleToggle} style={{ cursor: "pointer" }}>
+          {active ? (
+            <BsPersonFill size={25} color="rgba(4, 121, 2, 1)" />
+          ) : (
+            <BsPerson size={25} color="rgba(4, 121, 2, 1)" />
+          )}
+        </div>
+  
+        {open && (
+          <div style={{
+            position: "absolute",
+            top: "30px",
+            right: 0,
+            backgroundColor: "white",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            padding: "5px 0",
+            minWidth: "120px",
+            zIndex: 100,
+          }}>
+            <div style={{ padding: "8px", cursor: "pointer" }}
+              onClick={() => {
+                navigate("/penitip/profile");
+                setOpen(false);
+                }}>
+              Profil Saya
+            </div>
+            <div style={{ padding: "8px", cursor: "pointer" }} onClick={() => console.log('Logout')}>
+              Logout
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   
   //mengatur route yang akan ditampilkan di navbar 
   const getRoutes = () => {
@@ -97,31 +165,24 @@ const MainLayout = ({ children }) => {
         { path: "/register", name: "BUAT AKUN" },
         {
           path: "/penitip/profile",
-          name: location.pathname === "/penitip/profile" ? (
-            <BsPersonFill
-              size={25}
-              color="rgba(4, 121, 2, 1)"
-            />
-            
-          ) : (
-            <BsPerson
-              size={25}
-              color="rgba(4, 121, 2, 1)"
-            />
+          name: (
+            <ProfileDropdown active={location.pathname === "/penitip/profile"} />
           )
         }
       ];
+
     } 
     else if (userType === "pegawai") {
       if (jabatan === "Admin") {
         return [
-          { path: "/pegawai/admin/kelolaJabatan", name: "Kelola Jabatan" },
-          { path: "/pegawai/admin/kelolaPegawai", name: "Kelola Pegawai" },
-          { path: "/pegawai/admin/kelolaOrganisasi", name: "Kelola Organisasi" },
-          { path: "/pegawai/admin/kelolaMerchandise", name: "Kelola Merchandise" },
+          { path: "/pegawai/Admin/kelolaJabatan", name: "Kelola Jabatan" },
+          { path: "/pegawai/Admin/kelolaPegawai", name: "Kelola Pegawai" },
+          { path: "/pegawai/Admin/kelolaOrganisasi", name: "Kelola Organisasi" },
+          { path: "/pegawai/Admin/kelolaMerchandise", name: "Kelola Merchandise" },
         ];
       }
     //  else if (jabatan === "Gudang") {
+
     //     return [
           
     //     ];
@@ -129,12 +190,15 @@ const MainLayout = ({ children }) => {
     //     return [
           
     //     ];
-    //   } else if (jabatan === "Customer Service") {
-    //     return [
-          
-    //     ];
-    //   }
-    }
+//       } 
+      else if (jabatan === "Customer Service") {
+        return [
+          { path: "/pegawai/Customer Service/verifikasi", name: "Verifikasi Bukti Bayar" },
+          { path: "/pegawai/Customer Service/managePenitip", name: "Kelola Penitip" },
+          { path: "/pegawai/Customer Service/claimMerchandise", name: "Kelola Klaim Merchandise" },
+        ];
+      }
+    
     // else if (userType === "pembeli") {
     //   return [
 
@@ -145,7 +209,7 @@ const MainLayout = ({ children }) => {
 
     //   ];
     // }
-    else {
+    } else {
       return [
         { path: "/", name: "BERANDA" },
         { path: "/donasi", name: "DONASI" },
@@ -187,9 +251,7 @@ const MainLayout = ({ children }) => {
           <div style={{ marginLeft: "250px" }}>
             <Container fluid className="ps-4 d-flex mb-3 ">
               <h2>Selamat Datang {jabatan} {namaPegawai} </h2>
-              <Button onClick={() => LogOut()} className="ms-auto me-3 border-0 btn-lg rounded-3 shadow-sm btnLogout">
-                Logout
-              </Button>
+              <ModalLogout />
               <img src={pathFotoPegawai} height="50" alt="Profile Pegawai" className="rounded-5 me-2" />
             </Container>
             <Container fluid className="borderHijauBwh mb-2" ></Container>

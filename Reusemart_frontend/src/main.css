@@ -21,9 +21,36 @@ body {
     color: rgba(24, 36, 24, 0.40) !important;
 }
 
+
+.custom-tabs .nav-link {
+    color: gray !important;
+    background-color: transparent;
+  }
+  
+.custom-tabs .nav-link.active {
+    color: white !important;
+    background-color: rgba(4, 121, 2, 1) !important;
+}
+
+thead.custom-table {
+    --bs-table-bg: rgba(4, 121, 2, 1) !important;
+    --bs-table-color: white !important;
+}
+
+.modal-header {
+    color: white !important;
+    background-color: rgba(4, 121, 2, 1) !important;
+}
+
+.modal-header .btn-close {
+    filter: invert(1) !important;
+    opacity: 1 !important;
+}
+
 .btnHijau {
     background: rgba(4, 121, 2, 1) !important;
     color: #fff !important;
+    border: 0;
 }
 
 .btnHijau:hover {
@@ -43,8 +70,14 @@ body {
 .btnLogout {
     background: rgba(255, 89, 89, 1) !important;
     color: #fff !important;
+    border: 0;
 }
 
 .btnLogout:hover {
     background: rgba(255, 89, 89, 0.8) !important;
+}
+
+.boxHijau {
+    background: rgba(4, 121, 2, 1) !important;
+    color: #fff !important;
 }

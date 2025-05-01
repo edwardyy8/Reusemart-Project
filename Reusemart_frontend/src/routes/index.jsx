@@ -22,7 +22,18 @@ import PenitipPage from "../pages/penitip/PenitipPage";
 import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
 import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
 
+
 import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
+import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
+
+
+import ManagePenitipPage from "../pages/AllPegawai/CS/ManagePenitipPage";
+import ClaimMerchandisePage from "../pages/AllPegawai/CS/ClaimMerchandisePage";
+import VerifikasiPage from "../pages/AllPegawai/CS/VerifikasiPage";
+import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
+import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
+
+
 
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProtectedFromPegawai from "./ProtectedFromPegawai";
@@ -111,10 +122,46 @@ const router = createBrowserRouter([
       },
 
       {
+        path:  "/pegawai/Customer Service",
+        element: (
+          <ProtectedRoutes allowedRoles={['pegawai']} allowedJabatan={['Customer Service']}>
+          <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "",
+            element: <ManagePenitipPage />,
+          },
+          {
+            path: "verifikasi",
+            element: <VerifikasiPage />,
+          },
+          {
+            path: "managePenitip",
+            element: <ManagePenitipPage />,
+          },
+          {
+            path: "claimMerchandise",
+            element: <ClaimMerchandisePage />,
+          },
+          {
+            path: "managePenitip/tambahPenitip",
+            element: <TambahPenitipPage />,
+          },
+          {
+            path: "managePenitip/editPenitip/:id",
+            element: <EditPenitipPage />,
+          },
+        ],
+      },
+
+
+      {
         path: "/pegawai/Admin",
         element: (
           <ProtectedRoutes allowedRoles={['pegawai']} allowedJabatan={['Admin']}>
-            <Outlet />
+          <Outlet />
           </ProtectedRoutes>
         ),
         children: [
@@ -125,10 +172,13 @@ const router = createBrowserRouter([
           {
             path: "kelolaOrganisasi",
             element: <KelolaOrganisasiPage />,
+          },
+          {
+            path: "kelolaOrganisasi/:id",
+            element: <EditOrganisasiPage />,
           }
         ],
       },
-
                                    
     ],
   },
