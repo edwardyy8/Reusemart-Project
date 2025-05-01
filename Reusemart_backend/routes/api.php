@@ -61,7 +61,7 @@ Route::middleware('auth:pegawai')->group(function () {
       
       Route::post('/penitip',[PenitipController::class,'store']);
       
-    };
+    });
 });
 
 Route::middleware('auth:penitip')->group(function () {
