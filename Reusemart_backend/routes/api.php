@@ -13,6 +13,9 @@ use App\Http\Controllers\MerchandiseController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\OrganisasiController;
+use App\Http\Controllers\PembeliController;
+use App\Http\Controllers\PemesananController;
+use App\Http\Controllers\RincianPemesananController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -74,7 +77,11 @@ Route::middleware('auth:pegawai')->group(function () {
 
 Route::middleware('auth:penitip')->group(function () {
     Route::get('/penitip/penitipProfile', [PenitipController::class, 'getPenitipProfile']);
+    Route::get('/getPenjualanByIdPenitip/{id}', [RincianPemesananController::class, 'getPenjualanByIdPenitip']);
+    Route::get('/getPenjualanById/{id}', [RincianPemesananController::class, 'getPenjualanById']);
+    Route::get('/getPemesananById/{id}', [PemesananController::class, 'getPemesananById']);
 
+    
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);
@@ -97,3 +104,11 @@ Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
 
 Route::get('/jabatan', [JabatanController::class, 'index']);
 Route::get('/jabatan/{id}', [JabatanController::class, 'show']);
+
+
+Route::middleware('auth:pembeli')->group(function () {
+    Route::get('/pembeli/pembeliProfile', [PembeliController::class, 'getPembeliProfile']);
+    Route::get('/getPemesananByIdPembeli/{id}', [PemesananController::class, 'getPemesananByIdPembeli']);
+    
+
+});

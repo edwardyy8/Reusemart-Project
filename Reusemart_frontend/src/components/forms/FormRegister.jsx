@@ -61,9 +61,8 @@ const FormRegister = () => {
 
     SignUp(data)
       .then((res) => {
-        sessionStorage.setItem("token", res.token);
         
-        navigate("/");
+        navigate("/login");
         toast.success(res.message);
       })
       .catch((err) => {

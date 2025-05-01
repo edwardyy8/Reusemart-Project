@@ -1,6 +1,6 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { BsPerson, BsPersonFill, BsCart } from 'react-icons/bs';
+import { BsPerson, BsPersonFill, BsCart, BsCartFill } from 'react-icons/bs';
 
 import TopNavbar from "../components/TopNavbar"; 
 import SideBarPegawai from "../components/SideBarPegawai"; 
@@ -12,6 +12,7 @@ import { LogOut } from "../api/apiAuth";
 import { getFotoPegawai } from "../api/apiPegawai";
 
 import ModalLogout from "../components/modals/ModalLogout";
+import ModalLogoutUser from "../components/modals/ModalLogoutUser";
 
 const MainLayout = ({ children }) => {
   const location = useLocation();
@@ -90,6 +91,7 @@ const MainLayout = ({ children }) => {
 
   function ProfileDropdown({ active }) {
     const [open, setOpen] = useState(false);
+    const [showModalLogout, setShowModalLogout] = useState(false);
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
@@ -112,6 +114,85 @@ const MainLayout = ({ children }) => {
     }, [open]);
   
     const handleToggle = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(!open);
+    };
+  
+    return (
+      <div ref={dropdownRef} style={{ position: "relative" }}>
+        <div onClick={handleToggle} style={{ cursor: "pointer" }}>
+          {active ? (
+            <BsPersonFill size={25} color="rgba(4, 121, 2, 1)" />
+          ) : (
+            <BsPerson size={25} color="rgba(4, 121, 2, 1)" />
+          )}
+        </div>
+  
+        {open && (
+          <div style={{
+            position: "absolute",
+            top: "30px",
+            right: 0,
+            backgroundColor: "white",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            padding: "5px 0",
+            minWidth: "120px",
+            zIndex: 100,
+          }}>
+            <div style={{ padding: "8px", cursor: "pointer" }}
+              onClick={(e) => {
+                e.preventDefault();     
+                e.stopPropagation();
+                navigate("/penitip/profile");
+                setOpen(false);
+              }}>
+              Profil Saya
+            </div>
+            <div style={{ padding: "8px", cursor: "pointer" }} 
+                 onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowModalLogout(true);
+                  setOpen(false);
+                }}>
+              Keluar
+            </div>
+            
+          </div>
+        )}
+        {showModalLogout && <ModalLogoutUser show={showModalLogout} onClose={() => setShowModalLogout(false)} />}
+      </div>
+    );
+  }
+
+  function ProfilePembeliDropdown({ active }) {
+    const [open, setOpen] = useState(false);
+    const [showModalLogout, setShowModalLogout] = useState(false);
+    const navigate = useNavigate();
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setOpen(false);
+        }
+      };
+  
+      if (open) {
+        document.addEventListener("mousedown", handleClickOutside);
+      } else {
+        document.removeEventListener("mousedown", handleClickOutside);
+      }
+
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [open]);
+  
+    const handleToggle = (e) => {
+      e.preventDefault();
       e.stopPropagation();
       setOpen(!open);
     };
@@ -140,19 +221,28 @@ const MainLayout = ({ children }) => {
           }}>
             <div style={{ padding: "8px", cursor: "pointer" }}
               onClick={() => {
-                navigate("/penitip/profile");
+                navigate("/pembeli/profile");
                 setOpen(false);
                 }}>
               Profil Saya
             </div>
-            <div style={{ padding: "8px", cursor: "pointer" }} onClick={() => console.log('Logout')}>
-              Logout
+            <div style={{ padding: "8px", cursor: "pointer" }} 
+                 onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowModalLogout(true);
+                  setOpen(false);
+                }}>
+              Keluar
             </div>
           </div>
         )}
+        {showModalLogout && <ModalLogoutUser show={showModalLogout} onClose={() => setShowModalLogout(false)} />}
       </div>
     );
   }
+
+  
 
   
   //mengatur route yang akan ditampilkan di navbar 
@@ -198,18 +288,42 @@ const MainLayout = ({ children }) => {
           { path: "/pegawai/Customer Service/claimMerchandise", name: "Kelola Klaim Merchandise" },
         ];
       }
-    
-    // else if (userType === "pembeli") {
-    //   return [
-
-    //   ];
-    // } else if (userType === "organisasi") {
+    }
+    else if (userType === "pembeli") {
+      return [
+        { path: "/", name: "BERANDA" },
+        { path: "/donasi", name: "DONASI" },
+        { path: "/kategori", name: "KATEGORI" },
+        { path: "/register", name: "BUAT AKUN" },
+        {
+          path: "/pembeli/keranjang/:id",
+          name: location.pathname === "/pembeli/keranjang/:id" ? (
+            <BsCartFill
+              size={25}
+              color="rgba(4, 121, 2, 1)"
+            />
+          ) : (
+            <BsCart
+              size={25}
+              color="rgba(4, 121, 2, 1)"
+            />
+          )
+        },
+        {
+          path: "/pembeli/profile",
+          name: (
+            <ProfilePembeliDropdown active={location.pathname === "/pembeli/profile"} />
+          )
+        }
+      ];
+    } 
+    // else if (userType === "organisasi") {
 
     //   return [
 
     //   ];
     // }
-    } else {
+    else {
       return [
         { path: "/", name: "BERANDA" },
         { path: "/donasi", name: "DONASI" },
@@ -261,7 +375,9 @@ const MainLayout = ({ children }) => {
       ) : (
         <>
           <TopNavbar routes={routes} />
-          {children ? children : <Outlet />} 
+          <div className="pt-5">
+            {children ? children : <Outlet />} 
+          </div>
         </>
       )}
       

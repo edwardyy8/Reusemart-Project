@@ -28,4 +28,9 @@ class Alamat extends Model
         return $this->belongsTo(Pembeli::class, 'id_pembeli');
     }
 
+    public function pemesanan()
+    {
+        return $this->hasMany(Pemesanan::class, 'id_alamat');
+    }
+
 }

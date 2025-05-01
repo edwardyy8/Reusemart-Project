@@ -102,10 +102,10 @@ const FormEditPenitip = () => {
           <Form.Control type="file" name="foto_ktp" accept="image/*" onChange={handleFileChange} />
         </Form.Group>
 
-        {/* <Form.Group className="mb-3">
+        <Form.Group className="mb-3">
           <Form.Label>Foto Profil (upload baru jika ingin mengubah)</Form.Label>
           <Form.Control type="file" name="foto_profile" accept="image/*" onChange={handleFileChange} />
-        </Form.Group> */}
+        </Form.Group>
         <div className="d-flex flex-row gap-3">
             <Button 
                 onClick={() => navigate("/pegawai/Customer Service/managePenitip")} 

@@ -30,7 +30,8 @@ class Penitip extends Authenticatable
         'password',
         'is_top',
         'foto_ktp',
-        'createdAt'
+        'createdAt',
+        'foto_profile',
     ];
 
 
