@@ -26,6 +26,11 @@ import DetailPenjualanPage from "../pages/penitip/DetailPenjualanPage";
 import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
 import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
 
+import KelolaPegawaiPage from "../pages/AllPegawai/Admin/kelolaPegawaiPage";
+import EditPegawaiPage from "../pages/AllPegawai/Admin/EditPegawaiPage";
+
+import KelolaJabatanPage from "../pages/AllPegawai/Admin/kelolaJabatanPage";
+import EditJabatanPage from "../pages/AllPegawai/Admin/EditJabatanPage";
 
 import ManagePenitipPage from "../pages/AllPegawai/CS/ManagePenitipPage";
 import ClaimMerchandisePage from "../pages/AllPegawai/CS/ClaimMerchandisePage";
@@ -174,7 +179,23 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <KelolaOrganisasiPage />,
+            element: <KelolaJabatanPage />,
+          },
+          {
+            path: "kelolaPegawai",
+            element: <KelolaPegawaiPage />,
+          },
+          {
+            path: "kelolaPegawai/:id",
+            element: <EditPegawaiPage />,
+          },
+          {
+            path: "kelolaJabatan",
+            element: <KelolaJabatanPage />,
+          },
+          {
+            path: "kelolaJabatan/:id",
+            element: <EditJabatanPage />,
           },
           {
             path: "kelolaOrganisasi",

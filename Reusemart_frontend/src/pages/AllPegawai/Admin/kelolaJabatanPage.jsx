@@ -1,29 +1,25 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, Col, Container, Row, Spinner, Stack, Button, Table, Form, Pagination } from "react-bootstrap";
-
-import { GetAllOrganisasi } from "../../../api/apiOrganisasi";
-
-import reusemart from "../../../assets/images/titlereuse.png";
+import { GetAllJabatan } from "../../../api/apiJabatan";  // API untuk mengambil data jabatan
 
 import { FaSearch } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
 
-import ModalShowOrg from "../../../components/modals/organisasi/ModalShowOrg";
-import ModalDeleteOrg from "../../../components/modals/organisasi/ModalDeleteOrg";
+import ModalShowJabatan from "../../../components/modals/jabatan/ModalShowJabatan";
+import ModalDeleteJabatan from "../../../components/modals/jabatan/ModalDeleteJabatan";
 
-
-const KelolaOrganisasiPage = () => {
-    const [organisasis, setOrganisasis] = useState([]);
+const KelolaJabatanPage = () => {
+    const [jabatans, setJabatans] = useState([]);
     const [jumlah, setJumlah] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState("");
-    const [filteredOrganisasis, setFilteredOrganisasis] = useState([]);
+    const [filteredJabatans, setFilteredJabatans] = useState([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    const dataToDisplay = searchKeyword ? filteredOrganisasis : organisasis;
+    const dataToDisplay = searchKeyword ? filteredJabatans : jabatans;
 
     const totalPages = Math.ceil(dataToDisplay.length / itemsPerPage);
     const currentItems = dataToDisplay.slice(
@@ -35,12 +31,12 @@ const KelolaOrganisasiPage = () => {
         setCurrentPage(page);
     };
 
-    const fetchAllOrganisasi = () => {
+    const fetchAllJabatan = () => {
         setIsLoading(true);
-        GetAllOrganisasi()
+        GetAllJabatan()
             .then((data) => {
                 console.log(data);
-                setOrganisasis(data.data);
+                setJabatans(data.data);
                 setJumlah(data.jumlah);
                 setIsLoading(false);
             })
@@ -51,7 +47,7 @@ const KelolaOrganisasiPage = () => {
     };
 
     useEffect(() => {
-        fetchAllOrganisasi();
+        fetchAllJabatan();
     }, []);
 
     const handleSearchChange = (e) => {
@@ -61,35 +57,34 @@ const KelolaOrganisasiPage = () => {
         const keyword = e.target.value;
         setSearchKeyword(keyword);
     
-        const filtered = organisasis.filter((org) =>
-            org.nama.toLowerCase().includes(keyword.toLowerCase())
+        const filtered = jabatans.filter((jabatan) =>
+            jabatan.nama_jabatan.toLowerCase().includes(keyword.toLowerCase())
         );
     
-        setFilteredOrganisasis(filtered);
+        setFilteredJabatans(filtered);
     };
 
     const navigate = useNavigate();
-    
-    return (
-        <>  
 
+    return (
+        <>
             <Container className="p-0">
-            <Container className="boxHijau p-3 rounded-3 mb-4 mt-4 ms-3" style={{ width: "13vw" }}>
-                <Row>
-                    <Col >
-                        <p>Jumlah </p>
-                        <p>Organisasi </p>
-                    </Col>
-                    <Col className="text-center d-flex justify-content-center align-items-center">
-                        <h3> {jumlah}</h3>
-                    </Col>
-                </Row>
-            </Container>
+                <Container className="boxHijau p-3 rounded-3 mb-4 mt-4 ms-3" style={{ width: "13vw" }}>
+                    <Row>
+                        <Col >
+                            <p>Jumlah </p>
+                            <p>Jabatan </p>
+                        </Col>
+                        <Col className="text-center d-flex justify-content-center align-items-center">
+                            <h3> {jumlah}</h3>
+                        </Col>
+                    </Row>
+                </Container>
 
                 <Container className="mb-5 ms-0 me-0">
                     <div className="mb-3 d-flex justify-content-between align-items-center">
-                        <p className="" style={{fontSize: "2vw" }}>KELOLA ORGANISASI</p>
-                        {/* Search barnya */}
+                        <p className="" style={{fontSize: "2vw" }}>KELOLA JABATAN</p>
+                        {/* Search bar */}
                         <Form className="d-flex mx-lg-3 my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }} onSubmit={handleSearchChange} >
                             <Button
                                 type="submit"
@@ -100,13 +95,12 @@ const KelolaOrganisasiPage = () => {
                                     padding: '0.375rem 0.75rem',
                                     zIndex: 2
                                 }}
-                                onClick={() => handleSearchChange}
                             >
                                 <FaSearch />
                             </Button>
                             <Form.Control
                                 type="search"
-                                placeholder="Cari nama organisasi"
+                                placeholder="Cari nama jabatan"
                                 value={searchKeyword}
                                 onChange={handleSearchChange}
                                 className="ps-5"
@@ -119,9 +113,9 @@ const KelolaOrganisasiPage = () => {
                         </Form>
                     </div>
 
-                    {organisasis.length === 0 && !isLoading ? (
+                    {jabatans.length === 0 && !isLoading ? (
                         <Alert variant="warning" className="text-center ">
-                            <h5>Belum ada organisasi yang terdaftar</h5>
+                            <h5>Belum ada jabatan yang terdaftar</h5>
                         </Alert>
                     ) : (
                         isLoading ? (
@@ -142,19 +136,19 @@ const KelolaOrganisasiPage = () => {
                                     <thead className="custom-table">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Nama Organisasi</th>
+                                            <th>Nama Jabatan</th>
                                             <th className="text-center">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {currentItems.map((organisasi) => (
-                                            <tr key={organisasi.id_organisasi}>
-                                                <td>{organisasi.id_organisasi}</td>
-                                                <td>{organisasi.nama}</td>
-                                                <td className="d-flex justify-content-center" >
-                                                    <ModalShowOrg organisasi={organisasi}/>
-                                                    <Button onClick={() => navigate(`/pegawai/Admin/kelolaOrganisasi/${organisasi.id_organisasi}`)} className="me-2"><FaRegPenToSquare size={20} /></Button>
-                                                    <ModalDeleteOrg organisasi={organisasi} onClose={fetchAllOrganisasi} />
+                                        {currentItems.map((jabatan) => (
+                                            <tr key={jabatan.id_jabatan}>
+                                                <td>{jabatan.id_jabatan}</td>
+                                                <td>{jabatan.nama_jabatan}</td>
+                                                <td className="d-flex justify-content-center">
+                                                    <ModalShowJabatan jabatan={jabatan}/>
+                                                    <Button onClick={() => navigate(`/pegawai/Admin/kelolaJabatan/${jabatan.id_jabatan}`)} className="me-2"><FaRegPenToSquare size={20} /></Button>
+                                                    <ModalDeleteJabatan jabatan={jabatan} onClose={fetchAllJabatan} />
                                                 </td>
                                             </tr>
                                         ))}
@@ -220,5 +214,4 @@ const KelolaOrganisasiPage = () => {
     );
 };
 
-export default KelolaOrganisasiPage;
-
+export default KelolaJabatanPage;

@@ -58,7 +58,7 @@ const CategoriesPage = () => {
 
     return (
         <>
-            <Container fluid className="mt-5 d-flex" style={{ minHeight: "100vh", backgroundColor: "rgba(252, 251, 249, 1)" }}>
+            <Container fluid className="d-flex" style={{ minHeight: "100vh", backgroundColor: "rgba(252, 251, 249, 1)" }}>
                 {/* Sidebar kategori */}
                 <div className="p-3 shadow-sm" style={{ width: "250px", backgroundColor: "#ffffff" }}>
                 <h5 className="mb-4 mt-4">KATEGORI</h5>

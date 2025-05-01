@@ -41,7 +41,7 @@ Route::post('/register',[AuthController::class,'register']);
 
 Route::middleware('guest')->group(function () {
     Route::post('/login',[AuthController::class,'login']);
-    
+
 });
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
 Route::post('/reset-password', [NewPasswordController::class, 'store']);
@@ -66,12 +66,26 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::post('/editOrganisasi/{id}', [OrganisasiController::class, 'editOrganisasi']);
         Route::get('/getOrganisasi/{id}', [OrganisasiController::class, 'getOrganisasi']);
 
+        Route::get('/pegawai', [PegawaiController::class, 'index']);
+        Route::get('/getAllPegawai', [PegawaiController::class, 'getAllPegawai']);
+        Route::get('/getPegawai/{id}', [PegawaiController::class, 'getPegawai']);
+        Route::delete('/deletePegawai/{id}', [PegawaiController::class, 'deletePegawai']);
+        Route::post('/editPegawai/{id}', [PegawaiController::class, 'editPegawai']);
+
+        Route::get('/getPegawai/{id}', [PegawaiController::class, 'getPegawai']);
+
+        Route::get('/getJabatan/{id}', [JabatanController::class, 'getJabatan']);
+        Route::get('/getAllJabatan', [JabatanController::class, 'getAllJabatan']);
+        Route::delete('/deleteJabatan/{id}', [JabatanController::class, 'deleteJabatan']);
+        Route::post('/editJabatan/{id}', [JabatanController::class, 'editJabatan']);
+        Route::get('/getJabatan/{id}', [JabatanController::class, 'getJabatan']);
+
     });
-  
+
     Route::middleware(CekJabatan::class.':Customer Service')->group(function () {
-      
+
       Route::post('/penitip',[PenitipController::class,'store']);
-      
+
     });
 });
 
@@ -81,7 +95,7 @@ Route::middleware('auth:penitip')->group(function () {
     Route::get('/getPenjualanById/{id}', [RincianPemesananController::class, 'getPenjualanById']);
     Route::get('/getPemesananById/{id}', [PemesananController::class, 'getPemesananById']);
 
-    
+
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);
@@ -109,6 +123,6 @@ Route::get('/jabatan/{id}', [JabatanController::class, 'show']);
 Route::middleware('auth:pembeli')->group(function () {
     Route::get('/pembeli/pembeliProfile', [PembeliController::class, 'getPembeliProfile']);
     Route::get('/getPemesananByIdPembeli/{id}', [PemesananController::class, 'getPemesananByIdPembeli']);
-    
+
 
 });

@@ -41,7 +41,7 @@ const KategoriUtamaPage = () => {
                 <br/>
                 <Container
                     fluid
-                    className="py-3 shadow-sm my-3 mt-5 abu83 px-5"
+                    className="py-3 shadow-sm abu83 px-5"
                     style={{ flexGrow: 0 }} // Ensures no extra space is added here
                 >
                     <div className="d-flex align-items-center">

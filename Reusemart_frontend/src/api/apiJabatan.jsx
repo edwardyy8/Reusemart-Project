@@ -1,25 +1,8 @@
-import useAxios from ".";
-import axios from "axios";
+import axios from ".";
 
-const getFotoPegawai = async (filename) => {
+export const GetAllJabatan = async () => {
     try {
-        const response = await useAxios.get(`/pegawai/foto-profile/${filename}`, {
-            headers: {
-                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-            responseType: "blob",
-        });
-        return response.data;
-    } catch (error) {
-        throw error.response.data;
-    }
-} 
-
-export {getFotoPegawai}; 
-
-export const GetAllPegawai = async () => {
-    try {
-        const response = await axios.get("/getAllPegawai", {
+        const response = await axios.get("/getAllJabatan", {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
@@ -30,9 +13,9 @@ export const GetAllPegawai = async () => {
     }
 };
 
-export const DeletePegawai = async (id) => {
+export const DeleteJabatan = async (id) => {
     try {
-        const response = await axios.delete(`/deletePegawai/${id}`, {
+        const response = await axios.delete(`/deleteJabatan/${id}`, {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
@@ -43,9 +26,9 @@ export const DeletePegawai = async (id) => {
     }
 };
 
-export const EditPegawai = async (id, data) => {
+export const EditJabatan = async (id, data) => {
     try {
-        const response = await axios.post(`/editPegawai/${id}`, data, {
+        const response = await axios.post(`/editJabatan/${id}`, data, {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
@@ -56,9 +39,9 @@ export const EditPegawai = async (id, data) => {
     }
 };
 
-export const GetPegawaiByid = async (id) => {
+export const GetJabatanById = async (id) => {
     try {
-        const response = await axios.get(`/getPegawai/${id}`, {
+        const response = await axios.get(`/getJabatan/${id}`, {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
@@ -68,3 +51,4 @@ export const GetPegawaiByid = async (id) => {
         throw error.response.data;
     }
 };
+
