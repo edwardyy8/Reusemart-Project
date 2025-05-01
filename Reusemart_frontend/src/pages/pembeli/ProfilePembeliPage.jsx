@@ -101,9 +101,9 @@ const ProfilePembeliPage = () => {
     
           <h3 className="text-center text-muted">@{profileData?.nama}</h3>
       
-          <Container className="text-center mt-0 mb-3 p-1 rounded-3 w-50 border">
-            <h5>{profileData?.poin_pembeli.toLocaleString("id-ID")?? 0}</h5>
-            <p className="text-muted">Poin Reward</p>
+          <Container className="text-center mt-0 mb-3 p-1 rounded-3 w-50 border border-dark">
+            <h5 className="mt-1">{profileData?.poin_pembeli.toLocaleString("id-ID")?? 0}</h5>
+            <p className="text-muted mb-1">Poin Reward</p>
           </Container>
     
           <Tabs defaultActiveKey="profil" className="mb-4 justify-content-center custom-tabs" fill>

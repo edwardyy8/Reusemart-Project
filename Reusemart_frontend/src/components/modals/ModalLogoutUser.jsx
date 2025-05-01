@@ -1,24 +1,17 @@
 import { Modal, Button, Spinner, Form } from "react-bootstrap";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { LogOut } from "../../api/apiAuth";
 import { useNavigate } from "react-router-dom";
 
-const ModalLogout = () => {
+const ModalLogoutUser = ({show, onClose }) => {
     const navigate = useNavigate();
-
-    const [show, setShow] = useState(false);
 
     const [isPending, setIsPending] = useState(false);
 
-    const handleClose = () => {
-        setShow(false);
-    };
-
-    const handleShow = () => setShow(true);
-
     const Keluar = async () => {
+        console.log("Keluar() dipanggil");
         setIsPending(true);
         try {
             const res = await LogOut();
@@ -26,7 +19,7 @@ const ModalLogout = () => {
             toast.success("Berhasil logout.");
             setTimeout(() => {
                 navigate(0);
-            }, 800);
+            }, 1000);
              
         } catch (error) {
             toast.error(error.message);
@@ -35,13 +28,18 @@ const ModalLogout = () => {
         }
     }
 
+
+
     return (
         <>
-            <Button onClick={handleShow} className="ms-auto me-3 border-0 btn-lg rounded-3 shadow-sm btnLogout">
+            {/* <Button onClick={handleShow} className="ms-auto me-3 border-0 btn-lg rounded-3 shadow-sm btnLogout">
                 Keluar
-            </Button>
+            </Button> */}
+            {/* <div style={{ padding: "8px", cursor: "pointer" }} onClick={handleShow}>
+              Logout
+            </div> */}
 
-            <Modal size="md" show={show} onHide={handleClose}>
+            <Modal size="md" show={show} onHide={onClose}>
                 <Modal.Header className="boxHijau" closeButton>
                 <Modal.Title>Keluar Dari Akun</Modal.Title>
                 </Modal.Header>
@@ -53,8 +51,9 @@ const ModalLogout = () => {
                 <Modal.Footer>
                     <Button
                         className="btnLogout border-0 btn-lg"
-                        onClick={Keluar}
+                        onClick={Keluar}    
                         disabled={isPending}
+                        type="button"
                     >
                         {isPending ? (
                         <>
@@ -77,4 +76,4 @@ const ModalLogout = () => {
     );
 }
 
-export default ModalLogout;
+export default ModalLogoutUser;

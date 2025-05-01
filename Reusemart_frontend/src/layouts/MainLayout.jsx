@@ -12,6 +12,7 @@ import { LogOut } from "../api/apiAuth";
 import { getFotoPegawai } from "../api/apiPegawai";
 
 import ModalLogout from "../components/modals/ModalLogout";
+import ModalLogoutUser from "../components/modals/ModalLogoutUser";
 
 const MainLayout = ({ children }) => {
   const location = useLocation();
@@ -90,6 +91,7 @@ const MainLayout = ({ children }) => {
 
   function ProfileDropdown({ active }) {
     const [open, setOpen] = useState(false);
+    const [showModalLogout, setShowModalLogout] = useState(false);
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
@@ -112,6 +114,7 @@ const MainLayout = ({ children }) => {
     }, [open]);
   
     const handleToggle = (e) => {
+      e.preventDefault();
       e.stopPropagation();
       setOpen(!open);
     };
@@ -139,23 +142,34 @@ const MainLayout = ({ children }) => {
             zIndex: 100,
           }}>
             <div style={{ padding: "8px", cursor: "pointer" }}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();     
+                e.stopPropagation();
                 navigate("/penitip/profile");
                 setOpen(false);
-                }}>
+              }}>
               Profil Saya
             </div>
-            <div style={{ padding: "8px", cursor: "pointer" }} onClick={() => console.log('Logout')}>
-              Logout
+            <div style={{ padding: "8px", cursor: "pointer" }} 
+                 onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowModalLogout(true);
+                  setOpen(false);
+                }}>
+              Keluar
             </div>
+            
           </div>
         )}
+        {showModalLogout && <ModalLogoutUser show={showModalLogout} onClose={() => setShowModalLogout(false)} />}
       </div>
     );
   }
 
   function ProfilePembeliDropdown({ active }) {
     const [open, setOpen] = useState(false);
+    const [showModalLogout, setShowModalLogout] = useState(false);
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
@@ -178,6 +192,7 @@ const MainLayout = ({ children }) => {
     }, [open]);
   
     const handleToggle = (e) => {
+      e.preventDefault();
       e.stopPropagation();
       setOpen(!open);
     };
@@ -211,11 +226,18 @@ const MainLayout = ({ children }) => {
                 }}>
               Profil Saya
             </div>
-            <div style={{ padding: "8px", cursor: "pointer" }} onClick={() => console.log('Logout')}>
-              Logout
+            <div style={{ padding: "8px", cursor: "pointer" }} 
+                 onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowModalLogout(true);
+                  setOpen(false);
+                }}>
+              Keluar
             </div>
           </div>
         )}
+        {showModalLogout && <ModalLogoutUser show={showModalLogout} onClose={() => setShowModalLogout(false)} />}
       </div>
     );
   }
