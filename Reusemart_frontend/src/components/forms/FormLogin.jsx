@@ -44,7 +44,7 @@ const FormLogin = () => {
             navigate(0);
           }, 1200);
         }else{
-          navigate(`/${res.user_type}`);
+          navigate(`/${res.user_type}/profile`);
           setTimeout(() => {
             navigate(0);
           }, 1200);

@@ -22,6 +22,7 @@ const InputFloatingForm = (props) => {
             autoComplete={props.autoComplete}
             required={props.required}
             disabled={props.disabled}
+            value={props.value}
 
             // {...props} 
           />

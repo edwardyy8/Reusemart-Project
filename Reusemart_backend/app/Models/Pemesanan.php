@@ -28,7 +28,9 @@ class Pemesanan extends Model
         'status_pengiriman',
         'batas_pengambilan',
         'poin_digunakan',
-        'poin_didapatkan'
+        'poin_didapatkan',
+        'ongkos',
+        'id_alamat',
     ];
 
     public function pembeli()
@@ -49,5 +51,10 @@ class Pemesanan extends Model
     public function rincianPemesanan()
     {
         return $this->hasMany(Rincian_Pemesanan::class, 'id_pemesanan');
+    }
+
+    public function alamat()
+    {
+        return $this->belongsTo(Alamat::class, 'id_alamat');
     }
 }

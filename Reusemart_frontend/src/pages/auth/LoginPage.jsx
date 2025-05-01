@@ -32,7 +32,7 @@ const LoginPage = () => {
               
               navigate(`/${res.user_type}/${jabatan}`);
             }else {
-              navigate(`/${res.user_type}`);
+              navigate(`/${res.user_type}/profile`);
             }
             
           }

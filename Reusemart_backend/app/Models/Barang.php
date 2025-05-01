@@ -54,6 +54,11 @@ class Barang extends Model
         return $this->hasOne(Rincian_Penitipan::class, 'id_barang');
     }
 
+    public function rincianPemesanan()
+    {
+        return $this->hasOne(Rincian_Pemesanan::class, 'id_barang');
+    }
+
     public function donasi()
     {
         return $this->hasOne(Donasi::class, 'id_barang');

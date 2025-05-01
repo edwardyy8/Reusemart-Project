@@ -138,8 +138,8 @@ const KelolaOrganisasiPage = () => {
                             </div>
                         ) : (
                             <>
-                                <Table>
-                                    <thead>
+                                <Table bordered hover>
+                                    <thead className="custom-table">
                                         <tr>
                                             <th>ID</th>
                                             <th>Nama Organisasi</th>
