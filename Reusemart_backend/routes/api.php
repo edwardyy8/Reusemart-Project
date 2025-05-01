@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Models\Organisasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarangController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\MerchandiseController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\OrganisasiController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -71,6 +73,12 @@ Route::middleware('auth:penitip')->group(function () {
     //     ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
 });
 
+Route::middleware('auth:organisasi')->group(function () {
+    Route::get('/organisasi/organisasiPage', [OrganisasiController::class, 'getOrganisasiProfile']);
+    
+    
+});
+
 Route::get('/penitip', [PenitipController::class, 'index']);
 Route::get('/penitip/{id}', [PenitipController::class, 'show']);
 Route::put('/penitip/{id}', [PenitipController::class, 'update']);
@@ -91,3 +99,5 @@ Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
 
 Route::get('/jabatan', [JabatanController::class, 'index']);
 Route::get('/jabatan/{id}', [JabatanController::class, 'show']);
+
+Route::get('/organisasi', [OrganisasiController::class, 'index']);

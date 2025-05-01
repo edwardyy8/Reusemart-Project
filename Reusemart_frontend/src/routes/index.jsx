@@ -34,6 +34,8 @@ import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage
 
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProtectedFromPegawai from "./ProtectedFromPegawai";
+import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
+import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
 
 const router = createBrowserRouter([
   {
@@ -170,6 +172,29 @@ const router = createBrowserRouter([
             path: "kelolaOrganisasi",
             element: <KelolaOrganisasiPage />,
           }
+        ],
+      },
+      {
+        path: "/organisasi",
+        element: (
+          <ProtectedRoutes allowedRoles={['organisasi']}>
+            <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "",
+            element: <OrganisasiPage />,
+          },
+          {
+            path: "organisasiPage",
+            element: <OrganisasiPage />,
+          },
+          {
+            path: "organisasiPage/tambahRequest",
+            element: <CreateRequestPage />,
+          }
+          
         ],
       },
                                    
