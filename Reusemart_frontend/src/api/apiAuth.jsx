@@ -25,12 +25,12 @@ const SignIn = async (data) => {
 
 const LogOut = async () => {
     try {
-        const response = await useAxios.post("/logout", 
+        const response = await useAxios.post("/logout", {},
             { headers: 
                 { 
                     Authorization: `Bearer ${sessionStorage.getItem("token")}` 
                 } 
-            }
+            },
         ); 
         return response.data;
     } catch (error) {

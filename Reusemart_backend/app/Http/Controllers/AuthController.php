@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alamat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -30,15 +31,14 @@ class AuthController extends Controller
                 'password' => 'required|min:8|same:confirm_password',
                 'confirm_password' => 'required|min:8',
                 'role' => 'required|in:pembeli,organisasi',
-                'alamat' => 'nullable|string',
+                'alamat' => 'required|string',
                 'foto_profile' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
             ];
 
             if ($registrationData['role'] === 'pembeli') {
-                $required['no_hp'] = 'required|string|max:15';
-                $required['label_alamat'] = 'nullable|string';
+                $required['no_hp'] = ['required', 'string', 'max:15', 'regex:/^(?:\+62|62|0)8[1-9][0-9]{6,9}$/'];
+                $required['label_alamat'] = 'required|string';
             } else {
-                
                 $required['no_hp'] = 'nullable|string|max:15';
                 $required['label_alamat'] = 'nullable|string';
             }
@@ -58,9 +58,6 @@ class AuthController extends Controller
                 'nama' => $registrationData['nama'],
                 'email' => $registrationData['email'],
                 'password' => bcrypt($registrationData['password']),
-                'alamat' => $registrationData['alamat'],
-                'no_hp' => $registrationData['no_hp'] ?? null,
-                'label_alamat' => $registrationData['label_alamat'] ?? null,
                 'foto_profile' => $fotoProfile,
                 'createdAt' => Carbon::now('Asia/Jakarta')
             ];
@@ -76,17 +73,27 @@ class AuthController extends Controller
             $user = $registrationData['role'] == 'pembeli'
                 ? Pembeli::create($insertData)
                 : Organisasi::create($insertData);
-
-            $token = $user->createToken('auth_token')->plainTextToken;
+                
+            if($registrationData['role'] == 'pembeli') {
+                $alamatData = [
+                    'id_pembeli' => $user->id_pembeli,
+                    'is_default' => true,
+                    'nama_alamat' => $registrationData['alamat'],
+                    'label_alamat' => $registrationData['label_alamat'],
+                    'nama_penerima' => $registrationData['nama'],
+                    'no_hp' => $registrationData['no_hp']
+                ];
+                Alamat::create($alamatData);
+            }
+            
 
             return response([
                 'message' => 'Register Success',
-                'token' => $token
             ], 200);
         } catch (\Exception $e) {
             
             return response([
-                'message' => 'Register Failed',
+                'message' => 'Register Failed :',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ], 500);
@@ -99,7 +106,7 @@ class AuthController extends Controller
 
         $validate = Validator::make($loginData, [
             'email' => 'required|email:rfc',
-            'password' => 'required',
+            'password' => 'required|min:8',
         ]);
 
         if ($validate->fails()) {
@@ -135,9 +142,19 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        
-        return response()->json(['message' => 'Logged out']);
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json(['message' => 'User tidak terautentikasi'], 401);
+            }
+
+            $user->currentAccessToken()->delete();
+            
+            return response()->json(['message' => 'Berhasil Logout'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Gagal Logout', 'error' => $e->getMessage()], 500);
+        }
     }
 
     public function getRole(Request $request) {

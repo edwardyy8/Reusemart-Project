@@ -1,11 +1,15 @@
-import { Container, Tab, Tabs, Card, Spinner, Alert } from "react-bootstrap";
+import { Container, Tab, Tabs, Card, Spinner, Alert, Button } from "react-bootstrap";
 import reusemart from "../../assets/images/titlereuse.png";
 import { getProfileData} from "../../api/apiPenitip";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import InputFloatingForm from "../../components/forms/InputFloatingForm";
 
 const ProfilePenitipPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [activeKey, setActiveKey] = useState('profil');
+
   const [profileData, setProfileData] = useState(null);
   const [penjualanData, setPenjualanData] = useState([]);
   const [barangData, setBarangData] = useState([]);
@@ -36,6 +40,15 @@ const ProfilePenitipPage = () => {
     }
   };
 
+  //buat tabsnya
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) {
+      setActiveKey(tabParam);
+    }
+  }, [location.search]);
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -60,18 +73,25 @@ const ProfilePenitipPage = () => {
   return (
     <Container className="mt-5">
       <div className="text-center mb-4 d-flex flex-row justify-content-center align-items-center gap-3">
-        <img src={reusemart} alt="ReuseMart" height="50" />
-        <h1 className="mt-1 hijau">P E N I T I P</h1>
+        <img src={`http://127.0.0.1:8000/storage/foto_profile/${profileData?.foto_profile}`} 
+              className="rounded-circle" style={{border: "1px black solid"}} alt="Profile penitips" height="100" />
       </div>
 
       <h3 className="text-center text-muted">@{profileData?.nama}</h3>
 
-      <Container className="text-center mt-0 mb-3 p-0 rounded-3 w-50 border">
-        <h5>{profileData?.poin_penitip ?? 0}</h5>
-        <p className="text-muted">Poin Reward</p>
+      <Container className="d-flex flex-column justify-content-center align-items-center gap-2 mt-3">
+        <div className="text-center mt-0 mb-3 p-1 rounded-3 w-50 border-dark border">
+          <h5 className="mt-1">{profileData?.poin_penitip.toLocaleString("id-ID") ?? 0}</h5>
+          <p className="text-muted mb-1">Poin Reward</p>
+        </div>
+        <div className="text-center mt-0 mb-3 p-1 rounded-3 w-50 border-dark border">
+          <h5 className="mt-1">{profileData.saldo_penitip.toLocaleString("id-ID") ?? 0}</h5>
+          <p className="text-muted mb-1">Saldo Penitip</p>
+        </div>  
       </Container>
+      
 
-      <Tabs defaultActiveKey="profile" className="mb-4 justify-content-center custom-tabs" fill>
+      <Tabs activeKey={activeKey} onSelect={(k) => setActiveKey(k)} className="mb-4 justify-content-center custom-tabs" fill>
       <Tab eventKey="penjualan" title="Penjualan Saya">
           {penjualanData.length > 0 ? (
             <Row className="g-3">
@@ -95,8 +115,8 @@ const ProfilePenitipPage = () => {
           )}
         </Tab>
 
-        <Tab eventKey="profile" title="Profil Saya">
-          <Container className="mt-5 mb-0 p-5 rounded-3 w-50" style={{ border: '1px solid rgb(122, 122, 122)', backgroundColor: 'rgb(255, 255, 255)' }}>
+        <Tab eventKey="profil" title="Profil Saya">
+          <Container className="mt-5 mb-4 p-5 rounded-3 w-50" style={{ border: '1px solid rgb(122, 122, 122)', backgroundColor: 'rgb(255, 255, 255)' }}>
             <h4>Nama Penitip</h4>
             <InputFloatingForm
               value={profileData?.nama}
@@ -114,6 +134,7 @@ const ProfilePenitipPage = () => {
             />
             <h4>Password</h4>
             <InputFloatingForm
+              type="password"
               value={profileData?.password}
               disabled
             />

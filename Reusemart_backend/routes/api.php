@@ -14,6 +14,10 @@ use App\Http\Controllers\MerchandiseController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\OrganisasiController;
+use App\Http\Controllers\PembeliController;
+use App\Http\Controllers\PemesananController;
+use App\Http\Controllers\RincianPemesananController;
+use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\RequestDonasiController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -54,11 +58,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:pegawai')->group(function () {
     Route::get('/getJabatan', [AuthController::class, 'getJabatan']);
-
-    Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
-        ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
-
     Route::get('/pegawai/foto-profile/{filename}', [PegawaiController::class, 'getFotoProfile']);
+
+    Route::middleware(CekJabatan::class.':Admin')->group(function () {
+        Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
+        ->middleware(EnsureApiTokenIsValid::class);
+
+        Route::get('/getAllOrganisasi', [OrganisasiController::class, 'getAllOrganisasi']);
+        Route::delete('/deleteOrganisasi/{id}', [OrganisasiController::class, 'deleteOrganisasi']);
+        Route::post('/editOrganisasi/{id}', [OrganisasiController::class, 'editOrganisasi']);
+        Route::get('/getOrganisasi/{id}', [OrganisasiController::class, 'getOrganisasi']);
+
+    });
   
     Route::middleware(CekJabatan::class.':Customer Service')->group(function () {
       
@@ -69,9 +80,11 @@ Route::middleware('auth:pegawai')->group(function () {
 
 Route::middleware('auth:penitip')->group(function () {
     Route::get('/penitip/penitipProfile', [PenitipController::class, 'getPenitipProfile']);
+    Route::get('/getPenjualanByIdPenitip/{id}', [RincianPemesananController::class, 'getPenjualanByIdPenitip']);
+    Route::get('/getPenjualanById/{id}', [RincianPemesananController::class, 'getPenjualanById']);
+    Route::get('/getPemesananById/{id}', [PemesananController::class, 'getPemesananById']);
+
     
-    // Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
-    //     ->middleware(EnsureApiTokenIsValid::class, CekJabatan::class.':Admin');
 });
 
 Route::middleware('auth:organisasi')->group(function () {
@@ -81,6 +94,7 @@ Route::middleware('auth:organisasi')->group(function () {
     Route::delete('/request_donasi/{id}', [RequestDonasiController::class, 'destroy']);
     Route::get('/organisasi/request-donasi/{id}', [RequestDonasiController::class, 'show']);
     Route::put('/request_donasi/{id}', [RequestDonasiController::class, 'update']);
+    Route::get('/organisasi', [OrganisasiController::class, 'index']);
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);
@@ -104,6 +118,14 @@ Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
 Route::get('/jabatan', [JabatanController::class, 'index']);
 Route::get('/jabatan/{id}', [JabatanController::class, 'show']);
 
-Route::get('/organisasi', [OrganisasiController::class, 'index']);
-Route::get('/request_donasi/{id}', [RequestDonasiController::class, 'show']);
 
+Route::middleware('auth:pembeli')->group(function () {
+    Route::get('/pembeli/pembeliProfile', [PembeliController::class, 'getPembeliProfile']);
+    Route::get('/getPemesananByIdPembeli/{id}', [PemesananController::class, 'getPemesananByIdPembeli']);
+    Route::get('/getAlamatByIdPembeli/{id}', [AlamatController::class, 'getAlamatByIdPembeli']);
+    Route::delete('/deleteAlamat/{id}', [AlamatController::class, 'deleteAlamat']);
+    Route::post('/editAlamat/{id}', [AlamatController::class, 'editAlamat']);
+    Route::get('/getAlamatById/{id}', [AlamatController::class, 'getAlamatById']);
+    Route::post('tambahAlamat', [AlamatController::class, 'tambahAlamat']);
+    
+});

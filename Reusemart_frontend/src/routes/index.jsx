@@ -18,18 +18,25 @@ import LupaPassPage from "../pages/auth/LupaPassPage";
 import ResetPassPage from "../pages/auth/ResetPassPage";
 
 
-import PenitipPage from "../pages/penitip/PenitipPage";
 import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
 import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
+import DetailPenjualanPage from "../pages/penitip/DetailPenjualanPage";
 
-
-import ManagePenitipPage from "../pages/CS/ManagePenitipPage";
-import ClaimMerchandisePage from "../pages/CS/ClaimMerchandisePage";
-import VerifikasiPage from "../pages/CS/VerifikasiPage";
-import TambahPenitipPage from "../pages/CS/TambahPenitipPage";
-import EditPenitipPage from "../pages/CS/EditPenitipPage";
 
 import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
+import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
+
+
+import ManagePenitipPage from "../pages/AllPegawai/CS/ManagePenitipPage";
+import ClaimMerchandisePage from "../pages/AllPegawai/CS/ClaimMerchandisePage";
+import VerifikasiPage from "../pages/AllPegawai/CS/VerifikasiPage";
+import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
+import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
+
+import ProfilePembeliPage from "../pages/pembeli/ProfilePembeliPage";
+import EditAlamatPage from "../pages/pembeli/EditAlamatPage";
+import TambahAlamatPage from "../pages/pembeli/TambahAlamatPage";
+
 
 
 import ProtectedRoutes from "./ProtectedRoutes";
@@ -37,6 +44,7 @@ import ProtectedFromPegawai from "./ProtectedFromPegawai";
 import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
 import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
 import EditRequestPage from "../pages/Organisasi/EditRequestPage";
+
 
 const router = createBrowserRouter([
   {
@@ -111,12 +119,16 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <PenitipPage />,
+            element: <ProfilePenitipPage />,
           },
           {
             path: "profile",
             element: <ProfilePenitipPage />,
-          }
+          },
+          {
+            path: "detailPenjualan/:id",
+            element: <DetailPenjualanPage />,
+          },
           
         ],
       },
@@ -172,6 +184,33 @@ const router = createBrowserRouter([
           {
             path: "kelolaOrganisasi",
             element: <KelolaOrganisasiPage />,
+          },
+          {
+            path: "kelolaOrganisasi/:id",
+            element: <EditOrganisasiPage />,
+          }
+        ],
+      },
+
+      {
+        path: "/pembeli",
+        element: (
+          <ProtectedRoutes allowedRoles={['pembeli']}>
+            <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "profile",
+            element: <ProfilePembeliPage />,
+          },
+          {
+            path: "editAlamat/:id",
+            element: <EditAlamatPage />,
+          },
+          {
+            path: "tambahAlamat",
+            element: <TambahAlamatPage />,
           }
         ],
       },
