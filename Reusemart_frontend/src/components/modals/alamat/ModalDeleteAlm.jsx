@@ -3,9 +3,9 @@ import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 
 import { toast } from "react-toastify";
-import { DeleteOrganisasi } from "../../../api/apiOrganisasi";
+import { DeleteAlamat } from "../../../api/apiAlamat";
 
-const ModalDeleteOrg = ({ organisasi, onClose }) => { 
+const ModalDeleteAlm = ({ alamat, onClose }) => { 
     const [show, setShow] = useState(false);
 
     const [isPending, setIsPending] = useState(false);
@@ -24,8 +24,8 @@ const ModalDeleteOrg = ({ organisasi, onClose }) => {
     const handleDelete = async () => {
         setIsPending(true);
         try {
-            const res = await DeleteOrganisasi(organisasi.id_organisasi);
-            toast.success("Berhasil menghapus organisasi.");
+            const res = await DeleteAlamat(alamat.id_alamat);
+            toast.success("Berhasil menghapus alamat.");
             handleClose();
         } catch (error) {
             toast.error(error.message);
@@ -36,19 +36,19 @@ const ModalDeleteOrg = ({ organisasi, onClose }) => {
 
     return (
         <>
-            <Button variant="danger" className="shadow-sm" onClick={handleShow}>
-                <FaTrash size={20} />
+            <Button className="w-0 me-2" variant="danger" onClick={handleShow}> 
+                Hapus
             </Button>
 
             <Modal size="lg" show={show} onHide={handleBatal} centered>
                 <Modal.Header className="boxHijau" closeButton>
-                    <Modal.Title className="ms-3">Hapus Data Organisasi</Modal.Title>
+                    <Modal.Title className="ms-3">Hapus Data Alamat</Modal.Title>
                 </Modal.Header>
                 
                 <Modal.Body >
                     <div className="p-3">
-                       <h5>Apakah Anda yakin ingin menghapus data organisasi ini?</h5>
-                       <h4 className="fw-bold">{organisasi.nama}</h4>
+                       <h5>Apakah Anda yakin ingin menghapus data alamat ini?</h5>
+                       <h4 className="fw-bold">{alamat.nama_alamat}</h4>
                     </div>
                    
                 </Modal.Body>
@@ -84,4 +84,4 @@ const ModalDeleteOrg = ({ organisasi, onClose }) => {
     );
 }
 
-export default ModalDeleteOrg;
+export default ModalDeleteAlm;

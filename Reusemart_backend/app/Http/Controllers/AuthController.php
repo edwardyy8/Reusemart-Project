@@ -36,7 +36,7 @@ class AuthController extends Controller
             ];
 
             if ($registrationData['role'] === 'pembeli') {
-                $required['no_hp'] = 'required|string|max:15';
+                $required['no_hp'] = ['required', 'string', 'max:15', 'regex:/^(?:\+62|62|0)8[1-9][0-9]{6,9}$/'];
                 $required['label_alamat'] = 'required|string';
             } else {
                 $required['no_hp'] = 'nullable|string|max:15';
@@ -89,12 +89,11 @@ class AuthController extends Controller
 
             return response([
                 'message' => 'Register Success',
-                
             ], 200);
         } catch (\Exception $e) {
             
             return response([
-                'message' => 'Register Failed',
+                'message' => 'Register Failed :',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ], 500);

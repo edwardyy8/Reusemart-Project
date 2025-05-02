@@ -16,6 +16,7 @@ use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\RincianPemesananController;
+use App\Http\Controllers\AlamatController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -109,6 +110,10 @@ Route::get('/jabatan/{id}', [JabatanController::class, 'show']);
 Route::middleware('auth:pembeli')->group(function () {
     Route::get('/pembeli/pembeliProfile', [PembeliController::class, 'getPembeliProfile']);
     Route::get('/getPemesananByIdPembeli/{id}', [PemesananController::class, 'getPemesananByIdPembeli']);
+    Route::get('/getAlamatByIdPembeli/{id}', [AlamatController::class, 'getAlamatByIdPembeli']);
+    Route::delete('/deleteAlamat/{id}', [AlamatController::class, 'deleteAlamat']);
+    Route::post('/editAlamat/{id}', [AlamatController::class, 'editAlamat']);
+    Route::get('/getAlamatById/{id}', [AlamatController::class, 'getAlamatById']);
+    Route::post('tambahAlamat', [AlamatController::class, 'tambahAlamat']);
     
-
 });

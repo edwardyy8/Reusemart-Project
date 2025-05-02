@@ -2,10 +2,14 @@ import { Container, Tab, Tabs, Card, Spinner, Alert, Button } from "react-bootst
 import reusemart from "../../assets/images/titlereuse.png";
 import { getProfileData} from "../../api/apiPenitip";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import InputFloatingForm from "../../components/forms/InputFloatingForm";
 
 const ProfilePenitipPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [activeKey, setActiveKey] = useState('profil');
+
   const [profileData, setProfileData] = useState(null);
   const [penjualanData, setPenjualanData] = useState([]);
   const [barangData, setBarangData] = useState([]);
@@ -35,6 +39,15 @@ const ProfilePenitipPage = () => {
       setLoading(false);
     }
   };
+
+  //buat tabsnya
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) {
+      setActiveKey(tabParam);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     fetchProfile();
@@ -78,7 +91,7 @@ const ProfilePenitipPage = () => {
       </Container>
       
 
-      <Tabs defaultActiveKey="profil" className="mb-4 justify-content-center custom-tabs" fill>
+      <Tabs activeKey={activeKey} onSelect={(k) => setActiveKey(k)} className="mb-4 justify-content-center custom-tabs" fill>
       <Tab eventKey="penjualan" title="Penjualan Saya">
           {penjualanData.length > 0 ? (
             <Row className="g-3">
