@@ -269,7 +269,7 @@ const ProfilePembeliPage = () => {
                   <>
                     <div className="d-flex flex-row mb-3">
                       {/* Search barnya */}
-                      <Form className="d-flex my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }} onSubmit={(e) => e.preventDefault()} >
+                      <Form className="d-flex my-2 my-lg-0 position-relative w-100" style={{ minWidth: "300px" }} onSubmit={(e) => e.preventDefault()} >
                         <Button
                             type="submit"
                             variant="link"
@@ -285,10 +285,10 @@ const ProfilePembeliPage = () => {
                         </Button>
                         <Form.Control
                           type="search"
-                          placeholder="Cari nama alamat"
+                          placeholder="Cari label alamat atau nama penerima..."
                           value={searchAlamat}
                           onChange={handleSearchAlamatChange}
-                          className="ps-5"
+                          className="ps-5 "
                           aria-label="Search"
                           style={{
                             paddingLeft: '2.5rem',
@@ -297,7 +297,7 @@ const ProfilePembeliPage = () => {
                         />
                       </Form>
                       <Button className="btnHijau ms-3" onClick={() => navigate("/pembeli/tambahAlamat")}>
-                        Tambah Alamat
+                        +Tambah
                       </Button>
                     </div>
                     {(searchAlamat === "" ? alamatData : filteredAlamat).length > 0 ? (
