@@ -41,6 +41,9 @@ import TambahAlamatPage from "../pages/pembeli/TambahAlamatPage";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProtectedFromPegawai from "./ProtectedFromPegawai";
+import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
+import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
+import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
 
 const router = createBrowserRouter([
@@ -209,6 +212,32 @@ const router = createBrowserRouter([
             path: "tambahAlamat",
             element: <TambahAlamatPage />,
           }
+        ],
+      },
+      {
+        path: "/organisasi",
+        element: (
+          <ProtectedRoutes allowedRoles={['organisasi']}>
+            <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "",
+            element: <OrganisasiPage />,
+          },
+          {
+            path: "organisasiPage",
+            element: <OrganisasiPage />,
+          },
+          {
+            path: "organisasiPage/tambahRequest",
+            element: <CreateRequestPage />,
+          },
+          {
+            path: "organisasiPage/editRequest/:id",
+            element: <EditRequestPage />,
+          },
         ],
       },
                                    

@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Models\Organisasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarangController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\RincianPemesananController;
 use App\Http\Controllers\AlamatController;
+use App\Http\Controllers\RequestDonasiController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -83,6 +85,16 @@ Route::middleware('auth:penitip')->group(function () {
     Route::get('/getPemesananById/{id}', [PemesananController::class, 'getPemesananById']);
 
     
+});
+
+Route::middleware('auth:organisasi')->group(function () {
+    Route::get('/organisasi/organisasiPage', [OrganisasiController::class, 'getOrganisasiProfile']);
+    Route::get('/organisasi/request-donasi', [RequestDonasiController::class, 'indexByOrganisasi']);
+    Route::post('/request_donasi', action: [RequestDonasiController::class, 'store']);
+    Route::delete('/request_donasi/{id}', [RequestDonasiController::class, 'destroy']);
+    Route::get('/organisasi/request-donasi/{id}', [RequestDonasiController::class, 'show']);
+    Route::put('/request_donasi/{id}', [RequestDonasiController::class, 'update']);
+    Route::get('/organisasi', [OrganisasiController::class, 'index']);
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);
