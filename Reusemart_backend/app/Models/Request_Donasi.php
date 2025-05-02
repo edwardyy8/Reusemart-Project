@@ -17,7 +17,23 @@ class Request_Donasi extends Model
         'id_organisasi',
         'isi_request',
         'tanggal_request',
+        'tanggal_approve',
     ];
+
+    public static function generateId()
+    {
+        $latestRequest = Request_Donasi::orderBy('id_request', 'desc')->first();
+        
+        if (!$latestRequest) {
+            return '1';
+        }
+        $newId = $latestRequest->id_request;
+        do{
+            $newId++;
+        }while (Request_Donasi::where('id_request', $newId)->exists());
+    
+        return (string)$newId;
+    }
 
     public function organisasi()
     {
@@ -25,7 +41,7 @@ class Request_Donasi extends Model
     }
     public function donasi()
     {
-        return $this->hasMany(Donasi::class, 'id_request');
+        return $this->hasOne(Donasi::class, 'id_request');
     }
 
 

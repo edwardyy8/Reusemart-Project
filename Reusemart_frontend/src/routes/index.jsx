@@ -36,6 +36,7 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import ProtectedFromPegawai from "./ProtectedFromPegawai";
 import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
 import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
+import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
 const router = createBrowserRouter([
   {
@@ -193,8 +194,11 @@ const router = createBrowserRouter([
           {
             path: "organisasiPage/tambahRequest",
             element: <CreateRequestPage />,
-          }
-          
+          },
+          {
+            path: "organisasiPage/editRequest/:id",
+            element: <EditRequestPage />,
+          },
         ],
       },
                                    

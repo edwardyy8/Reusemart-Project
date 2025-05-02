@@ -1,5 +1,5 @@
 import { Container } from "react-bootstrap";
-import FormEditPenitip from "../../components/forms/FormEditPenitip";
+import FormEditRequest from "../../components/forms/FormEditRequest";
 
 import reusemart from "../../assets/images/titlereuse.png";
 
@@ -14,7 +14,7 @@ const EditPenitipPage = () => {
         <h1 className="mt-1 pb-1 hijau" >P E N I T I P</h1>
       </div>
 
-      <FormEditPenitip />
+      <FormEditRequest />
     </Container>
   );
 };
