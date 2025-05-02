@@ -189,7 +189,7 @@ const DetailPenjualanPage = () => {
                     </Card>
                 </Container>
                 <Container className="d-flex justify-content-end mt-4 mb-1">
-                    <Button className="rounded-pill" variant="light" onClick={() => navigate(-1)}>
+                    <Button className="rounded-pill" variant="light" onClick={() => navigate("/penitip/profile?tab=penjualan")}>
                         Kembali
                     </Button>
                 </Container>

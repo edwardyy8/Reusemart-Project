@@ -34,6 +34,8 @@ import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
 import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
 
 import ProfilePembeliPage from "../pages/pembeli/ProfilePembeliPage";
+import EditAlamatPage from "../pages/pembeli/EditAlamatPage";
+import TambahAlamatPage from "../pages/pembeli/TambahAlamatPage";
 
 
 
@@ -198,6 +200,14 @@ const router = createBrowserRouter([
           {
             path: "profile",
             element: <ProfilePembeliPage />,
+          },
+          {
+            path: "editAlamat/:id",
+            element: <EditAlamatPage />,
+          },
+          {
+            path: "tambahAlamat",
+            element: <TambahAlamatPage />,
           }
         ],
       },

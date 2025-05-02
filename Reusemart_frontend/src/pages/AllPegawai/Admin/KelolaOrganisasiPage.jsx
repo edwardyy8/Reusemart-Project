@@ -90,7 +90,7 @@ const KelolaOrganisasiPage = () => {
                     <div className="mb-3 d-flex justify-content-between align-items-center">
                         <p className="" style={{fontSize: "2vw" }}>KELOLA ORGANISASI</p>
                         {/* Search barnya */}
-                        <Form className="d-flex mx-lg-3 my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }} onSubmit={handleSearchChange} >
+                        <Form className="d-flex mx-lg-3 my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }} onSubmit={(e) => e.preventDefault()} >
                             <Button
                                 type="submit"
                                 variant="link"
@@ -100,7 +100,7 @@ const KelolaOrganisasiPage = () => {
                                     padding: '0.375rem 0.75rem',
                                     zIndex: 2
                                 }}
-                                onClick={() => handleSearchChange}
+                                onClick={(e) => e.preventDefault()}
                             >
                                 <FaSearch />
                             </Button>
@@ -147,17 +147,27 @@ const KelolaOrganisasiPage = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {currentItems.map((organisasi) => (
-                                            <tr key={organisasi.id_organisasi}>
-                                                <td>{organisasi.id_organisasi}</td>
-                                                <td>{organisasi.nama}</td>
-                                                <td className="d-flex justify-content-center" >
-                                                    <ModalShowOrg organisasi={organisasi}/>
-                                                    <Button onClick={() => navigate(`/pegawai/Admin/kelolaOrganisasi/${organisasi.id_organisasi}`)} className="me-2"><FaRegPenToSquare size={20} /></Button>
-                                                    <ModalDeleteOrg organisasi={organisasi} onClose={fetchAllOrganisasi} />
+                                        {currentItems.length > 0 ? (
+                                            currentItems.map((organisasi) => (
+                                                <tr key={organisasi.id_organisasi}>
+                                                    <td>{organisasi.id_organisasi}</td>
+                                                    <td>{organisasi.nama}</td>
+                                                    <td className="d-flex justify-content-center" >
+                                                        <ModalShowOrg organisasi={organisasi}/>
+                                                        <Button onClick={() => navigate(`/pegawai/Admin/kelolaOrganisasi/${organisasi.id_organisasi}`)} className="me-2"><FaRegPenToSquare size={20} /></Button>
+                                                        <ModalDeleteOrg organisasi={organisasi} onClose={fetchAllOrganisasi} />
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr className="text-center">
+                                                <td colSpan={3} >
+                                                    <Alert variant="warning" className="text-center mb-0">
+                                                        <h5 className="mb-0">Data Pencarian Tidak Ditemukan</h5>
+                                                    </Alert>
                                                 </td>
                                             </tr>
-                                        ))}
+                                        )}
                                     </tbody>
                                 </Table>
 
