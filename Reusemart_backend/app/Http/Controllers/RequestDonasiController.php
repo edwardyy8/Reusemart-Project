@@ -15,6 +15,7 @@ class RequestDonasiController extends Controller
     {
         try {
             $organisasi = $request->user();
+    
 
             if (!$organisasi) {
                 return response()->json([
@@ -22,6 +23,7 @@ class RequestDonasiController extends Controller
                 ], 401);
             }
 
+    
             $requestDonasi = Request_Donasi::with('donasi')
                 ->where('id_organisasi', $organisasi->id_organisasi)
                 ->get();
