@@ -231,4 +231,3 @@ const KelolaOrganisasiPage = () => {
 };
 
 export default KelolaOrganisasiPage;
-
