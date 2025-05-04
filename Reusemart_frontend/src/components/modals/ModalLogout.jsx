@@ -26,7 +26,7 @@ const ModalLogout = () => {
             toast.success("Berhasil logout.");
             setTimeout(() => {
                 navigate(0);
-            }, 800);
+            }, 600);
              
         } catch (error) {
             toast.error(error.message);

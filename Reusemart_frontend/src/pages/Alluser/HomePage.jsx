@@ -46,7 +46,7 @@ const HomePage = () => {
             <Container className="mt-4 mb-5">
                 <div className="d-flex justify-content-center align-items-center flex-column">
                     <img src={reusemart} alt="ReuseMart" />
-                    <h1 className="hijau">Letak slogan aja la di sini we tp gatau slogan apa wkwkkwk</h1>
+                    <h1 className="hijau">🌿 Gaya Hidup Baru, Barang Tak Harus Baru. 🔁</h1>
                 </div>
                 
             </Container>

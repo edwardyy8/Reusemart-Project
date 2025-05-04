@@ -17,6 +17,7 @@ use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\RincianPemesananController;
 use App\Http\Controllers\AlamatController;
+use App\Http\Controllers\DiskusiController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -51,6 +52,7 @@ Route::post('/reset-password', [NewPasswordController::class, 'store']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/getrole', [AuthController::class, 'getRole']);
+    Route::post('tambahDiskusi', [DiskusiController::class, 'tambahDiskusi']);
 });
 
 
@@ -117,3 +119,5 @@ Route::middleware('auth:pembeli')->group(function () {
     Route::post('tambahAlamat', [AlamatController::class, 'tambahAlamat']);
     
 });
+
+Route::get('/getDiskusiByIdBarang/{id}', [DiskusiController::class, 'getDiskusiByIdBarang']);

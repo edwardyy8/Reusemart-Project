@@ -139,7 +139,7 @@ const ProfilePenitipPage = () => {
               disabled
             />
             <h6 className="mt-2 mb-4 text-primary">
-                Ubah password? <Link to="/resetPassword">Klik Disini!</Link>
+                Ubah password? <Link to="/lupaPassword">Klik Disini!</Link>
             </h6>
             <h6 className="text-muted">Karena kebijakan privasi kami, peran Anda tidak mengizinkan perubahan profil secara mandiri. Silakan kunjungi kantor kami jika ingin memperbarui data pribadi.</h6>
           </Container>
