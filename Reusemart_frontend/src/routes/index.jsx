@@ -40,11 +40,16 @@ import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
 import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
 
 import ProfilePembeliPage from "../pages/pembeli/ProfilePembeliPage";
+import EditAlamatPage from "../pages/pembeli/EditAlamatPage";
+import TambahAlamatPage from "../pages/pembeli/TambahAlamatPage";
 
 
 
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProtectedFromPegawai from "./ProtectedFromPegawai";
+import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
+import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
+import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
 
 const router = createBrowserRouter([
@@ -203,6 +208,10 @@ const router = createBrowserRouter([
             element: <EditJabatanPage />,
           },
           {
+            path: "",
+            element: <KelolaOrganisasiPage />,
+          },
+          {
             path: "kelolaOrganisasi",
             element: <KelolaOrganisasiPage />,
           },
@@ -224,7 +233,41 @@ const router = createBrowserRouter([
           {
             path: "profile",
             element: <ProfilePembeliPage />,
+          },
+          {
+            path: "editAlamat/:id",
+            element: <EditAlamatPage />,
+          },
+          {
+            path: "tambahAlamat",
+            element: <TambahAlamatPage />,
           }
+        ],
+      },
+      {
+        path: "/organisasi",
+        element: (
+          <ProtectedRoutes allowedRoles={['organisasi']}>
+            <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "",
+            element: <OrganisasiPage />,
+          },
+          {
+            path: "organisasiPage",
+            element: <OrganisasiPage />,
+          },
+          {
+            path: "organisasiPage/tambahRequest",
+            element: <CreateRequestPage />,
+          },
+          {
+            path: "organisasiPage/editRequest/:id",
+            element: <EditRequestPage />,
+          },
         ],
       },
                                    
