@@ -1,54 +1,103 @@
-import { Container, Tab, Tabs, Card, Spinner, Alert, Row, Col, Button } from "react-bootstrap";
+import { Container, Tab, Tabs, Card, Spinner, Alert, Row, Col, Button, Badge, Form } from "react-bootstrap";
 import reusemart from "../../assets/images/titlereuse.png";
 import { getProfileData } from "../../api/apiPembeli";
 import { GetPemesananByIdPembeli } from "../../api/apiPemesanan";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import InputFloatingForm from "../../components/forms/InputFloatingForm";
+import { GetAlamatByIdPembeli } from "../../api/apiAlamat";
+
+import { toast } from "react-toastify";
+import ModalDeleteAlm from "../../components/modals/alamat/ModalDeleteAlm";
+import { FaSearch } from "react-icons/fa";
 
 
 const ProfilePembeliPage = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [activeKey, setActiveKey] = useState('profil');
+
     const [profileData, setProfileData] = useState(null);
     const [pembelianData, setPembelianData] = useState([]);
+    const [alamatData, setAlamatData] = useState([]);
     
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [loadingAlm, setLoadingAlm] = useState(true);
+
+    const [searchAlamat, setSearchAlamat] = useState("");
+    const [filteredAlamat, setFilteredAlamat] = useState([]);
 
     const fetchProfile = async () => {
-        try {
-          setLoading(true);
-          const profile = await getProfileData();
-          
-          setProfileData(profile);
-          if (!profile) {
-            return (
-              <Container className="mt-5 text-center">
-                <Alert variant="warning">Data tidak ditemukan</Alert>
-              </Container>
-            );
-          }
-
-          const pembelian = await GetPemesananByIdPembeli(profile.id_pembeli);
-          if (!pembelian) {
-            return (
-              <Container className="mt-5 text-center">
-                <Alert variant="warning">Data pembelian tidak ditemukan</Alert>
-              </Container>
-            );
-          }
-          setPembelianData(pembelian.data);
-          
-        } catch (err) {
-          console.log(err);
-          setError(err?.response?.data?.message || err.message || "Gagal memuat data");
-        } finally {
-          setLoading(false);
+      try {
+        setLoading(true);
+        const profile = await getProfileData();
+        
+        setProfileData(profile);
+        if (!profile) {
+          return (
+            <Container className="mt-5 text-center">
+              <Alert variant="warning">Data tidak ditemukan</Alert>
+            </Container>
+          );
         }
+
+        const pembelian = await GetPemesananByIdPembeli(profile.id_pembeli);
+        if (!pembelian) {
+          return (
+            <Container className="mt-5 text-center">
+              <Alert variant="warning">Data pembelian tidak ditemukan</Alert>
+            </Container>
+          );
+        }
+        setPembelianData(pembelian.data);
+        
+      } catch (err) {
+        console.log(err);
+        setError(err?.response?.data?.message || err.message || "Gagal memuat data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchAlamat = async () => {
+      try {
+        setLoadingAlm(true);
+
+        const alamat = await GetAlamatByIdPembeli(profileData.id_pembeli);
+        if (!alamat) {
+          return (
+            <Container className="mt-5 text-center">
+              <Alert variant="warning">Data Alamat tidak ditemukan</Alert>
+            </Container>
+          );
+        }
+        setAlamatData(alamat.data);
+      } catch (err) {
+        console.log(err);
+        setError(err?.response?.data?.message || err.message || "Gagal memuat data");
+      } finally {
+        setLoadingAlm(false);
+      }
     };
 
     useEffect(() => {
-        fetchProfile();
+      const params = new URLSearchParams(location.search);
+      const tabParam = params.get('tab');
+      if (tabParam) {
+        setActiveKey(tabParam);
+      }
+    }, [location.search]);
+
+    useEffect(() => {
+      fetchProfile();
     }, []);
+
+    useEffect(() => {
+      if(!profileData) return;
+
+      fetchAlamat();
+    }, [profileData]);
 
     const formatTanpaDetik = (tanggal) => {
         const date = new Date(tanggal);
@@ -59,6 +108,20 @@ const ProfilePembeliPage = () => {
         const menit = String(date.getMinutes()).padStart(2, '0');
       
         return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
+    };
+    
+    const handleSearchAlamatChange = (e) => {
+      e.preventDefault();
+
+      const keyword = e.target.value;
+      setSearchAlamat(keyword);
+      
+      const filtered = alamatData.filter((alm) =>
+        alm.nama_penerima.toLowerCase().includes(keyword.toLowerCase()) ||
+        alm.label_alamat.toLowerCase().includes(keyword.toLowerCase())
+      );
+      
+      setFilteredAlamat(filtered);
     };
 
     if (loading) { 
@@ -106,8 +169,8 @@ const ProfilePembeliPage = () => {
             <p className="text-muted mb-1">Poin Reward</p>
           </Container>
     
-          <Tabs defaultActiveKey="profil" className="mb-4 justify-content-center custom-tabs" fill>
-          <Tab eventKey="pembelian" title="Pembelian Saya">
+          <Tabs activeKey={activeKey} onSelect={(k) => setActiveKey(k)} className="mb-4 justify-content-center custom-tabs" fill>
+          <Tab eventKey="pembelian" title="Pembelian Saya" >
               {pembelianData.length > 0 ? (
                 <Row className="g-3">
                   {pembelianData.map((item, idx) => (
@@ -182,31 +245,97 @@ const ProfilePembeliPage = () => {
               </Container>
             </Tab>
     
-            <Tab eventKey="barang" title="Barang Saya">
-              {/* {barangData.length > 0 ? (
-                <Row className="g-3">
-                  {barangData.map((barang, idx) => (
-                    <Col md={4} key={idx}>
-                      <Card className="h-100">
-                        <Card.Body>
-                          <Card.Text>
-                            ID Titipan: {barang.id_penitipan}
-                            <br />
-                            Tanggal Titip: {barang.tanggal_masuk}
-                          </Card.Text>
-                          <Card.Text>
-                            {barang.nama_barang}
-                            <br />
-                            Status barang: {barang.status_barang}
-                          </Card.Text>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
-              ) : (
-                <Alert className="text-center" variant="warning">Belum Ada Titipan :(</Alert>
-              )} */}
+            <Tab eventKey="alamat" title="Alamat Saya">
+              {loadingAlm ? (
+                  <Container style={{  
+                    minHeight: "100vh", 
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                    }}>
+                      <div className="text-center">
+                        <Spinner
+                            as="span"
+                            animation="border"
+                            variant="success"
+                            size="lg"
+                            role="status"
+                            aria-hidden="true"
+                        />
+                        <p className="mb-0">Loading...</p>
+                      </div>
+                  </Container>
+                ) : (
+                  <>
+                    <div className="d-flex flex-row mb-3">
+                      {/* Search barnya */}
+                      <Form className="d-flex my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }} onSubmit={(e) => e.preventDefault()} >
+                        <Button
+                            type="submit"
+                            variant="link"
+                            className="hijau position-absolute start-0 top-50 translate-middle-y bg-transparent border-0"
+                            style={{
+                                transform: 'translateY(-50%)',
+                                padding: '0.375rem 0.75rem',
+                                zIndex: 2
+                            }}
+                            onClick={(e) => e.preventDefault()}
+                        >
+                            <FaSearch />
+                        </Button>
+                        <Form.Control
+                          type="search"
+                          placeholder="Cari nama alamat"
+                          value={searchAlamat}
+                          onChange={handleSearchAlamatChange}
+                          className="ps-5"
+                          aria-label="Search"
+                          style={{
+                            paddingLeft: '2.5rem',
+                            borderColor: 'rgba(83, 83, 83, 1)',
+                          }}
+                        />
+                      </Form>
+                      <Button className="btnHijau ms-3" onClick={() => navigate("/pembeli/tambahAlamat")}>
+                        Tambah Alamat
+                      </Button>
+                    </div>
+                    {(searchAlamat === "" ? alamatData : filteredAlamat).length > 0 ? (
+                      <Row className="g-3 mb-5">
+                        {(searchAlamat === "" ? alamatData : filteredAlamat).map((alamat, idx) => (
+                          <Col md={12} sm={12} xs={12} lg={12} key={idx}>
+                            <Card className="h-100 w-100">
+                              <Card.Body>
+                                <div className="d-flex mb-0 justify-content-between align-items-center">
+                                  <div className="d-flex flex-row">
+                                    <p className="h5 fw-bold me-2 mb-0">{alamat.nama_penerima}</p>
+                                    <p className="text-muted mb-0">({alamat.label_alamat})</p>
+                                  </div>
+                                  {alamat.is_default ? ( 
+                                      <Badge className="ms-2 p-2 defaultBadge"><p className="mb-0 h6">Default</p></Badge>
+                                    ) : null
+                                  }
+                                </div>
+                                <div className="mt-1">
+                                  <p className="text-muted mb-0">{alamat.no_hp}</p>
+                                  <p className="text-muted mb-0">{alamat.nama_alamat}</p>
+                                </div>
+                              </Card.Body>
+                              <Card.Footer className="d-flex justify-content-end align-items-center">
+                                <ModalDeleteAlm alamat={alamat} onClose={fetchAlamat} />
+                                <Button className="w-0" variant="primary" onClick={() => navigate(`/pembeli/editAlamat/${alamat.id_alamat}`)}> 
+                                  Edit
+                                </Button>
+                              </Card.Footer>
+                            </Card>
+                          </Col>
+                        ))}
+                      </Row>
+                    ) : (
+                      <Alert className="text-center" variant="warning">Data Alamat Tidak Ditemukan / Belum Ada :(</Alert>
+                    )}
+                  </>
+                )}
             </Tab>
           </Tabs>
         </Container>

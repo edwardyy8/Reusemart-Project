@@ -2,13 +2,21 @@ import { Modal, Button, Spinner } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { DeletePegawai } from "../../../api/apiPegawai";
+import { DeletePegawai } from "../../../api/apiPegawai"; // pastikan path-nya sesuai
 
 const ModalDeletePegawai = ({ pegawai, onClose }) => {
     const [show, setShow] = useState(false);
     const [isPending, setIsPending] = useState(false);
 
-    const handleClose = () => setShow(false);
+    const handleClose = () => {
+        setShow(false);
+        onClose();
+    };
+
+    const handleBatal = () => {
+        setShow(false);
+    };
+
     const handleShow = () => setShow(true);
 
     const handleDelete = async () => {
@@ -17,9 +25,8 @@ const ModalDeletePegawai = ({ pegawai, onClose }) => {
             await DeletePegawai(pegawai.id_pegawai);
             toast.success("Berhasil menghapus pegawai.");
             handleClose();
-            onClose();
         } catch (error) {
-            toast.error(error.message);
+            toast.error(error.message || "Gagal menghapus pegawai.");
         } finally {
             setIsPending(false);
         }
@@ -27,29 +34,45 @@ const ModalDeletePegawai = ({ pegawai, onClose }) => {
 
     return (
         <>
-            <Button variant="danger" onClick={handleShow}>
+            <Button variant="danger" className="shadow-sm" onClick={handleShow}>
                 <FaTrash size={20} />
             </Button>
 
-            <Modal show={show} onHide={handleClose} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Hapus Data Pegawai</Modal.Title>
+            <Modal size="lg" show={show} onHide={handleClose} centered>
+                <Modal.Header className="boxHijau" closeButton>
+                    <Modal.Title className="ms-3">Hapus Data Pegawai</Modal.Title>
                 </Modal.Header>
+
                 <Modal.Body>
-                    <p>Apakah Anda yakin ingin menghapus pegawai ini?</p>
-                    <h4>{pegawai.nama_pegawai}</h4>
+                    <div className="p-3">
+                        <h5>Apakah Anda yakin ingin menghapus pegawai ini?</h5>
+                        <h4 className="fw-bold">{pegawai.nama}</h4>
+                    </div>
                 </Modal.Body>
+
                 <Modal.Footer>
-                    <Button variant="danger" onClick={handleDelete} disabled={isPending}>
+                    <Button 
+                        variant="danger"
+                        onClick={handleDelete}
+                        disabled={isPending}
+                    >
                         {isPending ? (
                             <>
-                                <Spinner as="span" animation="grow" size="sm" /> Loading...
+                                <Spinner
+                                    as="span"
+                                    animation="grow"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                />{" "}
+                                Loading...
                             </>
                         ) : (
-                            "Ya"
+                            <span>Ya</span>
                         )}
                     </Button>
-                    <Button variant="secondary" onClick={handleClose}>
+
+                    <Button variant="secondary" onClick={handleBatal}>
                         Batal
                     </Button>
                 </Modal.Footer>

@@ -40,7 +40,7 @@ const ModalDeleteOrg = ({ organisasi, onClose }) => {
                 <FaTrash size={20} />
             </Button>
 
-            <Modal size="lg" show={show} onHide={handleClose} centered>
+            <Modal size="lg" show={show} onHide={handleBatal} centered>
                 <Modal.Header className="boxHijau" closeButton>
                     <Modal.Title className="ms-3">Hapus Data Organisasi</Modal.Title>
                 </Modal.Header>

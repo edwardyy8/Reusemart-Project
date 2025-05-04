@@ -1,51 +1,67 @@
-import useAxios from ".";
 import axios from "axios";
 
-const getFotoPegawai = async (filename) => {
-    try {
-        const response = await useAxios.get(`/pegawai/foto-profile/${filename}`, {
-            headers: {
-                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-            responseType: "blob",
-        });
-        return response.data;
-    } catch (error) {
-        throw error.response.data;
-    }
-} 
+axios.defaults.baseURL = "http://localhost:8000/api";
 
-export {getFotoPegawai}; 
-
+// Ambil semua pegawai
 export const GetAllPegawai = async () => {
     try {
-        const response = await axios.get("/getAllPegawai", {
+        const response = await axios.get("/pegawai", {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
         return response.data;
     } catch (error) {
-        throw error.response.data;
+        throw error.response?.data || { message: "Gagal mengambil data pegawai." };
     }
 };
 
-export const DeletePegawai = async (id) => {
+// Hapus pegawai
+export const DeletePegawai = async (id_pegawai) => {
     try {
-        const response = await axios.delete(`/deletePegawai/${id}`, {
+        const response = await axios.delete(`/deletePegawai/${id_pegawai}`, {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
         return response.data;
     } catch (error) {
-        throw error.response.data;
+        throw error.response?.data || { message: "Gagal menghapus data pegawai." };
     }
 };
 
-export const EditPegawai = async (id, data) => {
+// Tambah pegawai
+export const tambahPegawai = async (data) => {
     try {
-        const response = await axios.post(`/editPegawai/${id}`, data, {
+        const token = sessionStorage.getItem("token");
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+
+        // Cek jika foto_pegawai ada, append ke FormData
+        if (data.foto_pegawai) {
+            formData.append('foto_pegawai', data.foto_pegawai);
+        }
+
+        const response = await axios.post("/tambahPegawai", formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data", // Tentukan tipe konten sebagai multipart/form-data
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: "Gagal menambah data pegawai." };
+    }
+};
+
+
+// Edit pegawai
+export const editPegawai = async (id, data) => {
+    try {
+        const response = await axios.post(`/updatePegawai/${id}`, data, {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
@@ -56,7 +72,8 @@ export const EditPegawai = async (id, data) => {
     }
 };
 
-export const GetPegawaiByid = async (id) => {
+// Ambil pegawai berdasarkan ID
+export const GetPegawaiById = async (id) => {
     try {
         const response = await axios.get(`/getPegawai/${id}`, {
             headers: {
@@ -65,6 +82,21 @@ export const GetPegawaiByid = async (id) => {
         });
         return response.data;
     } catch (error) {
-        throw error.response.data;
+        throw error.response?.data || { message: "Gagal mengambil data pegawai." };
+    }
+};
+
+// Ambil foto profil pegawai
+export const getFotoPegawai = async (filename) => {
+    try {
+        const response = await axios.get(`/pegawai/foto-profile/${filename}`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+            responseType: "blob",
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: "Gagal mengambil foto pegawai." };
     }
 };

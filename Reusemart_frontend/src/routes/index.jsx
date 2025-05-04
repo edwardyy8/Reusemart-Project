@@ -28,6 +28,7 @@ import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
 
 import KelolaPegawaiPage from "../pages/AllPegawai/Admin/kelolaPegawaiPage";
 import EditPegawaiPage from "../pages/AllPegawai/Admin/EditPegawaiPage";
+import TambahPegawaiPage from "../pages/AllPegawai/Admin/TambahPegawaiPage";
 
 import KelolaJabatanPage from "../pages/AllPegawai/Admin/kelolaJabatanPage";
 import EditJabatanPage from "../pages/AllPegawai/Admin/EditJabatanPage";
@@ -188,6 +189,10 @@ const router = createBrowserRouter([
           {
             path: "kelolaPegawai/:id",
             element: <EditPegawaiPage />,
+          },
+          {
+            path: "kelolaPegawai/tambahPegawai",
+            element: <TambahPegawaiPage />,
           },
           {
             path: "kelolaJabatan",
