@@ -129,3 +129,5 @@ Route::middleware('auth:pembeli')->group(function () {
     Route::post('tambahAlamat', [AlamatController::class, 'tambahAlamat']);
     
 });
+
+Route::get('/getPemesananByIdPemesanan/{id}', [PemesananController::class, 'getPemesananByIdPemesanan']);

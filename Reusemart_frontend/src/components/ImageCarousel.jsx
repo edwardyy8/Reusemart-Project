@@ -5,7 +5,7 @@ const ImageCarousel = ({ images }) => {
     <Carousel>
       {images?.map((image, index) => (
         <Carousel.Item key={index}>
-          <img className="d-block w-100" src={image.img} alt={image.title} />
+          <img className="d-block w-100" src={image.img} alt={image.title} style={{height:'720px', objectFit: 'cover'}} />
           <Carousel.Caption>
             {/* <h3 className="d-none d-md-block">{image.title}</h3>
             <p className="d-none d-md-block">{image.description}</p> */}

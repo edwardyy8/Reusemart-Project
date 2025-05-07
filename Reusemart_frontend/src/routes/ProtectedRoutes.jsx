@@ -50,7 +50,8 @@ const ProtectedRoutes = ({ allowedRoles, children, allowedJabatan }) => {
         }
 
         if (res.user_type && (allowedRoles && allowedRoles.includes(res.user_type))) {
-          navigate(`/${res.user_type}/profile`);
+          // navigate(`/${res.user_type}/profile`);
+          return;
         }
 
       } catch (err) { 

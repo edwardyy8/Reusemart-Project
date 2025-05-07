@@ -1,9 +1,10 @@
-import { Container, Tab, Tabs, Card, Spinner, Alert, Button } from "react-bootstrap";
+import { Container, Tab, Tabs, Card, Spinner, Alert, Button, Row, Col } from "react-bootstrap";
 import reusemart from "../../assets/images/titlereuse.png";
 import { getProfileData} from "../../api/apiPenitip";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import InputFloatingForm from "../../components/forms/InputFloatingForm";
+import { GetPenjualanByIdPenitip } from "../../api/apiPenjualan";
 
 const ProfilePenitipPage = () => {
   const navigate = useNavigate();
@@ -20,7 +21,6 @@ const ProfilePenitipPage = () => {
     try {
       setLoading(true);
       const profile = await getProfileData();
-      // const penjualan = await getPenjualanSaya();
       // const barang = await getBarangSaya();
       setProfileData(profile);
       if (!profile) {
@@ -30,7 +30,24 @@ const ProfilePenitipPage = () => {
           </Container>
         );
       }
-      // setPenjualanData(penjualan);
+      const penjualan = await GetPenjualanByIdPenitip(profile.id_penitip);
+      if (!penjualan) {
+        return (
+          <Container className="mt-5 text-center">
+            <Alert variant="warning">Data tidak ditemukan</Alert>
+          </Container>
+        );
+      }
+      setPenjualanData(penjualan);
+      console.log(penjualan);
+      
+      // if (!barang) {
+      //   return (
+      //     <Container className="mt-5 text-center">
+      //       <Alert variant="warning">Data tidak ditemukan</Alert>
+      //     </Container>
+      //   );
+      // }
       // setBarangData(barang);
     } catch (err) {
       console.log(err);
@@ -40,7 +57,6 @@ const ProfilePenitipPage = () => {
     }
   };
 
-  //buat tabsnya
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tabParam = params.get('tab');
@@ -52,6 +68,17 @@ const ProfilePenitipPage = () => {
   useEffect(() => {
     fetchProfile();
   }, []);
+
+  const formatTanpaDetik = (tanggal) => {
+    const date = new Date(tanggal);
+    const tahun = date.getFullYear();
+    const bulan = String(date.getMonth() + 1).padStart(2, '0');
+    const hari = String(date.getDate()).padStart(2, '0');
+    const jam = String(date.getHours()).padStart(2, '0');
+    const menit = String(date.getMinutes()).padStart(2, '0');
+  
+    return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
+};
 
   if (loading) {
     return (
@@ -96,18 +123,37 @@ const ProfilePenitipPage = () => {
           {penjualanData.length > 0 ? (
             <Row className="g-3">
               {penjualanData.map((item, idx) => (
-                <Col md={4} key={idx}>
-                  <Card className="h-100">
-                    <Card.Body>
-                      <Card.Title>{item.nama_produk}</Card.Title>
-                      <Card.Text>
-                        Jumlah Terjual: {item.jumlah_terjual}
-                        <br />
-                        Harga: Rp {item.harga}
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
+                <Col md={12} sm={12} xs={12} lg={12} key={idx} className="mb-3 px-5 d-flex justify-content-center">
+                <Card className="h-100 w-100">
+                  <Card.Body>
+                    <Card.Title className="border-bottom">
+                      <h5>ID Order : {item.id_pemesanan}</h5>
+                      <p className="text-muted h6">Tanggal Order : {formatTanpaDetik(item.pemesanan.tanggal_pemesanan)}</p>
+                    </Card.Title>
+                    <Card.Text>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="">
+                          Nama Barang : {item.barang.nama_barang}
+                          <br />
+                          Status Order : {item.pemesanan.status_pengiriman}
+                        </div>
+                        <div>
+                          <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.rincian_pemesanan?.[0].barang?.[0].foto_barang}`} 
+                                alt="Foto Barang" 
+                                height={100}
+                                className="rounded-2"/>
+                        </div>
+                      </div>
+                    </Card.Text>
+                    
+                  </Card.Body>
+                  <Card.Footer className="">
+                      <Button className="w-100" variant="outline-secondary" onClick={() => navigate(`/penitip/detailPenjualan/${item.id_rincianpemesanan}`)}> 
+                          Lihat Detail
+                      </Button>
+                  </Card.Footer>
+                </Card>
+              </Col>
               ))}
             </Row>
           ) : (

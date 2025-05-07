@@ -26,3 +26,17 @@ export const GetPemesananById = async (id) => {
         throw error.response.data;
     }
 }
+
+export const GetPemesananByIdPemesanan = async (id) => {
+    try {
+        const response = await useAxios.get(`/getPemesananByIdPemesanan/${id}`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}
