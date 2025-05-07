@@ -17,7 +17,7 @@ class Pegawai extends Authenticatable
 
     protected $primaryKey = 'id_pegawai';
 
-    protected $keyType = 'string'; 
+    protected $keyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
@@ -27,8 +27,8 @@ class Pegawai extends Authenticatable
         'email',
         'password',
         'foto_profile',
-        'tanggal_lahir',   
-        'createdAt' 
+        'tanggal_lahir',
+        'createdAt'
     ];
 
     public function getUserType() {
@@ -50,7 +50,7 @@ class Pegawai extends Authenticatable
     }
 
     public function penitipanHunter(){
-        return $this->hasMany(Penitipan::class, 'id_hunter');  
+        return $this->hasMany(Penitipan::class, 'id_hunter');
     }
 
     public function penitipanQC() {

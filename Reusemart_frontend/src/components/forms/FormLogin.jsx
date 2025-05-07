@@ -42,12 +42,12 @@ const FormLogin = () => {
           navigate(`/${res.user_type}/${res.jabatan}`);
           setTimeout(() => {
             navigate(0);
-          }, 1000);
+          }, 800);
         }else{
           navigate(`/${res.user_type}/profile`);
           setTimeout(() => {
             navigate(0);
-          }, 1000);
+          }, 800);
         }
         
       })

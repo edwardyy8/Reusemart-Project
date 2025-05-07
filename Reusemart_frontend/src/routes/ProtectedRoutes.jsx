@@ -39,7 +39,7 @@ const ProtectedRoutes = ({ allowedRoles, children, allowedJabatan }) => {
           }
 
           if (res.user_type && (allowedJabatan && allowedJabatan.includes(jabatanData.jabatan))) {
-            navigate(`/${res.user_type}/${jabatanData.jabatan}`);
+            // navigate(`/${res.user_type}/${jabatanData.jabatan}`);
             return;
           }
         }

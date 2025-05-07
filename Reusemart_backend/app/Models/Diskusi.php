@@ -15,10 +15,8 @@ class Diskusi extends Model
     protected $fillable = [
         'id_diskusi',
         'id_barang',
-        'id_penitip',
         'id_pembeli',
         'id_pegawai',
-        'id_organisasi',
         'komentar',
         'tanggal_diskusi',
     ];
@@ -31,16 +29,6 @@ class Diskusi extends Model
     public function pembeli()
     {
         return $this->belongsTo(Pembeli::class, 'id_pembeli');
-    }
-
-    public function penitip()
-    {
-        return $this->belongsTo(Penitip::class, 'id_penitip');
-    }
-
-    public function organisasi()
-    {
-        return $this->belongsTo(Organisasi::class, 'id_organisasi');
     }
 
     public function pegawai()

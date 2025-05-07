@@ -19,13 +19,20 @@ const DonationPage = () => {
     const [itemsPerPage] = useState(5); 
 
     const getPaginatedData = () => {
-        const dates = Object.keys(donasis);
+        const uniqueDonasis = Object.keys(donasis).reduce((result, date) => {
+            // Mengeliminasi duplikasi berdasarkan nama_barang pada setiap tanggal
+            result[date] = Array.from(new Set(donasis[date].map(donasi => donasi.nama_barang)))
+                                .map(nome => donasis[date].find(donasi => donasi.nama_barang === nome));
+            return result;
+        }, {});
+
+        const dates = Object.keys(uniqueDonasis);
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const paginatedDates = dates.slice(startIndex, endIndex);
         
         return paginatedDates.reduce((result, date) => {
-            result[date] = donasis[date];
+            result[date] = uniqueDonasis[date];
             return result;
         }, {});
     };
@@ -57,9 +64,9 @@ const DonationPage = () => {
         });
     };
 
-      useEffect(() => {
+    useEffect(() => {
         fetchDonasis();
-      }, []);
+    }, []);
 
     const navigate = useNavigate();
 
@@ -75,7 +82,7 @@ const DonationPage = () => {
             <Container fluid className="px-5 mb-5" >
                 
                 {isLoading ? (
-                    <div className="text-center">
+                    <div className="text-center d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
                         <Spinner
                             as="span"
                             animation="border"
@@ -159,4 +166,3 @@ const DonationPage = () => {
 };
 
 export default DonationPage;
-

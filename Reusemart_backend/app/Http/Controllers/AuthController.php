@@ -128,7 +128,7 @@ class AuthController extends Controller
                 $token = $user->createToken('Authentication Token')->plainTextToken;
               
                 return response([
-                    'message' => 'Selamat datang, ' . ($user->nama_penitip ?? $user->nama_organisasi ?? $user->nama),
+                    'message' => 'Selamat datang, ' . ($user->nama),
                     'token' => $token,
                     'user_type' => $type,
                     'jabatan' => $user->jabatan->nama_jabatan ?? null,
@@ -191,22 +191,25 @@ class AuthController extends Controller
         }
     }
 
-    public function resetPassPegawai (Request $request)
+    public function resetPassPegawai ($id_pegawai)
     {
-        $request->validate([
-            'id_pegawai' => 'required|exists:pegawai,id_pegawai',
-        ]);
+        try {
+            $pegawai = Pegawai::where('id_pegawai', $id_pegawai)->first();
 
-        $pegawai = Pegawai::where('id_pegawai', $request->id_pegawai)->first();
+            if (!$pegawai) {
+                return response(['message' => 'Pegawai tidak ditemukan'], 404);
+            }
 
-        if (!$pegawai) {
-            return response(['message' => 'Pegawai tidak ditemukan'], 404);
+            $pegawai->password = Hash::make($pegawai->tanggal_lahir);
+            $pegawai->save();
+
+            return response(['message' => 'Password berhasil diubah'], 200);
+        } catch (\Exception $e) {
+            return response([
+                'message' => 'Gagal mengubah password', 
+                'error' => $e->getMessage()
+            ], status: 401);
         }
-
-        $pegawai->password = Hash::make($pegawai->tanggal_lahir);
-        $pegawai->save();
-
-        return response(['message' => 'Password berhasil diubah']);
     }
 
 }

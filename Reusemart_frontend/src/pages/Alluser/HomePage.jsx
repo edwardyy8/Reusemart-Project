@@ -50,8 +50,9 @@ const HomePage = () => {
             
             
                 <div className="d-flex justify-content-center align-items-center flex-column">
-                    <img src={carou2} alt="gambar kategori" />
-                    
+
+                    <img src={carou2} alt="gambar kategori" /> 
+
                 </div>
                 <div className="d-flex justify-content-center align-items-center flex-column">
                     <img src={carou3} alt="gambar kategori" />

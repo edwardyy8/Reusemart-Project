@@ -16,16 +16,18 @@ class RequestDonasiController extends Controller
         try {
             $organisasi = $request->user();
     
+
             if (!$organisasi) {
                 return response()->json([
                     'message' => 'Unauthorized',
                 ], 401);
             }
+
     
             $requestDonasi = Request_Donasi::with('donasi')
                 ->where('id_organisasi', $organisasi->id_organisasi)
                 ->get();
-    
+
             return response()->json([
                 'message' => 'Request donasi retrieved',
                 'status' => 'success',
@@ -115,7 +117,4 @@ class RequestDonasiController extends Controller
             'data' => $req,
         ]);
     }
-
-
-
 }

@@ -239,7 +239,7 @@ const ProfilePembeliPage = () => {
                   disabled
                 />
                 <h6 className="mt-2 mb-4 text-primary">
-                    Ubah password? <Link to="/resetPassword">Klik Disini!</Link>
+                    Ubah password? <Link to="/lupaPassword">Klik Disini!</Link>
                 </h6>
                 <h6 className="text-muted">Karena kebijakan privasi kami, peran Anda tidak mengizinkan perubahan profil secara mandiri. Silakan kunjungi kantor kami jika ingin memperbarui data pribadi.</h6>
               </Container>
@@ -269,7 +269,7 @@ const ProfilePembeliPage = () => {
                   <>
                     <div className="d-flex flex-row mb-3">
                       {/* Search barnya */}
-                      <Form className="d-flex my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }} onSubmit={(e) => e.preventDefault()} >
+                      <Form className="d-flex my-2 my-lg-0 position-relative w-100" style={{ minWidth: "300px" }} onSubmit={(e) => e.preventDefault()} >
                         <Button
                             type="submit"
                             variant="link"
@@ -285,10 +285,10 @@ const ProfilePembeliPage = () => {
                         </Button>
                         <Form.Control
                           type="search"
-                          placeholder="Cari nama alamat"
+                          placeholder="Cari label alamat atau nama penerima..."
                           value={searchAlamat}
                           onChange={handleSearchAlamatChange}
-                          className="ps-5"
+                          className="ps-5 "
                           aria-label="Search"
                           style={{
                             paddingLeft: '2.5rem',
@@ -297,7 +297,7 @@ const ProfilePembeliPage = () => {
                         />
                       </Form>
                       <Button className="btnHijau ms-3" onClick={() => navigate("/pembeli/tambahAlamat")}>
-                        Tambah Alamat
+                        +Tambah
                       </Button>
                     </div>
                     {(searchAlamat === "" ? alamatData : filteredAlamat).length > 0 ? (
