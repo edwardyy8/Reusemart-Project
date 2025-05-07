@@ -10,7 +10,7 @@ const EditPegawaiPage = () => {
 
     // Menggunakan state untuk menyimpan data pegawai dan status loading
     const [pegawaiData, setPegawaiData] = useState({
-        nama_pegawai: "",
+        nama: "",
         email: "",
         id_jabatan: "",
         foto_profile: null,
@@ -61,7 +61,7 @@ const EditPegawaiPage = () => {
         try {
             const formData = new FormData();
             formData.append("_method", "POST");
-            formData.append("nama_pegawai", pegawaiData.nama_pegawai);
+            formData.append("nama", pegawaiData.nama);
             formData.append("email", pegawaiData.email);
             formData.append("id_jabatan", pegawaiData.id_jabatan); // Pastikan id_jabatan ada
             if (pegawaiData.foto_profile) {
@@ -112,8 +112,8 @@ const EditPegawaiPage = () => {
                         <Form.Label>Nama Pegawai</Form.Label>
                         <Form.Control
                             className="text-muted"
-                            name="nama_pegawai"
-                            value={pegawaiData.nama_pegawai}
+                            name="nama"
+                            value={pegawaiData.nama}
                             onChange={handleChange}
                         />
                     </Form.Group>

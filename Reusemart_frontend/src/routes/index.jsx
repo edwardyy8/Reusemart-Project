@@ -26,11 +26,11 @@ import DetailPenjualanPage from "../pages/penitip/DetailPenjualanPage";
 import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
 import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
 
-import KelolaPegawaiPage from "../pages/AllPegawai/Admin/kelolaPegawaiPage";
+import KelolaPegawaiPage from "../pages/AllPegawai/Admin/KelolaPegawaiPage";
 import EditPegawaiPage from "../pages/AllPegawai/Admin/EditPegawaiPage";
 import TambahPegawaiPage from "../pages/AllPegawai/Admin/TambahPegawaiPage";
 
-import KelolaJabatanPage from "../pages/AllPegawai/Admin/kelolaJabatanPage";
+import KelolaJabatanPage from "../pages/AllPegawai/Admin/KelolaJabatanPage";
 import EditJabatanPage from "../pages/AllPegawai/Admin/EditJabatanPage";
 
 import ManagePenitipPage from "../pages/AllPegawai/CS/ManagePenitipPage";
