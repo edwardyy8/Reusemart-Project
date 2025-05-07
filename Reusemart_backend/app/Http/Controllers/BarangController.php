@@ -10,8 +10,7 @@ class BarangController extends Controller
 {
     public function index()
     {
-        $barang = Barang::with('fotoBarang')
-            ->orderBy('tanggal_masuk', 'desc')
+        $barang = Barang::orderBy('tanggal_masuk', 'desc')
             ->get();
 
         return response()->json([
@@ -23,8 +22,7 @@ class BarangController extends Controller
 
     public function findBySubKategori($id_kategori)
     {
-        $barang = Barang::with('fotoBarang')
-            ->where('id_kategori', $id_kategori)
+        $barang = Barang::where('id_kategori', $id_kategori)
             ->get();
 
         if ($barang->isEmpty()) {
@@ -43,7 +41,7 @@ class BarangController extends Controller
 
     public function findByKategori($id_kategori)
     {
-        $query = Barang::with('fotoBarang');
+        $query = Barang::query();
 
         if ($id_kategori == 1) {
             $query->where('id_kategori', 'like', '1%')
@@ -70,7 +68,7 @@ class BarangController extends Controller
 
     public function show($id)
     {
-        $barang = Barang::with('fotoBarang')->find($id);
+        $barang = Barang::find($id);
 
         if (!$barang) {
             return response()->json([
