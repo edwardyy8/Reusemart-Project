@@ -202,7 +202,7 @@ const ProfilePembeliPage = () => {
                           
                         </Card.Body>
                         <Card.Footer className="">
-                            <Button className="w-100" variant="outline-secondary"> 
+                            <Button className="w-100" variant="outline-secondary" onClick={() => navigate(`/pembeli/detailPembelian/${item.id_pemesanan}`)}> 
                                 Lihat Detail
                             </Button>
                         </Card.Footer>
