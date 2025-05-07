@@ -128,7 +128,7 @@ const DetailBarangPage = () => {
 
   if (loading) {
     return (
-      <div className="text-center my-5 pt-5" style={{ marginTop: "5rem" }}>
+      <div className="text-center my-5" style={{ marginTop: "5rem" }}>
         <Spinner animation="border" variant="success" />
         <p>Loading Detail Barang...</p>
       </div>
@@ -137,7 +137,7 @@ const DetailBarangPage = () => {
 
   if (!barang) {
     return (
-      <Container className="text-center my-5 pt-5" style={{ marginTop: "5rem" }}>
+      <Container className="text-center my-5" style={{ marginTop: "5rem" }}>
         <h3>Barang tidak ditemukan</h3>
       </Container>
     );
@@ -149,7 +149,7 @@ const DetailBarangPage = () => {
 
   return (
     <>
-      <Container className="my-5 pt-5">
+      <Container className="my-5">
         <Row className="g-4">
           {/* Foto Utama */}
           <Col md={4}>

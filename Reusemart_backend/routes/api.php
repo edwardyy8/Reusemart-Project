@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Models\Organisasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarangController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\RincianPemesananController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\DiskusiController;
+use App\Http\Controllers\RequestDonasiController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -69,6 +71,21 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::post('/editOrganisasi/{id}', [OrganisasiController::class, 'editOrganisasi']);
         Route::get('/getOrganisasi/{id}', [OrganisasiController::class, 'getOrganisasi']);
 
+        Route::get('/pegawai', [PegawaiController::class, 'index']);
+        Route::post('/pegawai', action: [PegawaiController::class, 'store']);
+        Route::get('/getPegawai/{id}', [PegawaiController::class, 'getPegawai']);
+        Route::delete('/deletePegawai/{id}', [PegawaiController::class, 'deletePegawai']);
+        Route::post('/updatePegawai/{id}', [PegawaiController::class, 'updatePegawai']);
+        Route::post('/tambahPegawai', [PegawaiController::class, 'tambahPegawai']);
+        Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
+
+
+        Route::get('/getJabatan/{id}', [JabatanController::class, 'getJabatan']);
+        Route::get('/getAllJabatan', [JabatanController::class, 'getAllJabatan']);
+        Route::delete('/deleteJabatan/{id}', [JabatanController::class, 'deleteJabatan']);
+        Route::post('/editJabatan/{id}', [JabatanController::class, 'editJabatan']);
+        Route::get('/getJabatan/{id}', [JabatanController::class, 'getJabatan']);
+
     });
   
     Route::middleware(CekJabatan::class.':Customer Service')->group(function () {
@@ -88,6 +105,16 @@ Route::middleware('auth:penitip')->group(function () {
     Route::get('/getPemesananById/{id}', [PemesananController::class, 'getPemesananById']);
 
     
+});
+
+Route::middleware('auth:organisasi')->group(function () {
+    Route::get('/organisasi/organisasiPage', [OrganisasiController::class, 'getOrganisasiProfile']);
+    Route::get('/organisasi/request-donasi', [RequestDonasiController::class, 'indexByOrganisasi']);
+    Route::post('/request_donasi', action: [RequestDonasiController::class, 'store']);
+    Route::delete('/request_donasi/{id}', [RequestDonasiController::class, 'destroy']);
+    Route::get('/organisasi/request-donasi/{id}', [RequestDonasiController::class, 'show']);
+    Route::put('/request_donasi/{id}', [RequestDonasiController::class, 'update']);
+    Route::get('/organisasi', [OrganisasiController::class, 'index']);
 });
 
 Route::get('/penitip', [PenitipController::class, 'index']);

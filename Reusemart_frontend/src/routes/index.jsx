@@ -26,6 +26,12 @@ import DetailPenjualanPage from "../pages/penitip/DetailPenjualanPage";
 import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
 import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
 
+import KelolaPegawaiPage from "../pages/AllPegawai/Admin/kelolaPegawaiPage";
+import EditPegawaiPage from "../pages/AllPegawai/Admin/EditPegawaiPage";
+import TambahPegawaiPage from "../pages/AllPegawai/Admin/TambahPegawaiPage";
+
+import KelolaJabatanPage from "../pages/AllPegawai/Admin/kelolaJabatanPage";
+import EditJabatanPage from "../pages/AllPegawai/Admin/EditJabatanPage";
 
 import ManagePenitipPage from "../pages/AllPegawai/CS/ManagePenitipPage";
 import ClaimMerchandisePage from "../pages/AllPegawai/CS/ClaimMerchandisePage";
@@ -42,6 +48,9 @@ import TambahAlamatPage from "../pages/pembeli/TambahAlamatPage";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProtectedFromPegawai from "./ProtectedFromPegawai";
+import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
+import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
+import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
 
 const router = createBrowserRouter([
@@ -181,6 +190,30 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
+            element: <KelolaJabatanPage />,
+          },
+          {
+            path: "kelolaPegawai",
+            element: <KelolaPegawaiPage />,
+          },
+          {
+            path: "kelolaPegawai/:id",
+            element: <EditPegawaiPage />,
+          },
+          {
+            path: "kelolaPegawai/tambahPegawai",
+            element: <TambahPegawaiPage />,
+          },
+          {
+            path: "kelolaJabatan",
+            element: <KelolaJabatanPage />,
+          },
+          {
+            path: "kelolaJabatan/:id",
+            element: <EditJabatanPage />,
+          },
+          {
+            path: "",
             element: <KelolaOrganisasiPage />,
           },
           {
@@ -214,6 +247,32 @@ const router = createBrowserRouter([
             path: "tambahAlamat",
             element: <TambahAlamatPage />,
           }
+        ],
+      },
+      {
+        path: "/organisasi",
+        element: (
+          <ProtectedRoutes allowedRoles={['organisasi']}>
+            <Outlet />
+          </ProtectedRoutes>
+        ),
+        children: [
+          {
+            path: "",
+            element: <OrganisasiPage />,
+          },
+          {
+            path: "organisasiPage",
+            element: <OrganisasiPage />,
+          },
+          {
+            path: "organisasiPage/tambahRequest",
+            element: <CreateRequestPage />,
+          },
+          {
+            path: "organisasiPage/editRequest/:id",
+            element: <EditRequestPage />,
+          },
         ],
       },
                                    

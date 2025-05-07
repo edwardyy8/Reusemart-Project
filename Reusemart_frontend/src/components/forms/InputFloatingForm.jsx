@@ -23,7 +23,9 @@ const InputFloatingForm = (props) => {
             required={props.required}
             disabled={props.disabled}
             value={props.value}
-
+            as={props.as}
+            style={props.style}
+            rows={props.rows}
             // {...props} 
           />
           {isPassword && (

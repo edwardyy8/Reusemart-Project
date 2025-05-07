@@ -124,12 +124,18 @@ class PenitipController extends Controller
         $penitip->email = $request->email ?? $penitip->email;
     
         if ($request->hasFile('foto_ktp')) {
-            if ($penitip->foto_ktp && Storage::exists('public/' . $penitip->foto_ktp)) {
-                Storage::delete('public/' . $penitip->foto_ktp);
+            if ($penitip->foto_ktp) {
+                $oldPath = 'foto_ktp/' . $penitip->foto_ktp;
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
             }
 
-            $path = $request->file('foto_ktp')->store('foto_ktp', 'public');
-            $penitip->foto_ktp = $path;
+            $uploadFolder = 'foto_ktp';
+            $image = $request->file('foto_ktp');
+            $image_uploaded_path = $image->store($uploadFolder, 'public');
+            $fotoKtp = basename($image_uploaded_path);
+            $penitip->foto_ktp = $fotoKtp;
         }
 
         // if ($request->hasFile('foto_profile')) {
