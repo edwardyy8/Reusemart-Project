@@ -192,7 +192,7 @@ const ProfilePembeliPage = () => {
                                 Status Order : {item.status_pengiriman}
                               </div>
                               <div>
-                                <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.rincian_pemesanan[0].barang.foto_barang[0].foto_barang}`} 
+                                <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.rincian_pemesanan[0].barang.foto_barang}`} 
                                       alt="Foto Barang" 
                                       height={100}
                                       className="rounded-2"/>
