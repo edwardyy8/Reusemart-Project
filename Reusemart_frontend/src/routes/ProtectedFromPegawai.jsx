@@ -28,8 +28,12 @@ const ProtectedFromPegawai = ({ children }) => {
             setUserType(res.user_type);
 
             if(res.user_type === "pegawai"){
-                navigate("/tidaksah");
+              const jabatanData = await getJabatan();
+    
+              if (jabatanData.jabatan) {
+                navigate(`/${res.user_type}/${jabatanData.jabatan}`);
                 return;
+              }
             }
 
         } catch (err) { 

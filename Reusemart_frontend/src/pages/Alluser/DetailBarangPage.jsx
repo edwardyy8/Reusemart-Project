@@ -1,19 +1,107 @@
 import { useEffect, useState } from "react";
-import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
+import { Card, Col, Container, Row, Spinner, Alert, Form, Button } from "react-bootstrap";
 import { FaRegCommentDots } from 'react-icons/fa'; // Importing the comment icon
-import { useParams } from "react-router-dom";
+import { BsPatchCheckFill, BsShop } from "react-icons/bs";
+import { useParams, useNavigate } from "react-router-dom";
 import { GetBarangById } from "../../api/apiBarang";
 import { GetFotoBarangByIdBarang } from "../../api/apiFotoBarang"; // pastikan fungsinya ada
 import { GetPenitipById } from "../../api/apiPenitip";
 import iconPenitip from "../../assets/images/iconPenitip.png";
 import FooterBar from "../../components/FooterBar";
 
+import { GetDiskusiByIdBarang, TambahDiskusi } from "../../api/apiDiskusi";
+import { getRole } from "../../api/apiAuth";
+import logo from "../../assets/images/logoreuse.png";
+import { toast } from "react-toastify";
+
 const DetailBarangPage = () => {
   const { id } = useParams();
   const [barang, setBarang] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingDiskusi, setLoadingDiskusi] = useState(true);
   const [penitip, setPenitip] = useState(null);
   const [fotoBarangList, setFotoBarangList] = useState([]);
+  const [diskusiList, setDiskusiList] = useState([]);
+  const [isPending, setIsPending] = useState(false);
+  const [userType, setUserType] = useState("");
+
+  const navigate = useNavigate();
+
+  const [diskusiInput, setDiskusiInput] = useState({
+    komentar: "",
+    id_barang: id,
+    id_pegawai: "",
+    id_pembeli: "",
+  });
+
+  const handleChange = (event) => {
+    setDiskusiInput({ ...diskusiInput, [event.target.name]: event.target.value });
+  };
+
+  const submitDiskusi = (event) => {
+    event.preventDefault();
+    fetchRole();
+
+    TambahDiskusi(diskusiInput)
+      .then((res) => {    
+        toast.success(res.message); 
+        fetchDiskusi(); 
+        setDiskusiInput({ komentar: "", id_barang: id, id_pegawai: "", id_pembeli: "" });
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.message);
+      });
+  };
+
+  const fetchDiskusi = async () => {
+    try {
+      setLoadingDiskusi(true);
+      const diskusiData = await GetDiskusiByIdBarang(id);
+      setDiskusiList(diskusiData.data);
+
+      setLoadingDiskusi(false);
+    } catch (error) {
+      console.error(error);
+      setLoadingDiskusi(false);
+    }
+  };  
+
+  const fetchRole = async () => { 
+    setIsPending(true);
+
+    const tokenDariSS = sessionStorage.getItem("token");
+    
+    if (!tokenDariSS) {
+      setIsPending(false);
+      navigate("/login");
+      toast.error("Silahkan login terlebih dahulu!");
+      return;
+    }else{
+      try {
+        const res = await getRole();
+
+        setUserType(res.user_type);
+
+
+      } catch (err) { 
+        console.log(err);
+        toast.error("Terjadi Kesalahan! Silahkan login ulang.");
+        sessionStorage.removeItem("token");
+        navigate("/login");
+      }finally {
+        setIsPending(false);
+      }
+    }
+  };
+
+  const formatDateAja = (tanggal) => {
+    const date = new Date(tanggal);
+    const tahun = date.getFullYear();
+    const bulan = String(date.getMonth() + 1).padStart(2, '0');
+    const hari = String(date.getDate()).padStart(2, '0');
+    return `${tahun}-${bulan}-${hari}`;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,9 +120,10 @@ const DetailBarangPage = () => {
         console.error(error);
         setLoading(false);
       }
-    };
+    };        
 
     fetchData();
+    fetchDiskusi();
   }, [id]);
 
   if (loading) {
@@ -88,10 +177,10 @@ const DetailBarangPage = () => {
                 <div className="p-3 border rounded">
                   <Row>
                     <Col md={4}>
-                      <img src={iconPenitip} alt="Penitip" className="img-fluid rounded" />
+                      <img src={`http://127.0.0.1:8000/storage/foto_profile/${penitip.foto_profile}`} alt="Penitip" className="img-fluid rounded" />
                     </Col>
                     <Col md={8}>
-                      <h5 className="fw-bold">{penitip?.nama_penitip || "Nama Penitip"}</h5>
+                      <h5 className="fw-bold">{penitip?.nama || "Nama Penitip"}</h5>
                       <p className="text-muted mb-1">Rating Penjual: ⭐ {penitip?.rating_penitip} </p>
                       <p className="text-muted">Barang Terjual: Masih dummyy</p>
                     </Col>
@@ -135,32 +224,69 @@ const DetailBarangPage = () => {
         {/* Diskusi Produk */}
         <hr className="my-4" />
         <h4 className="text-success text-decoration-underline">Diskusi Produk</h4>
-
+        
         <div className="border rounded p-4">
-          <div className="border bg-light rounded p-2 mb-3 d-flex align-items-center">
-            <img
-              src={iconPenitip}
-              alt="icon user"
-              width={30}
-              height={30}
-              className="me-2"
-            />
-            <div>
-              <strong>Abrakadabra</strong>
-              <p className="mb-0">Baterainya masih bagus ga ?</p>
-            </div>
-          </div>
+          {/* Input Diskusi */}
+          {!loadingDiskusi || !isPending ? (
+            <>
+              {diskusiList.length > 0 ? (
+                diskusiList.map((diskusi, index) => (
+                  <div key={index} className="border bg-light rounded p-2 mb-3 d-flex align-items-center px-3">
+                    <img
+                      src={diskusi.id_pegawai ? ( logo
+                        ) : (
+                        `http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`
+                      )}
+                      alt="icon user"
+                      width={35}
+                      height={35}
+                      className="me-2 border rounded-circle"
+                    />
+                    <div className="w-100 d-flex justify-content-between align-items-center">
+                      <div>
+                        <strong>
+                          {diskusi.nama_pembeli || diskusi.nama_pegawai}  
+                          {diskusi.id_pegawai && 
+                            <>
+                              <span className="ms-1 hijau">(Customer Service)</span> <BsPatchCheckFill className="hijau ms-1" />
+                            </>
+                          }
+                        </strong> 
+                        <p className="mb-0">{diskusi.komentar}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted mb-0">{formatDateAja(diskusi.tanggal_diskusi)}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <Alert variant="light" className="text-center mb-0">
+                  <p className="text-center mb-0">Tidak ada diskusi untuk produk ini.</p>
+                </Alert>       
+              )}
 
-          <div className="d-flex align-items-center w-100 mt-5">
-            <FaRegCommentDots size={20} className="me-2" />
-            <input
-              type="text"
-              placeholder="Masukkan diskusi Anda . . ."
-              className="form-control me-2"
-            />
-            <button className="btn btn-outline-success">Kirim</button>
-          </div>
+              <Form className="d-flex align-items-center w-100 mt-5" onSubmit={submitDiskusi}>
+                <FaRegCommentDots size={20} className="me-2" />
+                <Form.Control
+                  type="text"
+                  placeholder="Masukkan diskusi Anda . . ."
+                  className="form-control me-2"
+                  name="komentar"
+                  onChange={handleChange}
+                  required
+                />
+                <Button variant="outline-success" type="submit">Kirim</Button>
+              </Form>
+            </>
+          ) : (
+            <div className="text-center my-5 pt-5" style={{ marginTop: "5rem" }}>
+              <Spinner animation="border" variant="success" />
+              <p>Loading Diskusi...</p>
+            </div>
+          )}
         </div>
+
       </Container>
 
       <FooterBar />

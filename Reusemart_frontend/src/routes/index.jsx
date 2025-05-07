@@ -38,6 +38,7 @@ import ClaimMerchandisePage from "../pages/AllPegawai/CS/ClaimMerchandisePage";
 import VerifikasiPage from "../pages/AllPegawai/CS/VerifikasiPage";
 import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
 import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
+import BalasDiskusiPage from "../pages/AllPegawai/CS/balasDiskusiPage";
 
 import ProfilePembeliPage from "../pages/pembeli/ProfilePembeliPage";
 import EditAlamatPage from "../pages/pembeli/EditAlamatPage";
@@ -171,6 +172,10 @@ const router = createBrowserRouter([
             path: "managePenitip/editPenitip/:id",
             element: <EditPenitipPage />,
           },
+          {
+            path: "balasDiskusi",
+            element: <BalasDiskusiPage />,
+          }
         ],
       },
 

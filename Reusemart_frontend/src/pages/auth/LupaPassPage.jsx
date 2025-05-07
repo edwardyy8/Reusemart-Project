@@ -15,12 +15,9 @@ const LupaPassPage = () => {
     const tokenDariSS = sessionStorage.getItem("token");
     setToken(tokenDariSS);
     
-    if (tokenDariSS) {
-      navigate("/user");
-    }
-  }, [navigate]);
+  }, []);
 
-  return !token && (
+  return (
     <Container className="mt-5">
       <div className="text-center mb-3 d-flex flex-row justify-content-center align-items-center gap-3">
           <img src={reusemart} alt="ReuseMart" />

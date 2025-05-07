@@ -38,9 +38,18 @@ class RincianPemesananController extends Controller
         }
     }
 
-    public function getPenjualanById($id)
+    public function getPenjualanById($id, Request $request)
     {
         try {
+            $id_penitip = $request->user()->id_penitip;
+
+            if (!$id_penitip) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ID penitip tidak ditemukan',
+                ], 404);
+            }
+
             $penjualan = Rincian_Pemesanan::with(['barang.fotoBarang'])
                 ->where('id_rincianpemesanan', $id)
                 ->first();

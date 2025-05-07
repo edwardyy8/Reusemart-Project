@@ -51,10 +51,6 @@ class Organisasi extends Authenticatable
         return 'organisasi';
     }
 
-    public function diskusi() {
-        return $this->hasMany(Diskusi::class, 'id_organisasi');
-    }
-
     public function request_donasi() {
         return $this->hasMany(Request_Donasi::class, 'id_organisasi');
     }
