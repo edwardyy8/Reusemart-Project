@@ -63,7 +63,7 @@ Route::middleware('auth:pegawai')->group(function () {
     Route::get('/pegawai/foto-profile/{filename}', [PegawaiController::class, 'getFotoProfile']);
 
     Route::middleware(CekJabatan::class.':Admin')->group(function () {
-        Route::post('/resetPassPegawai', [AuthController::class, 'resetPassPegawai'])
+        Route::post('/resetPassPegawai/{id_pegawai}', [AuthController::class, 'resetPassPegawai'])
         ->middleware(EnsureApiTokenIsValid::class);
 
         Route::get('/getAllOrganisasi', [OrganisasiController::class, 'getAllOrganisasi']);

@@ -13,7 +13,7 @@ class PegawaiController extends Controller
     {
         // Ambil data minimal, tanpa relasi
         try {
-            $pegawai = Pegawai::select('id_pegawai', 'nama_pegawai', 'email', 'id_jabatan', 'tanggal_lahir')->get();
+            $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'id_jabatan', 'tanggal_lahir')->get();
             return response()->json($pegawai, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Server Error', 'message' => $e->getMessage()], 500);
@@ -78,7 +78,7 @@ public function tambahPegawai(Request $request)
     try {
         $pegawai = new Pegawai();
         $pegawai->id_pegawai = $id_pegawai;  // Set id_pegawai yang baru
-        $pegawai->nama_pegawai = $request->input('nama');
+        $pegawai->nama = $request->input('nama');
         $pegawai->email = $request->input('email');
         $pegawai->password = bcrypt($request->input('password')); // Enkripsi password
         $pegawai->id_jabatan = $request->input('id_jabatan');
@@ -104,7 +104,7 @@ public function tambahPegawai(Request $request)
     public function getAllPegawai()
     {
         // Mengambil data pegawai dan menyertakan jabatan
-        $pegawai = Pegawai::select('id_pegawai', 'nama_pegawai', 'email', 'tanggal_lahir', 'id_jabatan')
+        $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'tanggal_lahir', 'id_jabatan')
             ->with('jabatan') // Menyertakan relasi jabatan
             ->orderBy('created_at', 'asc')
             ->get();
@@ -200,7 +200,7 @@ public function tambahPegawai(Request $request)
     // Validasi input data dengan pengecualian pada email untuk pegawai yang sedang diupdate
     $validated = $request->validate([
         'id_jabatan' => 'nullable|string',
-        'nama_pegawai' => 'nullable|string|max:255',
+        'nama' => 'nullable|string|max:255',
         // Pengecualian pada validasi email, agar email yang sama dengan pegawai yang sedang diupdate diizinkan
         'email' => 'nullable|email|unique:pegawai,email,' . $id . ',id_pegawai',  // Memperbaiki pengecualian untuk email
         'foto_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi foto profile
@@ -241,7 +241,7 @@ public function tambahPegawai(Request $request)
         ->where('id_pegawai', $id) // Menggunakan id_pegawai
         ->update([
             'id_jabatan' => $request->id_jabatan,
-            'nama_pegawai' => $request->nama_pegawai,
+            'nama' => $request->nama,
             'email' => $request->email, // Update email
             'foto_profile' => $fotoProfile, // Update foto profile jika ada
         ]);

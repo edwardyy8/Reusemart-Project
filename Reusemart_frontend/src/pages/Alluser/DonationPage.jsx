@@ -82,7 +82,7 @@ const DonationPage = () => {
             <Container fluid className="px-5 mb-5" >
                 
                 {isLoading ? (
-                    <div className="text-center">
+                    <div className="text-center d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
                         <Spinner
                             as="span"
                             animation="border"
