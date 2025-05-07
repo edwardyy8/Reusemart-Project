@@ -53,7 +53,7 @@ class RincianPemesananController extends Controller
                 ], 404);
             }
 
-            $penjualan = Rincian_Pemesanan::with(['barang.fotoBarang'])
+            $penjualan = Rincian_Pemesanan::with(['barang'])
                 ->where('id_rincianpemesanan', $id)
                 ->first();
 
