@@ -18,13 +18,19 @@ const FormResetPass = () => {
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   
 
   const ResetPass = (event) => {
     event.preventDefault();
-
+    setIsLoading(true);
+    setIsDisabled(true);
     resetPassword(token, email, password, passwordConfirmation)
       .then((res) => {
+        setIsLoading(false);
+        setIsDisabled(false);
         navigate("/login");
         toast.success(res.message);
       })
@@ -66,7 +72,7 @@ const FormResetPass = () => {
             />
 
             <p className="text-start mt-2 abuForm">
-                Mohon masukkan password baru anda, lalu tekan tombol konfirmasi.
+                Mohon masukkan password baru anda, lalu tekan tombol reset kata sandi.
             </p>
 
             <div className="text-center">
@@ -75,13 +81,22 @@ const FormResetPass = () => {
                     className="mt-3 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
                     style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
                     >
-                    Reset Kata Sandi
+                      {isLoading ? (
+                      <>
+                          <Spinner
+                          as="span"
+                          animation="grow"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                          />{" "}
+                          Loading...
+                      </>
+                    ) : (
+                        <span>Reset Kata Sandi</span>
+                    )}
                 </Button>
             </div>
-            
-            <p className="text-center mt-3 mb-0 abuForm">
-              Ingat Kata Sandi? <Link to="/login">Login!</Link>
-            </p>
 
           </Col>
   

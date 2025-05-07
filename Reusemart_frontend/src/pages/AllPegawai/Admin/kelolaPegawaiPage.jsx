@@ -7,6 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import ModalDeletePegawai from "../../../components/modals/pegawai/ModalDeletePegawai";
 import ModalShowPegawai from "../../../components/modals/pegawai/ModalShowPegawai";
 
+import { ResetPasswordPegawai } from '../../../api/apiAuth';
+import { toast } from 'react-toastify';
+
 const KelolaPegawaiPage = () => {
   const [dataPegawai, setDataPegawai] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,7 +20,7 @@ const KelolaPegawaiPage = () => {
   const navigate = useNavigate();
 
   const filteredPegawai = dataPegawai.filter((pegawai) =>
-    pegawai.nama_pegawai.toLowerCase().includes(searchKeyword.toLowerCase())
+    pegawai.nama.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
   const fetchData = async () => {
@@ -48,6 +51,17 @@ const KelolaPegawaiPage = () => {
   const countByJabatan = (jabatanId) => {
     return dataPegawai.filter(pegawai => pegawai.id_jabatan === jabatanId).length;
   };
+
+  const handleResetPasswordPegawai = async (id) => {
+    try {
+      const response = await ResetPasswordPegawai(id);
+      if (!response.ok) throw new Error('Gagal reset password');
+      toast.success('Password berhasil direset!');
+    } catch (err) {
+      setError(err.message);
+      toast.error('Gagal reset password');
+    }
+  }
 
   return (
     <Container className="p-0">
@@ -223,8 +237,11 @@ const KelolaPegawaiPage = () => {
                 {currentItems.map((pegawai) => (
                   <tr key={pegawai.id_pegawai}>
                     <td>{pegawai.id_pegawai}</td>
-                    <td>{pegawai.nama_pegawai}</td>
+                    <td>{pegawai.nama}</td>
                     <td className="d-flex justify-content-center">
+                      <Button variant='secondary' onClick={() => handleResetPasswordPegawai(pegawai.id_pegawai)} className="me-2">
+                        Reset Password?
+                      </Button>
                       <ModalShowPegawai pegawai={pegawai} />
                       <Button onClick={() => navigate(`/pegawai/Admin/kelolaPegawai/${pegawai.id_pegawai}`)} className="me-2">
                         <FaRegPenToSquare size={20} />

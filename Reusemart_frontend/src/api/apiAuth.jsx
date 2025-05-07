@@ -88,5 +88,17 @@ const resetPassword = async (token, email, password, password_confirmation) => {
     }
 };
   
+const ResetPasswordPegawai = async (id) => {
+    try {
+        const response = await useAxios.post(`/resetPassPegawai/${id}`, {}, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-export { SignUp, SignIn, LogOut, getRole, getJabatan, forgotPassword, resetPassword };
+export { SignUp, SignIn, LogOut, getRole, getJabatan, forgotPassword, resetPassword, ResetPasswordPegawai};

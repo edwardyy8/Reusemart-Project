@@ -26,11 +26,11 @@ import DetailPenjualanPage from "../pages/penitip/DetailPenjualanPage";
 import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
 import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
 
-import KelolaPegawaiPage from "../pages/AllPegawai/Admin/kelolaPegawaiPage";
+import KelolaPegawaiPage from "../pages/AllPegawai/Admin/KelolaPegawaiPage";
 import EditPegawaiPage from "../pages/AllPegawai/Admin/EditPegawaiPage";
 import TambahPegawaiPage from "../pages/AllPegawai/Admin/TambahPegawaiPage";
 
-import KelolaJabatanPage from "../pages/AllPegawai/Admin/kelolaJabatanPage";
+import KelolaJabatanPage from "../pages/AllPegawai/Admin/KelolaJabatanPage";
 import EditJabatanPage from "../pages/AllPegawai/Admin/EditJabatanPage";
 
 import ManagePenitipPage from "../pages/AllPegawai/CS/ManagePenitipPage";
@@ -38,6 +38,7 @@ import ClaimMerchandisePage from "../pages/AllPegawai/CS/ClaimMerchandisePage";
 import VerifikasiPage from "../pages/AllPegawai/CS/VerifikasiPage";
 import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
 import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
+import BalasDiskusiPage from "../pages/AllPegawai/CS/balasDiskusiPage";
 
 import ProfilePembeliPage from "../pages/pembeli/ProfilePembeliPage";
 import EditAlamatPage from "../pages/pembeli/EditAlamatPage";
@@ -171,6 +172,10 @@ const router = createBrowserRouter([
             path: "managePenitip/editPenitip/:id",
             element: <EditPenitipPage />,
           },
+          {
+            path: "balasDiskusi",
+            element: <BalasDiskusiPage />,
+          }
         ],
       },
 

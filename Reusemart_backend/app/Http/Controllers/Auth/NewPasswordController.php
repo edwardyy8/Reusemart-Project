@@ -58,6 +58,8 @@ class NewPasswordController extends Controller
         ])->save();
     
         DB::table('password_reset_tokens')->where('email', $email)->delete();
+
+        $user->tokens()->delete(); 
     
         return response()->json(['message' => 'Password berhasil direset.']);
     }
