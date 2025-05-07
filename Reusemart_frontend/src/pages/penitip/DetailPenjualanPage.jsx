@@ -5,6 +5,8 @@ import { GetPemesananById } from "../../api/apiPemesanan";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+import NoPage from "../Alluser/NoPage";
+import { toast } from "react-toastify";
 
 const DetailPenjualanPage = () => {
     const { id } = useParams();
@@ -43,6 +45,7 @@ const DetailPenjualanPage = () => {
         } catch (err) {
             console.log(err);
             setError(err?.response?.data?.message || err.message || "Gagal memuat data");
+            toast.error(err?.response?.data?.message || err.message || "Gagal memuat data");
         } finally {
             setLoading(false);
         }
@@ -88,9 +91,7 @@ const DetailPenjualanPage = () => {
 
     if (error) {
         return (
-            <Container className="mt-5 text-center">
-            <Alert variant="danger">Error: {error}</Alert>
-            </Container>
+            <NoPage />
         );
     }
 

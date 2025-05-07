@@ -128,7 +128,7 @@ class AuthController extends Controller
                 $token = $user->createToken('Authentication Token')->plainTextToken;
               
                 return response([
-                    'message' => 'Selamat datang, ' . ($user->nama_penitip ?? $user->nama_organisasi ?? $user->nama),
+                    'message' => 'Selamat datang, ' . ($user->nama),
                     'token' => $token,
                     'user_type' => $type,
                     'jabatan' => $user->jabatan->nama_jabatan ?? null,

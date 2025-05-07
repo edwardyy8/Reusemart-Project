@@ -4,7 +4,7 @@ import { FaEye} from "react-icons/fa";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
 import { useNavigate, Outlet } from "react-router-dom";
 import reusemart from "../../../assets/images/titlereuse.png";
-import { GetAllPenitip, deletePenitipById } from "../../../api/apiPenitip"; // Sesuaikan dengan path API Anda
+import { GetAllPenitip, deletePenitipById } from "../../../api/apiPenitip";
 
 const ManagePenitipPage = () => {
   const [penitipList, setPenitipList] = useState([]);

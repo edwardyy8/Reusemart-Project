@@ -30,10 +30,8 @@ const DetailBarangPage = () => {
   const [diskusiInput, setDiskusiInput] = useState({
     komentar: "",
     id_barang: id,
-    id_penitip: "",
     id_pegawai: "",
     id_pembeli: "",
-    id_organisasi: "",
   });
 
   const handleChange = (event) => {
@@ -43,16 +41,12 @@ const DetailBarangPage = () => {
   const submitDiskusi = (event) => {
     event.preventDefault();
     fetchRole();
-    // if (!userType) {
-    //   toast.error("Silahkan login terlebih dahulu!");
-    //   return;
-    // }
 
     TambahDiskusi(diskusiInput)
       .then((res) => {    
         toast.success(res.message); 
         fetchDiskusi(); 
-        setDiskusiInput({ komentar: "", id_barang: id, id_penitip: "", id_pegawai: "", id_pembeli: "", id_organisasi: "" });
+        setDiskusiInput({ komentar: "", id_barang: id, id_pegawai: "", id_pembeli: "" });
       })
       .catch((err) => {
         console.log(err);
@@ -99,6 +93,14 @@ const DetailBarangPage = () => {
         setIsPending(false);
       }
     }
+  };
+
+  const formatDateAja = (tanggal) => {
+    const date = new Date(tanggal);
+    const tahun = date.getFullYear();
+    const bulan = String(date.getMonth() + 1).padStart(2, '0');
+    const hari = String(date.getDate()).padStart(2, '0');
+    return `${tahun}-${bulan}-${hari}`;
   };
 
   useEffect(() => {
@@ -229,27 +231,32 @@ const DetailBarangPage = () => {
             <>
               {diskusiList.length > 0 ? (
                 diskusiList.map((diskusi, index) => (
-                  <div key={index} className="border bg-light rounded p-2 mb-3 d-flex align-items-center">
+                  <div key={index} className="border bg-light rounded p-2 mb-3 d-flex align-items-center px-3">
                     <img
                       src={diskusi.id_pegawai ? ( logo
                         ) : (
-                        `http://127.0.0.1:8000/storage/foto_profile/${
-                          diskusi.foto_profile_penitip || 
-                          diskusi.foto_profile_organisasi ||
-                          diskusi.foto_profile_pembeli}`
+                        `http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`
                       )}
                       alt="icon user"
                       width={35}
                       height={35}
                       className="me-2 border rounded-circle"
                     />
-                    <div>
-                      <strong>
-                        {diskusi.nama_penitip || diskusi.nama_pembeli || diskusi.nama_organisasi || diskusi.nama_pegawai}  
-                        {diskusi.id_pegawai && <BsPatchCheckFill className="hijau ms-1" />}
-                        {(diskusi.id_penitip === penitip.id_penitip) && <span className="ms-1 hijau">(Penitip Barang)</span> }
-                      </strong> 
-                      <p className="mb-0">{diskusi.komentar}</p>
+                    <div className="w-100 d-flex justify-content-between align-items-center">
+                      <div>
+                        <strong>
+                          {diskusi.nama_pembeli || diskusi.nama_pegawai}  
+                          {diskusi.id_pegawai && 
+                            <>
+                              <span className="ms-1 hijau">(Customer Service)</span> <BsPatchCheckFill className="hijau ms-1" />
+                            </>
+                          }
+                        </strong> 
+                        <p className="mb-0">{diskusi.komentar}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted mb-0">{formatDateAja(diskusi.tanggal_diskusi)}</p>
+                      </div>
                     </div>
                   </div>
                 ))

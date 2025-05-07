@@ -9,7 +9,8 @@ import { forgotPassword } from "../../api/apiAuth";
 
 const FormLupaPass = () => {
   const navigate = useNavigate();
-  const [isDisabled, setIsDisabled] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
  
   const [email, setEmail] = useState("");
   const [user_type, setUserType] = useState("");
@@ -29,9 +30,13 @@ const FormLupaPass = () => {
 
   const ForgotPass = (event) => {
     event.preventDefault();
+    setIsLoading(true);
+    setIsDisabled(true);
     forgotPassword(email, user_type)
       .then((res) => {
         toast.success(res.message);
+        setIsLoading(false);
+        setIsDisabled(false);
       })
       .catch((err) => {
         console.log(err);
@@ -73,8 +78,22 @@ const FormLupaPass = () => {
                     type="submit"
                     className="mt-3 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
                     style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
+                    disabled={isDisabled}
                     >
-                    KONFIRMASI
+                    {isLoading ? (
+                      <>
+                          <Spinner
+                          as="span"
+                          animation="grow"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                          />{" "}
+                          Loading...
+                      </>
+                    ) : (
+                        <span>KONFIRMASI</span>
+                    )}
                 </Button>
             </div>
             

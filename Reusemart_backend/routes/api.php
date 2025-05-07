@@ -74,7 +74,10 @@ Route::middleware('auth:pegawai')->group(function () {
     Route::middleware(CekJabatan::class.':Customer Service')->group(function () {
       
       Route::post('/penitip',[PenitipController::class,'store']);
-      
+
+
+      Route::get('/getAllDiskusiKecualiCS', [DiskusiController::class, 'getAllDiskusiKecualiCS']);
+
     });
 });
 

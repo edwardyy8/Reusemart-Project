@@ -63,10 +63,6 @@ class Penitip extends Authenticatable
         return $this->hasMany(Barang::class, 'id_penitip');
     }
 
-    public function diskusi(){
-        return $this->hasMany(Diskusi::class, 'id_penitip');
-    }
-
     public function penitipan(){
         return $this->hasMany(Penitipan::class, 'id_penitip');
     }

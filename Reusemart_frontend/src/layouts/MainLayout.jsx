@@ -283,9 +283,10 @@ const MainLayout = ({ children }) => {
 //       } 
       else if (jabatan === "Customer Service") {
         return [
-          { path: "/pegawai/Customer Service/verifikasi", name: "Verifikasi Bukti Bayar" },
-          { path: "/pegawai/Customer Service/managePenitip", name: "Kelola Penitip" },
-          { path: "/pegawai/Customer Service/claimMerchandise", name: "Kelola Klaim Merchandise" },
+          { path: "/pegawai/Customer%20Service/verifikasi", name: "Verifikasi Bukti Bayar" },
+          { path: "/pegawai/Customer%20Service/managePenitip", name: "Kelola Penitip" },
+          { path: "/pegawai/Customer%20Service/claimMerchandise", name: "Kelola Klaim Merchandise" },
+          { path: "/pegawai/Customer%20Service/balasDiskusi", name: "Balas Diskusi" },
         ];
       }
     }

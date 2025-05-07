@@ -21,3 +21,16 @@ export const TambahDiskusi = async (data) => {
         throw error.response.data;
     }
 }
+
+export const GetAllDiskusiKecualiCS = async () => {
+    try {
+        const response = await useAxios.get("/getAllDiskusiKecualiCS", {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}
