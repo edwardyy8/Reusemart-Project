@@ -5,8 +5,12 @@ import AppRouter from "./routes/index.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./main.css";
 
+import { KeranjangProvider } from "./context/KeranjangContext.jsx";
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AppRouter />
+    <KeranjangProvider>
+      <AppRouter />
+    </KeranjangProvider>
   </React.StrictMode>
 )

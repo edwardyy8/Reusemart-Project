@@ -20,6 +20,7 @@ use App\Http\Controllers\RincianPemesananController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\DiskusiController;
 use App\Http\Controllers\RequestDonasiController;
+use App\Http\Controllers\KeranjangController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -148,6 +149,9 @@ Route::middleware('auth:pembeli')->group(function () {
     Route::get('/getAlamatById/{id}', [AlamatController::class, 'getAlamatById']);
     Route::post('tambahAlamat', [AlamatController::class, 'tambahAlamat']);
     Route::get('/getPemesananByIdPemesanan/{id}', [PemesananController::class, 'getPemesananByIdPemesanan']);
+
+    Route::get('/getKeranjangByIdPembeli', [KeranjangController::class, 'getKeranjangByIdPembeli']);
+    Route::post('/tambahKeranjang', [KeranjangController::class, 'tambahKeranjang']);
 });
 
 

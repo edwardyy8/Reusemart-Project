@@ -13,6 +13,8 @@ import { GetDiskusiByIdBarang, TambahDiskusi } from "../../api/apiDiskusi";
 import { getRole } from "../../api/apiAuth";
 import logo from "../../assets/images/logoreuse.png";
 import { toast } from "react-toastify";
+import { TambahKeranjang } from "../../api/apiKeranjang";
+import { useKeranjang } from "../../context/KeranjangContext";
 
 const DetailBarangPage = () => {
   const { id } = useParams();
@@ -24,6 +26,10 @@ const DetailBarangPage = () => {
   const [diskusiList, setDiskusiList] = useState([]);
   const [isPending, setIsPending] = useState(false);
   const [userType, setUserType] = useState("");
+  const [isPendingKeranjang, setIsPendingKeranjang] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const { fetchKeranjang } = useKeranjang();
 
   const navigate = useNavigate();
 
@@ -40,17 +46,29 @@ const DetailBarangPage = () => {
 
   const submitDiskusi = (event) => {
     event.preventDefault();
-    fetchRole();
+    setIsDisabled(true);
+
+    const tokenDariSS = sessionStorage.getItem("token");
+
+    if (!tokenDariSS) {
+      navigate("/login");
+      toast.error("Silahkan login terlebih dahulu!");
+      return;
+    }else{
+      fetchRole();
+    }
 
     TambahDiskusi(diskusiInput)
       .then((res) => {    
         toast.success(res.message); 
         fetchDiskusi(); 
         setDiskusiInput({ komentar: "", id_barang: id, id_pegawai: "", id_pembeli: "" });
+        setIsDisabled(false);
       })
       .catch((err) => {
         console.log(err);
         toast.error(err.message);
+        setIsDisabled(false);
       });
   };
 
@@ -70,29 +88,56 @@ const DetailBarangPage = () => {
   const fetchRole = async () => { 
     setIsPending(true);
 
-    const tokenDariSS = sessionStorage.getItem("token");
-    
-    if (!tokenDariSS) {
+    try {
+      const res = await getRole();
+      setUserType(res.user_type);
+    } catch (err) { 
+      console.log(err);
+      toast.error("Terjadi Kesalahan! Silahkan login ulang.");
+      sessionStorage.removeItem("token");
+      navigate("/login");
+    }finally {
       setIsPending(false);
+    }
+  };
+
+  // buat keranjang
+  const [keranjangInput, setKeranjangInput] = useState({
+    id_barang: id,
+    harga_barang: null,
+  });
+
+  const submitTambahKeranjang = () => {
+    setIsDisabled(true);
+    setIsPendingKeranjang(true);
+
+    const tokenDariSS = sessionStorage.getItem("token");
+
+    if (!tokenDariSS) {
       navigate("/login");
       toast.error("Silahkan login terlebih dahulu!");
       return;
     }else{
-      try {
-        const res = await getRole();
-
-        setUserType(res.user_type);
-
-
-      } catch (err) { 
-        console.log(err);
-        toast.error("Terjadi Kesalahan! Silahkan login ulang.");
-        sessionStorage.removeItem("token");
-        navigate("/login");
-      }finally {
-        setIsPending(false);
-      }
+      fetchRole();
     }
+
+    TambahKeranjang(keranjangInput)
+      .then((res) => {    
+        toast.success(res.message); 
+        fetchKeranjang();
+        setIsPendingKeranjang(false);
+        setIsDisabled(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        if(err.message == "Unauthenticated."){
+          toast.error("Hanya pembeli yang bisa menambah keranjang!");
+        }else {
+          toast.error(err.message ?? "Hanya pembeli yang bisa menambah keranjang!");
+        }
+        setIsPendingKeranjang(false);
+        setIsDisabled(false);
+      });
   };
 
   const formatDateAja = (tanggal) => {
@@ -108,6 +153,7 @@ const DetailBarangPage = () => {
       try {
         const barangData = await GetBarangById(id);
         setBarang(barangData);
+        setKeranjangInput({ ...keranjangInput, harga_barang: barangData.harga_barang });
 
         const penitipData = await GetPenitipById(barangData.id_penitip);
         setPenitip(penitipData);
@@ -215,7 +261,13 @@ const DetailBarangPage = () => {
           </Col>
           <Col md={4} className="d-flex justify-content-end align-items-center">
             <div className="d-flex gap-2 w-100">
-              <button className="btn btn-outline-success w-50">+ Keranjang</button>
+              <button className="btn btn-outline-success w-50" onClick={() => submitTambahKeranjang()} disabled={isDisabled}>
+                {isPendingKeranjang ? (
+                  <Spinner animation="border" size="sm" variant="success" className="me-2" />
+                ) : (
+                  <span>+ Keranjang</span>
+                )}
+              </button>
               <button className="btn btn-success w-50">Checkout</button>
             </div>
           </Col>
@@ -276,7 +328,7 @@ const DetailBarangPage = () => {
                   onChange={handleChange}
                   required
                 />
-                <Button variant="outline-success" type="submit">Kirim</Button>
+                <Button variant="outline-success" type="submit" disabled={isDisabled} >Kirim</Button>
               </Form>
             </>
           ) : (
