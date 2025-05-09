@@ -32,7 +32,7 @@ export const GetPenitipById = async (id_penitip) => {
 
 export const getProfileData = async () => {
   try{
-    const response = await useAxios.get(`/penitip/penitipProfile`, {
+    const response = await useAxios.get(`/penitipProfile`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -60,10 +60,10 @@ export const getSalesData = async (id_penitip) => {
 
 export const getPenitipanData = async (id_penitip) => {
   try{
-    const response = await useAxios.get(`/penitip/${id_penitip}`, {
+    const response = await useAxios.get(`/getPenitipanByIdPenitip/${id_penitip}`, {
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
     return response.data.data;
@@ -111,3 +111,38 @@ export const updatePenitipById = async (id, data) => {
   });
   return response.data;
 };
+
+export const perpanjangRincianPenitipan = async (id_rincianpenitipan, tanggal_akhir) => {
+  try {
+    const response = await useAxios.put(`/perpanjangRincianPenitipan/${id_rincianpenitipan}`, {
+      tanggal_akhir: tanggal_akhir,
+      perpanjangan: "Ya"
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const ambilTitipan = async (id_rincianpenitipan, batas_akhir) =>{
+  try{
+    const response = await useAxios.put(`/ambilTitipan/${id_rincianpenitipan}`, {
+      batas_akhir: batas_akhir,
+      status_penitipan: 'Diambil'
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+

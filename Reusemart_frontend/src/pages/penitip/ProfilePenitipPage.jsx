@@ -1,19 +1,26 @@
-import { Container, Tab, Tabs, Card, Spinner, Alert, Button, Row, Col } from "react-bootstrap";
+import { Container, Tab, Tabs, Card, Spinner, Alert, Button, Row, Col, Form, Modal, ModalFooter } from "react-bootstrap";
 import reusemart from "../../assets/images/titlereuse.png";
-import { getProfileData} from "../../api/apiPenitip";
+import { getProfileData, getPenitipanData, perpanjangRincianPenitipan, ambilTitipan } from "../../api/apiPenitip";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, Outlet } from "react-router-dom";
 import InputFloatingForm from "../../components/forms/InputFloatingForm";
 import { GetPenjualanByIdPenitip } from "../../api/apiPenjualan";
+import { donasiByPenitip } from "../../api/apiBarang";
+import { toast } from "react-toastify";
+
 
 const ProfilePenitipPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeKey, setActiveKey] = useState('profil');
-
   const [profileData, setProfileData] = useState(null);
   const [penjualanData, setPenjualanData] = useState([]);
-  const [barangData, setBarangData] = useState([]);
+  const [titipanData, setTitipanData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDetail, setShowDetail] = useState(false);
+  const [showPerpanjangan, setShowPerpanjangan] = useState(false);
+  const [penitipanHabis, setPenitipanHabis] = useState(false);
+  const [selectedPenitipan, setSelectedPenitipan] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +28,6 @@ const ProfilePenitipPage = () => {
     try {
       setLoading(true);
       const profile = await getProfileData();
-      // const barang = await getBarangSaya();
       setProfileData(profile);
       if (!profile) {
         return (
@@ -39,22 +45,122 @@ const ProfilePenitipPage = () => {
         );
       }
       setPenjualanData(penjualan);
-      console.log(penjualan);
-      
-      // if (!barang) {
-      //   return (
-      //     <Container className="mt-5 text-center">
-      //       <Alert variant="warning">Data tidak ditemukan</Alert>
-      //     </Container>
-      //   );
-      // }
-      // setBarangData(barang);
+
+      const titipan = await getPenitipanData(profile.id_penitip);
+      if (!titipan) {
+        return (
+          <Container className="mt-5 text-center">
+            <Alert variant="warning">Data tidak ditemukan</Alert>
+          </Container>
+        );
+      }
+      setTitipanData(titipan);
+
     } catch (err) {
       console.log(err);
       setError(err?.response?.data?.message || err.message || "Gagal memuat data");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePerpanjang = async () => {
+    try {
+      const newTanggalAkhir = new Date(selectedPenitipan.tanggal_akhir);
+      newTanggalAkhir.setDate(newTanggalAkhir.getDate() + 30);
+      
+      await perpanjangRincianPenitipan(selectedPenitipan.id_rincianpenitipan, newTanggalAkhir.toISOString());
+      console.log(selectedPenitipan);
+      setTitipanData(titipanData.map(titipan => 
+        titipan.id_penitipan === selectedPenitipan.id_penitipan
+          ? { 
+              ...titipan, 
+              tanggal_akhir: newTanggalAkhir.toISOString(),
+              perpanjangan: "Ya"
+            } 
+          : titipan
+      ));
+      
+      setShowPerpanjangan(false);
+      toast.success("Berhasil memperpanjang masa penitipan");
+    } catch (error) {
+      toast.error("Gagal memperpanjang masa penitipan");
+    }
+  };
+
+  const handleAmbil = async () => {
+    try {
+      await ambilTitipan(selectedPenitipan.id_rincianpenitipan);
+      navigate(`/ambilTitipanPage/${selectedPenitipan.id}`);
+    } catch (error) {
+      toast.error("Gagal mengambil titipan");
+    }
+  };
+
+  const handleDonasi = async () => {
+    try {
+      await donasiByPenitip(selectedPenitipan.id_barang);
+      toast.success("Terima kasih telah mendonasikan barang anda");
+      setPenitipanHabis(false);
+    } catch (error) {
+      toast.error("Gagal mendonasikan barang");
+    }
+  };
+
+  const renderAdditionalButton = (titipan) => {
+    const hariIni = new Date();
+    const tanggalAkhir = new Date(titipan.tanggal_akhir);
+    const sisaHari = Math.ceil((tanggalAkhir - hariIni) / (1000 * 60 * 60 * 24));
+    const sudahLewat = hariIni > tanggalAkhir;
+    const tersedia = titipan.barang.status_barang === "Tersedia";
+    const terproses = ["Terjual", "Didonasikan"].includes(titipan.barang.status_barang);
+    const sudahPerpanjang = titipan.perpanjangan === "Ya";
+
+    if (terproses) return null;
+    
+    if (!sudahPerpanjang && !sudahLewat && tersedia) {
+      return (
+        <Button 
+          variant="danger" 
+          className="w-50"
+          onClick={() => {
+            setSelectedPenitipan(titipan);
+            setShowPerpanjangan(true);
+          }}
+        >
+          Perpanjang ({sisaHari} hari tersisa)
+        </Button>
+      );
+    }
+    
+    if ((!sudahPerpanjang && sudahLewat && tersedia) || 
+        (sudahPerpanjang && sudahLewat && tersedia)) {
+      return (
+        <Button 
+          className="btnHijau w-50"
+          onClick={() => {
+            setSelectedPenitipan(titipan);
+            setPenitipanHabis(true);
+          }}
+        >
+          Ambil/Donasi
+        </Button>
+      );
+    }
+    
+    if (sudahPerpanjang && !sudahLewat && tersedia) {
+      return (
+        <Button 
+          variant="danger" 
+          className="w-50"
+          disabled
+        >
+          Perpanjang ({sisaHari} hari tersisa)
+        </Button>
+      );
+    }
+    
+    return null;
   };
 
   useEffect(() => {
@@ -78,7 +184,7 @@ const ProfilePenitipPage = () => {
     const menit = String(date.getMinutes()).padStart(2, '0');
   
     return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
-};
+  };
 
   if (loading) {
     return (
@@ -117,9 +223,8 @@ const ProfilePenitipPage = () => {
         </div>  
       </Container>
       
-
       <Tabs activeKey={activeKey} onSelect={(k) => setActiveKey(k)} className="mb-4 justify-content-center custom-tabs" fill>
-      <Tab eventKey="penjualan" title="Penjualan Saya">
+        <Tab eventKey="penjualan" title="Penjualan Saya">
           {penjualanData.length > 0 ? (
             <Row className="g-3">
               {penjualanData.map((item, idx) => (
@@ -131,21 +236,23 @@ const ProfilePenitipPage = () => {
                       <p className="text-muted h6">Tanggal Order : {formatTanpaDetik(item.pemesanan.tanggal_pemesanan)}</p>
                     </Card.Title>
                     <Card.Text>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div className="">
-                          Nama Barang : {item.barang.nama_barang}
-                          <br />
-                          Status Order : {item.pemesanan.status_pengiriman}
+                      <div className="d-flex flex-column">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="">
+                          <h5 className="fw-bold mb-0">{item.barang.nama_barang}</h5>
+                          </div>
+                          <div>
+                            <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.rincian_pemesanan?.[0].barang?.[0].foto_barang}`} 
+                                  alt="Foto Barang" 
+                                  height={100}
+                                  className="rounded-2"/>
+                          </div> 
                         </div>
-                        <div>
-                          <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.rincian_pemesanan?.[0].barang?.[0].foto_barang}`} 
-                                alt="Foto Barang" 
-                                height={100}
-                                className="rounded-2"/>
+                        <div className="text-muted">
+                          Status Order : {item.pemesanan.status_pengiriman}
                         </div>
                       </div>
                     </Card.Text>
-                    
                   </Card.Body>
                   <Card.Footer className="">
                       <Button className="w-100" variant="outline-secondary" onClick={() => navigate(`/penitip/detailPenjualan/${item.id_rincianpemesanan}`)}> 
@@ -192,32 +299,195 @@ const ProfilePenitipPage = () => {
         </Tab>
 
         <Tab eventKey="barang" title="Barang Saya">
-          {barangData.length > 0 ? (
-            <Row className="g-3">
-              {barangData.map((barang, idx) => (
-                <Col md={4} key={idx}>
-                  <Card className="h-100">
-                    <Card.Body>
-                      <Card.Text>
-                        ID Titipan: {barang.id_penitipan}
-                        <br />
-                        Tanggal Titip: {barang.tanggal_masuk}
-                      </Card.Text>
-                      <Card.Text>
-                        {barang.nama_barang}
-                        <br />
-                        Status barang: {barang.status_barang}
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))}
+          <Row className="mb-4 d-flex align-items-end">
+              <Col>
+                  <Form.Control
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+              </Col>
             </Row>
-          ) : (
-            <Alert className="text-center" variant="warning">Belum Ada Titipan :(</Alert>
-          )}
+            {titipanData.length > 0 ? (
+              <div>
+                {titipanData.filter((titipan) => searchTerm==="" || titipan.barang.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .map((titipan, idx) => {
+                    const terproses = ["Terjual", "Didonasikan"].includes(titipan.barang.status_barang);
+                    return (
+                      <Row className="g-3" key={idx}>
+                        <Col md={12} sm={12} xs={12} lg={12} className="mb-3 px-5 d-flex justify-content-center">
+                          <Card className="h-100 w-100">
+                            <Card.Body>
+                              <Card.Title className="border-bottom">
+                                <h5>ID Titipan : {titipan.id_penitipan}</h5>
+                                <p className="text-muted h6">Tanggal Titip : {formatTanpaDetik(titipan.barang.tanggal_masuk)}</p>
+                              </Card.Title>
+                              <Card.Text>
+                                <div className="d-flex flex-column">
+                                  <div className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                      <h5 className="fw-bold mb-0">{titipan.barang.nama_barang}</h5>
+                                    </div>
+                                    <div>
+                                      <img
+                                        src={`http://127.0.0.1:8000/storage/foto_barang/${titipan.barang.foto_barang}`}
+                                        alt="Foto Barang"
+                                        height={100}
+                                        className="rounded-2"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="text-muted">
+                                    Status Barang : {titipan.barang.status_barang}
+                                  </div>
+                                </div>
+                              </Card.Text>
+                            </Card.Body>
+                            <Card.Footer className="d-flex gap-2">
+                              <Button
+                                className={terproses ? "w-100" : "w-50"}
+                                variant="outline-secondary"
+                                onClick={() => {
+                                  setSelectedPenitipan(titipan);
+                                  setShowDetail(true);
+                                }}
+                              >
+                                Lihat Detail
+                              </Button>
+                              {renderAdditionalButton(titipan)}
+                            </Card.Footer>
+                          </Card>
+                        </Col>
+                      </Row>
+                    );
+                  })}
+              </div>
+            ) : (
+              <Alert className="text-center" variant="warning">
+                Belum Ada Titipan :(
+              </Alert>
+            )}
         </Tab>
       </Tabs>
+
+      <Modal show={showDetail} onHide={() => setShowDetail(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Detail Barang</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedPenitipan && (
+            <>
+            <Row>
+              <Col md={8} className="gap-4">
+                <h3><b>{selectedPenitipan.barang.nama_barang}</b></h3>
+                <div className="d-flex flex-column gap-1">
+                  <span>Status: <span className="text-muted">{selectedPenitipan.barang.status_barang}</span></span>
+                  <span>Harga: <span className="text-muted">{selectedPenitipan.barang.harga_barang}</span></span>
+                  <span>Garansi: <span className="text-muted">{selectedPenitipan.barang.garansi}</span></span>
+                  <span>Tanggal Masuk: <span className="text-muted">{formatTanpaDetik(selectedPenitipan.barang.tanggal_masuk)}</span></span>
+                  <span>Tanggal Berakhir: <span className="text-muted">{formatTanpaDetik(selectedPenitipan.tanggal_akhir)}</span></span>
+                  <span>Perpanjangan: <span className="text-muted">{selectedPenitipan.perpanjangan}</span></span>
+                  <span>Deskripsi: </span>
+                  <InputFloatingForm
+                    as="textarea"
+                    className="text-muted"
+                    placeholder={selectedPenitipan.barang.deskripsi}
+                    disabled
+                  />
+                </div>
+              </Col>
+              <Col ms={6} className="d-flex flex-column align-items-end mt-5">
+                <img 
+                  src={`http://127.0.0.1:8000/storage/foto_barang/${selectedPenitipan.barang.foto_barang}`}
+                  alt="Foto barang" 
+                  style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
+                />
+              </Col>
+            </Row>
+            </>
+          )}
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showPerpanjangan} onHide={() => setShowPerpanjangan(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Perpanjangan</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Apakah anda yakin ingin memperpanjang masa penitipan (30 hari)?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPerpanjangan(false)}>
+            Batal
+          </Button>
+          <Button variant="success" onClick={handlePerpanjang}>
+            Perpanjang
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={penitipanHabis} onHide={() => setPenitipanHabis(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Ambil/Donasi</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedPenitipan && (
+            <>
+            <Row>
+              <Col md={8} className="gap-4">
+                <h3><b>{selectedPenitipan.barang.nama_barang}</b></h3>
+                <div className="d-flex flex-column gap-1">
+                  <span>Status: <span className="text-muted">{selectedPenitipan.barang.status_barang}</span></span>
+                  <span>Harga: <span className="text-muted">{selectedPenitipan.barang.harga_barang}</span></span>
+                  <span>Garansi: <span className="text-muted">{selectedPenitipan.barang.garansi}</span></span>
+                  <span>Tanggal Masuk: <span className="text-muted">{formatTanpaDetik(selectedPenitipan.barang.tanggal_masuk)}</span></span>
+                  <span>Tanggal Berakhir: <span className="text-muted">{formatTanpaDetik(selectedPenitipan.tanggal_akhir)}</span></span>
+                  <span>Perpanjangan: <span className="text-muted">{selectedPenitipan.perpanjangan}</span></span>
+                  <span>Deskripsi: </span>
+                  <InputFloatingForm
+                    as="textarea"
+                    className="text-muted"
+                    placeholder={selectedPenitipan.barang.deskripsi}
+                    disabled
+                  />
+                </div>
+              </Col>
+              <Col ms={6} className="d-flex flex-column align-items-end mt-5">
+                <img 
+                  src={`http://127.0.0.1:8000/storage/foto_barang/${selectedPenitipan.barang.foto_barang}`}
+                  alt="Foto barang" 
+                  style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
+                />
+              </Col>
+            </Row>
+            
+            </>
+          )}
+        </Modal.Body>
+
+        <Modal.Footer className="d-flex flex-column gap-2">
+          <Row className="w-100">
+            <p className="text-danger mb-0 text-start">
+              ⚠️ Peringatan! Aksi ini tidak bisa dibatalkan.
+            </p>
+          </Row>
+          <Row className="w-100">
+            <Col xs={6} className="pe-1">
+              <Button className="btnHijau w-100" onClick={handleAmbil}>
+                Ambil
+              </Button>
+            </Col>
+            <Col xs={6} className="ps-1">
+              <Button variant="warning" className="w-100" onClick={handleDonasi}>
+                Donasi
+              </Button>
+            </Col>
+          </Row>
+        </Modal.Footer>
+      </Modal>
+      
+      <Outlet/>
     </Container>
   );
 };

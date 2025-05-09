@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\RincianPenitipanController;
 use App\Models\Organisasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,7 @@ use App\Http\Controllers\RincianPemesananController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\DiskusiController;
 use App\Http\Controllers\RequestDonasiController;
+use App\Http\Controllers\PenitipanController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -99,12 +101,13 @@ Route::middleware('auth:pegawai')->group(function () {
 });
 
 Route::middleware('auth:penitip')->group(function () {
-    Route::get('/penitip/penitipProfile', [PenitipController::class, 'getPenitipProfile']);
+    Route::get('/penitipProfile', [PenitipController::class, 'getPenitipProfile']);
     Route::get('/getPenjualanByIdPenitip/{id}', [RincianPemesananController::class, 'getPenjualanByIdPenitip']);
     Route::get('/getPenjualanById/{id}', [RincianPemesananController::class, 'getPenjualanById']);
     Route::get('/getPemesananById/{id}', [PemesananController::class, 'getPemesananById']);
-
-    
+    Route::get('/getPenitipanByIdPenitip/{id}', [PenitipanController::class, 'getPenitipanData']);
+    Route::put('/perpanjangRincianPenitipan/{id}', [RincianPenitipanController::class, 'perpanjangRincianPenitipan']);
+    Route::put('/donasiByPenitip/{id}', [BarangController::class, 'donasiByPenitip']);
 });
 
 Route::middleware('auth:organisasi')->group(function () {

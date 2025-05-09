@@ -103,5 +103,21 @@ class BarangController extends Controller
         ]);
     }
 
+    public function donasiByPenitip($id)
+    {
+        try {
+            $barang = Barang::findOrFail($id);
+    
+            $barang->status_barang = 'Didonasikan'; 
+            $barang->save();
+    
+            return response()->json(['message' => 'Status barang berhasil diubah'], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat mengubah status barang.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
 }
