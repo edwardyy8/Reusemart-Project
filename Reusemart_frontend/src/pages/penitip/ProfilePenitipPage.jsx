@@ -20,6 +20,7 @@ const ProfilePenitipPage = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [showPerpanjangan, setShowPerpanjangan] = useState(false);
   const [penitipanHabis, setPenitipanHabis] = useState(false);
+  const [showPengambilan, setShowPengambilan] = useState(false);
   const [selectedPenitipan, setSelectedPenitipan] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,14 +70,14 @@ const ProfilePenitipPage = () => {
       const newTanggalAkhir = new Date(selectedPenitipan.tanggal_akhir);
       newTanggalAkhir.setDate(newTanggalAkhir.getDate() + 30);
       
-      await perpanjangRincianPenitipan(selectedPenitipan.id_rincianpenitipan, newTanggalAkhir.toISOString());
+      const response = await perpanjangRincianPenitipan(selectedPenitipan.id_rincianpenitipan, newTanggalAkhir.toISOString());
       console.log(selectedPenitipan);
       setTitipanData(titipanData.map(titipan => 
         titipan.id_penitipan === selectedPenitipan.id_penitipan
           ? { 
               ...titipan, 
-              tanggal_akhir: newTanggalAkhir.toISOString(),
-              perpanjangan: "Ya"
+              perpanjangan: "Ya",
+              tanggal_akhir: response.tanggal_akhir
             } 
           : titipan
       ));
@@ -90,8 +91,19 @@ const ProfilePenitipPage = () => {
 
   const handleAmbil = async () => {
     try {
-      await ambilTitipan(selectedPenitipan.id_rincianpenitipan);
-      navigate(`/ambilTitipanPage/${selectedPenitipan.id}`);
+      const response = await ambilTitipan(selectedPenitipan.id_rincianpenitipan);
+      setTitipanData(titipanData.map(titipan => 
+      titipan.id_rincianpenitipan === selectedPenitipan.id_rincianpenitipan
+        ? { 
+            ...titipan, 
+            status_penitipan: "Diambil Kembali",
+            batas_akhir: response.batas_akhir
+          } 
+        : titipan
+      ));
+      toast.success("Pengambilan titipan berhasil dijadwalkan");
+      setPenitipanHabis(false);
+      setShowPengambilan(true);
     } catch (error) {
       toast.error("Gagal mengambil titipan");
     }
@@ -100,6 +112,15 @@ const ProfilePenitipPage = () => {
   const handleDonasi = async () => {
     try {
       await donasiByPenitip(selectedPenitipan.id_barang);
+      setTitipanData(titipanData.map(titipan => 
+      titipan.id_rincianpenitipan === selectedPenitipan.id_rincianpenitipan
+        ? { 
+            ...titipan, 
+            status_penitipan: "Didonasikan",
+            status_barang: "Didonasikan"
+          } 
+        : titipan
+      ));
       toast.success("Terima kasih telah mendonasikan barang anda");
       setPenitipanHabis(false);
     } catch (error) {
@@ -115,8 +136,23 @@ const ProfilePenitipPage = () => {
     const tersedia = titipan.barang.status_barang === "Tersedia";
     const terproses = ["Terjual", "Didonasikan"].includes(titipan.barang.status_barang);
     const sudahPerpanjang = titipan.perpanjangan === "Ya";
+    const diambil = titipan.status_penitipan === "Diambil Kembali";
 
     if (terproses) return null;
+
+    if (diambil){
+      return (
+        <Button 
+          className="btnHijau w-50"
+          onClick={() => {
+            setSelectedPenitipan(titipan);
+            setShowPengambilan(true);
+          }}
+        >
+          Informasi Pengambilan
+        </Button>
+      );
+    }
     
     if (!sudahPerpanjang && !sudahLewat && tersedia) {
       return (
@@ -159,7 +195,7 @@ const ProfilePenitipPage = () => {
         </Button>
       );
     }
-    
+  
     return null;
   };
 
@@ -465,7 +501,6 @@ const ProfilePenitipPage = () => {
             </>
           )}
         </Modal.Body>
-
         <Modal.Footer className="d-flex flex-column gap-2">
           <Row className="w-100">
             <p className="text-danger mb-0 text-start">
@@ -484,6 +519,32 @@ const ProfilePenitipPage = () => {
               </Button>
             </Col>
           </Row>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showPengambilan} onHide={() => setShowPengambilan(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Ambil Titipan</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedPenitipan && (
+            <>
+            <div className="d-flex flex-column gap-1">
+              <h5><strong>Alamat Pengambilan</strong></h5>
+              Gudang ReuseMart <br />
+              +628987654321 <br />
+              Jl. Babarsari no. 111 (ruko 7 lantai di depan pom bensin, pagar besi), Depok, Sleman, Yogyakarta <br />
+            </div>
+            <p className="text-danger mb-0 text-start">
+                ⚠️ Batas Pengambilan: {formatTanpaDetik(selectedPenitipan.batas_akhir)}
+            </p>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPengambilan(false)}>
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
       

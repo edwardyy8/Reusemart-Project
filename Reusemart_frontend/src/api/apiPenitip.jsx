@@ -129,12 +129,10 @@ export const perpanjangRincianPenitipan = async (id_rincianpenitipan, tanggal_ak
   }
 };
 
-export const ambilTitipan = async (id_rincianpenitipan, batas_akhir) =>{
+export const ambilTitipan = async (id_rincianpenitipan) =>{
   try{
-    const response = await useAxios.put(`/ambilTitipan/${id_rincianpenitipan}`, {
-      batas_akhir: batas_akhir,
-      status_penitipan: 'Diambil'
-    }, {
+    const response = await useAxios.put(`/ambilTitipan/${id_rincianpenitipan}`, {},
+    {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,

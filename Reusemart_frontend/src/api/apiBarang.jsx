@@ -39,7 +39,6 @@ export const SearchBarang = async (query) => {
 export const donasiByPenitip = async (id_barang) => {
   try {
     const response = await useAxios.put(`/donasiByPenitip/${id_barang}`, {
-      status_barang : "Didonasikan"
     }, {
       headers: {
         "Content-Type": "application/json",
