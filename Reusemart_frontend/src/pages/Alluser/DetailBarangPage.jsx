@@ -95,8 +95,8 @@ const DetailBarangPage = () => {
       try {
         const barangData = await GetBarangById(id);
         setBarang(barangData);
-  
-        const penitipData = await GetPenitipById(barangData.barang.barang.id_penitip); // <--- perhatikan di sini
+
+        const penitipData = await GetPenitipById(barangData.barang.id_penitip); // <--- perhatikan di sini
         setPenitip({ ...penitipData, jumlahTerjual: barangData.jumlah_barang_terjual }); // ← Tambahkan properti ini
       } catch (err) {
         console.error(err);
@@ -104,11 +104,11 @@ const DetailBarangPage = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
     fetchDiskusi();
   }, [id]);
-  
+
 
   if (loading) {
     return (
@@ -134,7 +134,7 @@ const DetailBarangPage = () => {
           <Card>
             <Card.Img
               variant="top"
-              src={`/images/${barang.barang.foto_barang}`}
+              src={`http://127.0.0.1:8000/storage/foto_barang/${barang.barang.foto_barang}`}
               alt={barang.barang.nama_barang}
               style={{ maxHeight: "400px", objectFit: "contain" }}
             />
@@ -164,7 +164,7 @@ const DetailBarangPage = () => {
                     <h5 className="fw-bold">{penitip?.nama}</h5>
                     <p className="text-muted mb-1">Rating Penjual: ⭐ {penitip?.rating_penitip}</p>
                     <p className="text-muted">Barang Terjual: {penitip?.jumlahTerjual ?? 0}</p>
-                    </Col>
+                  </Col>
                 </Row>
               </div>
             </Col>

@@ -10,7 +10,8 @@ class BarangController extends Controller
 {
     public function index()
 {
-    $barang = Barang::where('status_barang', 'Tersedia')
+    $barang = Barang::with('penitip') // Eager load relasi penitip
+                    ->where('status_barang', 'Tersedia')
                     ->orderBy('tanggal_masuk', 'desc')
                     ->get();
 

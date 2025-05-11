@@ -25,6 +25,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 
 use App\Http\Middleware\CekJabatan;
 use App\Http\Middleware\EnsureApiTokenIsValid;
+use App\Models\Barang;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
