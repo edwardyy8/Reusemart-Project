@@ -15,7 +15,7 @@ class PegawaiController extends Controller
     {
         // Ambil data minimal, tanpa relasi
         try {
-            $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'id_jabatan', 'tanggal_lahir')->get();
+            $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'id_jabatan', 'tanggal_lahir', 'foto_profile')->get();
             return response()->json($pegawai, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Server Error', 'message' => $e->getMessage()], 500);
