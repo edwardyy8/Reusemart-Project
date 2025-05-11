@@ -54,9 +54,6 @@ import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
 import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
 import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
-import ProtectedRoutes from "./ProtectedRoutes";
-import ProtectedFromPegawai from "./ProtectedFromPegawai";
-
 const router = createBrowserRouter([
   { path: "*", element: <NoPage /> },
   { path: "/tidaksah", element: <UnauthorizedPage /> },
