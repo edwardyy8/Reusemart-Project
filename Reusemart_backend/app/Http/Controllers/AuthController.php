@@ -21,7 +21,7 @@ class AuthController extends Controller
 {
     //
     public function register(Request $request)
-    {   
+    {
         try {
             $registrationData = $request->all();
 
@@ -73,7 +73,7 @@ class AuthController extends Controller
             $user = $registrationData['role'] == 'pembeli'
                 ? Pembeli::create($insertData)
                 : Organisasi::create($insertData);
-                
+
             if($registrationData['role'] == 'pembeli') {
                 $alamatData = [
                     'id_pembeli' => $user->id_pembeli,
@@ -85,13 +85,13 @@ class AuthController extends Controller
                 ];
                 Alamat::create($alamatData);
             }
-            
+
 
             return response([
                 'message' => 'Register Success',
             ], 200);
         } catch (\Exception $e) {
-            
+
             return response([
                 'message' => 'Register Failed :',
                 'error' => $e->getMessage(),
@@ -101,7 +101,7 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {   
+    {
         $loginData = $request->all();
 
         $validate = Validator::make($loginData, [
@@ -119,21 +119,21 @@ class AuthController extends Controller
             'pegawai' => Pegawai::class,
             'organisasi' => Organisasi::class,
         ];
-    
-        
+
+
         foreach ($userTypes as $type => $model) {
             $user = $model::where('email', $request->email)->first();
-        
-            if ($user && Hash::check($request->password, $user->password)) {                
+
+            if ($user && Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('Authentication Token')->plainTextToken;
-              
+
                 return response([
                     'message' => 'Selamat datang, ' . ($user->nama),
                     'token' => $token,
                     'user_type' => $type,
                     'jabatan' => $user->jabatan->nama_jabatan ?? null,
                 ]);
-            
+
             }
         }
 
@@ -150,7 +150,7 @@ class AuthController extends Controller
             }
 
             $user->currentAccessToken()->delete();
-            
+
             return response()->json(['message' => 'Berhasil Logout'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Gagal Logout', 'error' => $e->getMessage()], 500);
@@ -159,11 +159,11 @@ class AuthController extends Controller
 
     public function getRole(Request $request) {
         try {
-            
+
             return response([
                 'user_type' => $request->user()->getUserType(),
             ]);
-            
+
         } catch (\Exception $e) {
             return response([
                 'message' => 'Failed to get user type',
@@ -179,6 +179,7 @@ class AuthController extends Controller
 
             return response([
                 'jabatan' => $user->jabatan->nama_jabatan,
+                'id_pegawai' => $user->id_pegawai,
                 'nama_pegawai' => $user->nama,
                 'foto_profile' => $user->foto_profile,
             ]);
@@ -206,7 +207,7 @@ class AuthController extends Controller
             return response(['message' => 'Password berhasil diubah'], 200);
         } catch (\Exception $e) {
             return response([
-                'message' => 'Gagal mengubah password', 
+                'message' => 'Gagal mengubah password',
                 'error' => $e->getMessage()
             ], status: 401);
         }

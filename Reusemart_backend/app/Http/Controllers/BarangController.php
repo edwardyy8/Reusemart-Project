@@ -9,89 +9,103 @@ use Illuminate\Support\Facades\DB;
 class BarangController extends Controller
 {
     public function index()
-    {
-        $barang = Barang::with('fotoBarang')
-            ->orderBy('tanggal_masuk', 'desc')
-            ->get();
+{
+    $barang = Barang::where('status_barang', 'Tersedia')
+                    ->orderBy('tanggal_masuk', 'desc')
+                    ->get();
 
+    return response()->json([
+        'message' => 'All available barang retrieved successfully',
+        'status' => 'success',
+        'data' => $barang,
+    ]);
+}
+
+
+public function findBySubKategori($id_kategori)
+{
+    $barang = Barang::where('id_kategori', $id_kategori)
+                    ->where('status_barang', 'Tersedia')
+                    ->get();
+
+    if ($barang->isEmpty()) {
         return response()->json([
-            'message' => 'All barang retrieved successfully',
-            'status' => 'success',
-            'data' => $barang,
-        ]);
+            'message' => 'Barang not found',
+            'status' => 'error',
+        ], 404);
     }
 
-    public function findBySubKategori($id_kategori)
-    {
-        $barang = Barang::with('fotoBarang')
-            ->where('id_kategori', $id_kategori)
-            ->get();
+    return response()->json([
+        'message' => 'Barang retrieved successfully',
+        'status' => 'success',
+        'data' => $barang,
+    ]);
+}
 
-        if ($barang->isEmpty()) {
-            return response()->json([
-                'message' => 'Barang not found',
-                'status' => 'error',
-            ], 404);
-        }
-
-        return response()->json([
-            'message' => 'Barang retrieved successfully',
-            'status' => 'success',
-            'data' => $barang,
-        ]);
-    }
 
     public function findByKategori($id_kategori)
-    {
-        $query = Barang::with('fotoBarang');
+{
+    $query = Barang::query();
 
-        if ($id_kategori == 1) {
-            $query->where('id_kategori', 'like', '1%')
-                  ->whereRaw('CHAR_LENGTH(id_kategori) = 2');
-        } else {
-            $query->where('id_kategori', 'like', $id_kategori . '%');
-        }
-
-        $barang = $query->get();
-
-        if ($barang->isEmpty()) {
-            return response()->json([
-                'message' => 'Barang not found',
-                'status' => 'error',
-            ], 404);
-        }
-
-        return response()->json([
-            'message' => 'Barang retrieved successfully',
-            'status' => 'success',
-            'data' => $barang,
-        ]);
+    if ($id_kategori == 1) {
+        $query->where('id_kategori', 'like', '1%')
+              ->whereRaw('CHAR_LENGTH(id_kategori) = 2');
+    } else {
+        $query->where('id_kategori', 'like', $id_kategori . '%');
     }
 
-    public function show($id)
-    {
-        $barang = Barang::with('fotoBarang')->find($id);
+    $query->where('status_barang', 'Tersedia'); // Tambahan filter
 
-        if (!$barang) {
-            return response()->json([
-                'message' => 'Barang not found',
-                'status' => 'error',
-            ], 404);
-        }
+    $barang = $query->get();
 
+    if ($barang->isEmpty()) {
         return response()->json([
-            'message' => 'Barang retrieved successfully',
-            'status' => 'success',
-            'data' => $barang,
-        ]);
+            'message' => 'Barang not found',
+            'status' => 'error',
+        ], 404);
     }
+
+    return response()->json([
+        'message' => 'Barang retrieved successfully',
+        'status' => 'success',
+        'data' => $barang,
+    ]);
+}
+
+
+public function show($id)
+{
+    $barang = Barang::find($id);
+
+    if (!$barang) {
+        return response()->json([
+            'message' => 'Barang not found',
+            'status' => 'error',
+        ], 404);
+    }
+
+    // Hitung jumlah barang terjual oleh penitip yang sama
+    $jumlahTerjual = Barang::where('id_penitip', $barang->id_penitip)
+                            ->where('status_barang', 'Terjual')
+                            ->count();
+
+    return response()->json([
+        'message' => 'Barang retrieved successfully',
+        'status' => 'success',
+        'data' => [
+            'barang' => $barang,
+            'jumlah_barang_terjual' => $jumlahTerjual,
+        ],
+    ]);
+}
+
 
     public function search(Request $request)
     {
         $query = strtolower($request->input('q'));
-        $threshold = 3; // maksimal jarak typo, misalnya laptopp vs laptop = 1
+        $threshold = 3;
 
-        $barang = Barang::with('fotoBarang')->get();
+        $barang = Barang::all();
 
         $filtered = $barang->filter(function ($item) use ($query, $threshold) {
             $distance = levenshtein(strtolower($item->nama_barang), $query);
@@ -104,6 +118,4 @@ class BarangController extends Controller
             'data' => array_values($filtered->toArray())
         ]);
     }
-
-
 }
