@@ -15,13 +15,15 @@ class RincianPemesananController extends Controller
             $penjualan = Rincian_Pemesanan::whereHas('barang', function ($query) use ($id) {
                 $query->where('id_penitip', $id);
                 })
-                ->with(['barang.fotoBarang'])
+                ->whereHas('pemesanan', function ($query) use ($id) {
+                    $query->where('status_pembayaran', 'Lunas');})
+                ->with(['pemesanan', 'barang'])
                 ->get();
 
             if (!$penjualan) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Pemesanan tidak ditemukan',
+                    'message' => 'Penjualan tidak ditemukan',
                 ], 404);
             }
 
@@ -41,6 +43,7 @@ class RincianPemesananController extends Controller
     public function getPenjualanById($id, Request $request)
     {
         try {
+
             $id_penitip = $request->user()->id_penitip;
 
             if (!$id_penitip) {
@@ -50,7 +53,7 @@ class RincianPemesananController extends Controller
                 ], 404);
             }
 
-            $penjualan = Rincian_Pemesanan::with(['barang.fotoBarang'])
+            $penjualan = Rincian_Pemesanan::with(['barang'])
                 ->where('id_rincianpemesanan', $id)
                 ->first();
 
@@ -73,4 +76,6 @@ class RincianPemesananController extends Controller
             ], 500);
         }
     }
+
+    
 }

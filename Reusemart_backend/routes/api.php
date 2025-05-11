@@ -152,6 +152,8 @@ Route::middleware('auth:pembeli')->group(function () {
     Route::post('/editAlamat/{id}', [AlamatController::class, 'editAlamat']);
     Route::get('/getAlamatById/{id}', [AlamatController::class, 'getAlamatById']);
     Route::post('tambahAlamat', [AlamatController::class, 'tambahAlamat']);
+    Route::get('/getPemesananByIdPemesanan/{id}', [PemesananController::class, 'getPemesananByIdPemesanan']);
 });
+
 
 Route::get('/getDiskusiByIdBarang/{id}', [DiskusiController::class, 'getDiskusiByIdBarang']);

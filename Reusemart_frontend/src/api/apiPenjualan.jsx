@@ -7,7 +7,7 @@ export const GetPenjualanByIdPenitip = async (id) => {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
-        return response.data;
+        return response.data.data;
     } catch (error) {
         throw error.response.data;
     }

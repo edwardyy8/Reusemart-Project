@@ -45,6 +45,10 @@ import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
 import ProfilePembeliPage from "../pages/pembeli/ProfilePembeliPage";
 import EditAlamatPage from "../pages/pembeli/EditAlamatPage";
 import TambahAlamatPage from "../pages/pembeli/TambahAlamatPage";
+import DetailPembelianPage from "../pages/pembeli/DetailPembelianPage";
+
+import ProtectedRoutes from "./ProtectedRoutes";
+import ProtectedFromPegawai from "./ProtectedFromPegawai";
 
 import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
 import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
@@ -128,6 +132,7 @@ const router = createBrowserRouter([
           { path: "profile", element: <ProfilePembeliPage /> },
           { path: "editAlamat/:id", element: <EditAlamatPage /> },
           { path: "tambahAlamat", element: <TambahAlamatPage /> },
+          { path: "detailPembelian/:id", element: <DetailPembelianPage /> },
         ],
       },
       {
