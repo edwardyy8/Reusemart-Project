@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class PegawaiController extends Controller
 {
@@ -258,9 +260,61 @@ public function tambahPegawai(Request $request)
 
 
 
-    
+public function register(Request $request)
+{
+    $validatedData = $request->validate([
+        'nama' => 'required|string',
+        'email' => 'required|email|unique:pegawai,email',
+        'password' => 'required|string|min:6',
+        'id_jabatan' => 'required|integer',
+        'tanggal_lahir' => 'required|date',
+    ]);
 
+    // Buat ID otomatis: P1, P2, dst.
+    $lastPegawai = Pegawai::orderBy('id_pegawai', 'desc')->first();
+    if ($lastPegawai) {
+        $lastIdNumber = intval(substr($lastPegawai->id_pegawai, 1)); // ambil angka dari "P14"
+        $newId = 'P' . ($lastIdNumber + 1);
+    } else {
+        $newId = 'P1';
+    }
 
+    // Cek apakah ID sudah ada
+    while (Pegawai::where('id_pegawai', $newId)->exists()) {
+        $lastIdNumber = intval(substr($newId, 1)); // ambil angka
+        $newId = 'P' . ($lastIdNumber + 1); // generate ID baru
+    }
+
+    // Buat Pegawai baru
+    $pegawai = Pegawai::create([
+        'id_pegawai' => $newId,
+        'nama' => $validatedData['nama'],
+        'email' => $validatedData['email'],
+        'password' => Hash::make($validatedData['password']),
+        'id_jabatan' => $validatedData['id_jabatan'],
+        'tanggal_lahir' => $validatedData['tanggal_lahir'],
+        'foto_profile' => 'default.png',
+        'createdAt' => Carbon::now('Asia/Jakarta'),
+    ]);
+
+    return response()->json([
+        'message' => 'Registrasi berhasil',
+        'pegawai' => $pegawai,
+    ], 201);
+}
+
+public function resetPassword($id)
+{
+    $pegawai = Pegawai::findOrFail($id);
+
+    // Asumsikan pegawai memiliki atribut 'tanggal_lahir' dengan format YYYY-MM-DD
+    $tglLahir = \Carbon\Carbon::parse($pegawai->tanggal_lahir)->format('dmY');
+
+    $pegawai->password = Hash::make($tglLahir);
+    $pegawai->save();
+
+    return response()->json(['message' => 'Password berhasil direset'], 200);
+}
 
     public function getFotoProfile($filename)
     {

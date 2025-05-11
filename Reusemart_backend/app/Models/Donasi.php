@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Donasi extends Model
-{   
+{
     use HasFactory;
 
     public $timestamps = false;
@@ -35,5 +35,10 @@ class Donasi extends Model
     {
         return $this->belongsTo(Pegawai::class, 'id_pegawai');
     }
+
+    public function donasi()
+{
+    return $this->hasMany(Donasi::class, 'id_request');
+}
 
 }

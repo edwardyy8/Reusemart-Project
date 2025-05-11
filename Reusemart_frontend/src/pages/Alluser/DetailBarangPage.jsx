@@ -1,30 +1,24 @@
 import { useEffect, useState } from "react";
 import { Card, Col, Container, Row, Spinner, Alert, Form, Button } from "react-bootstrap";
-import { FaRegCommentDots } from 'react-icons/fa'; // Importing the comment icon
-import { BsPatchCheckFill, BsShop } from "react-icons/bs";
+import { FaRegCommentDots } from 'react-icons/fa';
+import { BsPatchCheckFill } from "react-icons/bs";
 import { useParams, useNavigate } from "react-router-dom";
 import { GetBarangById } from "../../api/apiBarang";
-import { GetFotoBarangByIdBarang } from "../../api/apiFotoBarang"; // pastikan fungsinya ada
 import { GetPenitipById } from "../../api/apiPenitip";
-import iconPenitip from "../../assets/images/iconPenitip.png";
-import FooterBar from "../../components/FooterBar";
-
 import { GetDiskusiByIdBarang, TambahDiskusi } from "../../api/apiDiskusi";
 import { getRole } from "../../api/apiAuth";
-import logo from "../../assets/images/logoreuse.png";
 import { toast } from "react-toastify";
+import logo from "../../assets/images/logoreuse.png";
 
 const DetailBarangPage = () => {
   const { id } = useParams();
   const [barang, setBarang] = useState(null);
+  const [penitip, setPenitip] = useState(null);
+  const [diskusiList, setDiskusiList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingDiskusi, setLoadingDiskusi] = useState(true);
-  const [penitip, setPenitip] = useState(null);
-  const [fotoBarangList, setFotoBarangList] = useState([]);
-  const [diskusiList, setDiskusiList] = useState([]);
   const [isPending, setIsPending] = useState(false);
   const [userType, setUserType] = useState("");
-
   const navigate = useNavigate();
 
   const [diskusiInput, setDiskusiInput] = useState({
@@ -34,73 +28,66 @@ const DetailBarangPage = () => {
     id_pembeli: "",
   });
 
-  const handleChange = (event) => {
-    setDiskusiInput({ ...diskusiInput, [event.target.name]: event.target.value });
+  const handleChange = (e) => {
+    setDiskusiInput({ ...diskusiInput, [e.target.name]: e.target.value });
   };
 
-  const submitDiskusi = (event) => {
-    event.preventDefault();
-    fetchRole();
+  const submitDiskusi = async (e) => {
+    e.preventDefault();
+    await fetchRole();
 
-    TambahDiskusi(diskusiInput)
-      .then((res) => {    
-        toast.success(res.message); 
-        fetchDiskusi(); 
-        setDiskusiInput({ komentar: "", id_barang: id, id_pegawai: "", id_pembeli: "" });
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err.message);
-      });
+    try {
+      const res = await TambahDiskusi(diskusiInput);
+      toast.success(res.message);
+      setDiskusiInput({ komentar: "", id_barang: id, id_pegawai: "", id_pembeli: "" });
+      fetchDiskusi();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message);
+    }
+  };
+
+  const fetchRole = async () => {
+    setIsPending(true);
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      setIsPending(false);
+      toast.error("Silahkan login terlebih dahulu!");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const res = await getRole();
+      setUserType(res.user_type);
+    } catch (err) {
+      console.error(err);
+      toast.error("Terjadi Kesalahan! Silahkan login ulang.");
+      sessionStorage.removeItem("token");
+      navigate("/login");
+    } finally {
+      setIsPending(false);
+    }
   };
 
   const fetchDiskusi = async () => {
     try {
       setLoadingDiskusi(true);
-      const diskusiData = await GetDiskusiByIdBarang(id);
-      setDiskusiList(diskusiData.data);
-
+      const res = await GetDiskusiByIdBarang(id);
+      setDiskusiList(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setLoadingDiskusi(false);
-    } catch (error) {
-      console.error(error);
-      setLoadingDiskusi(false);
-    }
-  };  
-
-  const fetchRole = async () => { 
-    setIsPending(true);
-
-    const tokenDariSS = sessionStorage.getItem("token");
-    
-    if (!tokenDariSS) {
-      setIsPending(false);
-      navigate("/login");
-      toast.error("Silahkan login terlebih dahulu!");
-      return;
-    }else{
-      try {
-        const res = await getRole();
-
-        setUserType(res.user_type);
-
-
-      } catch (err) { 
-        console.log(err);
-        toast.error("Terjadi Kesalahan! Silahkan login ulang.");
-        sessionStorage.removeItem("token");
-        navigate("/login");
-      }finally {
-        setIsPending(false);
-      }
     }
   };
 
-  const formatDateAja = (tanggal) => {
-    const date = new Date(tanggal);
-    const tahun = date.getFullYear();
-    const bulan = String(date.getMonth() + 1).padStart(2, '0');
-    const hari = String(date.getDate()).padStart(2, '0');
-    return `${tahun}-${bulan}-${hari}`;
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
   };
 
   useEffect(() => {
@@ -108,189 +95,158 @@ const DetailBarangPage = () => {
       try {
         const barangData = await GetBarangById(id);
         setBarang(barangData);
-
-        const penitipData = await GetPenitipById(barangData.id_penitip);
-        setPenitip(penitipData);
-
-        const fotoList = await GetFotoBarangByIdBarang(id);
-        setFotoBarangList(fotoList);
-
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
+  
+        const penitipData = await GetPenitipById(barangData.barang.barang.id_penitip); // <--- perhatikan di sini
+        setPenitip({ ...penitipData, jumlahTerjual: barangData.jumlah_barang_terjual }); // ← Tambahkan properti ini
+      } catch (err) {
+        console.error(err);
+      } finally {
         setLoading(false);
       }
-    };        
-
+    };
+  
     fetchData();
     fetchDiskusi();
   }, [id]);
+  
 
   if (loading) {
     return (
-      <div className="text-center my-5" style={{ marginTop: "5rem" }}>
+      <div className="text-center my-5">
         <Spinner animation="border" variant="success" />
-        <p>Loading Detail Barang...</p>
+        <p>Loading Detail barang.barang...</p>
       </div>
     );
   }
 
   if (!barang) {
     return (
-      <Container className="text-center my-5" style={{ marginTop: "5rem" }}>
+      <Container className="text-center my-5">
         <h3>Barang tidak ditemukan</h3>
       </Container>
     );
   }
 
-  // Pisahkan foto utama dan foto lain
-  const fotoUtama = fotoBarangList.length > 0 ? fotoBarangList[0].foto_barang : null;
-  const fotoLainnya = fotoBarangList.slice(1); // Foto-foto lainnya selain foto utama
-
   return (
-    <>
-      <Container className="my-5">
-        <Row className="g-4">
-          {/* Foto Utama */}
-          <Col md={4}>
-            <Card>
-              <Card.Img
-                variant="top"
-                src={`/images/${fotoUtama}`}
-                alt={barang.nama_barang}
-                style={{ maxHeight: "400px", objectFit: "contain" }}
-              />
-            </Card>
-          </Col>
+    <Container className="my-5">
+      <Row className="g-4">
+        <Col md={4}>
+          <Card>
+            <Card.Img
+              variant="top"
+              src={`/images/${barang.barang.foto_barang}`}
+              alt={barang.barang.nama_barang}
+              style={{ maxHeight: "400px", objectFit: "contain" }}
+            />
+          </Card>
+        </Col>
 
-          {/* Informasi Barang & Penitip */}
-          <Col md={8}>
-            <Row>
-              <Col md={8}>
-                <h2>{barang.nama_barang}</h2>
-                <p className="text-success">
-                  {barang.status_barang} - {barang.garansi === "Ya" ? "Garansi" : "Tidak Bergaransi"} - {barang.berat_barang} Kg
-                </p>
-                <h3>Rp {Number(barang.harga_barang).toLocaleString("id-ID")}</h3>
-              </Col>
-              <Col md={4}>
-                <div className="p-3 border rounded">
-                  <Row>
-                    <Col md={4}>
-                      <img src={`http://127.0.0.1:8000/storage/foto_profile/${penitip.foto_profile}`} alt="Penitip" className="img-fluid rounded" />
-                    </Col>
-                    <Col md={8}>
-                      <h5 className="fw-bold">{penitip?.nama || "Nama Penitip"}</h5>
-                      <p className="text-muted mb-1">Rating Penjual: ⭐ {penitip?.rating_penitip} </p>
-                      <p className="text-muted">Barang Terjual: Masih dummyy</p>
-                    </Col>
-                  </Row>
-                </div>
-              </Col>
-            </Row>
-
-            <hr />
-            <h4 className="text-success text-decoration-underline">Detail Produk</h4>
-            <p>{barang.deskripsi}</p>
-            <hr />
-          </Col>
-        </Row>
-
-        {/* Foto Lainnya */}
-        <Row className="my-3">
-          <Col md={8}>
-            {fotoLainnya.length > 0 ? (
-              fotoLainnya.map((foto, index) => (
-                <img
-                  key={index}
-                  src={`/images/${foto.foto_barang}`}
-                  alt={`Foto ${index + 2}`}
-                  className="img-fluid rounded me-2 mb-2"
-                  style={{ maxWidth: "150px" }}
-                />
-              ))
-            ) : (
-              <p>Tidak ada foto lainnya</p>
-            )}
-          </Col>
-          <Col md={4} className="d-flex justify-content-end align-items-center">
-            <div className="d-flex gap-2 w-100">
-              <button className="btn btn-outline-success w-50">+ Keranjang</button>
-              <button className="btn btn-success w-50">Checkout</button>
-            </div>
-          </Col>
-        </Row>
-
-        {/* Diskusi Produk */}
-        <hr className="my-4" />
-        <h4 className="text-success text-decoration-underline">Diskusi Produk</h4>
-        
-        <div className="border rounded p-4">
-          {/* Input Diskusi */}
-          {!loadingDiskusi || !isPending ? (
-            <>
-              {diskusiList.length > 0 ? (
-                diskusiList.map((diskusi, index) => (
-                  <div key={index} className="border bg-light rounded p-2 mb-3 d-flex align-items-center px-3">
+        <Col md={8}>
+          <Row>
+            <Col md={8}>
+              <h2>{barang.barang.nama_barang}</h2>
+              <p className="text-success">
+                {barang.barang.status_barang} - {barang.barang.garansi === "Ya" ? "Garansi" : "Tidak Bergaransi"} - {barang.barang.berat_barang} Kg
+              </p>
+              <h3>Rp {Number(barang.barang.harga_barang).toLocaleString("id-ID")}</h3>
+            </Col>
+            <Col md={4}>
+              <div className="p-3 border rounded">
+                <Row>
+                  <Col md={4}>
                     <img
-                      src={diskusi.id_pegawai ? ( logo
-                        ) : (
-                        `http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`
-                      )}
-                      alt="icon user"
-                      width={35}
-                      height={35}
-                      className="me-2 border rounded-circle"
+                      src={`http://127.0.0.1:8000/storage/foto_profile/${penitip?.foto_profile}`}
+                      alt="Penitip"
+                      className="img-fluid rounded"
                     />
-                    <div className="w-100 d-flex justify-content-between align-items-center">
-                      <div>
-                        <strong>
-                          {diskusi.nama_pembeli || diskusi.nama_pegawai}  
-                          {diskusi.id_pegawai && 
-                            <>
-                              <span className="ms-1 hijau">(Customer Service)</span> <BsPatchCheckFill className="hijau ms-1" />
-                            </>
-                          }
-                        </strong> 
-                        <p className="mb-0">{diskusi.komentar}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted mb-0">{formatDateAja(diskusi.tanggal_diskusi)}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <Alert variant="light" className="text-center mb-0">
-                  <p className="text-center mb-0">Tidak ada diskusi untuk produk ini.</p>
-                </Alert>       
-              )}
+                  </Col>
+                  <Col md={8}>
+                    <h5 className="fw-bold">{penitip?.nama}</h5>
+                    <p className="text-muted mb-1">Rating Penjual: ⭐ {penitip?.rating_penitip}</p>
+                    <p className="text-muted">Barang Terjual: {penitip?.jumlahTerjual ?? 0}</p>
+                    </Col>
+                </Row>
+              </div>
+            </Col>
+          </Row>
 
-              <Form className="d-flex align-items-center w-100 mt-5" onSubmit={submitDiskusi}>
-                <FaRegCommentDots size={20} className="me-2" />
-                <Form.Control
-                  type="text"
-                  placeholder="Masukkan diskusi Anda . . ."
-                  className="form-control me-2"
-                  name="komentar"
-                  onChange={handleChange}
-                  required
-                />
-                <Button variant="outline-success" type="submit">Kirim</Button>
-              </Form>
-            </>
-          ) : (
-            <div className="text-center my-5 pt-5" style={{ marginTop: "5rem" }}>
-              <Spinner animation="border" variant="success" />
-              <p>Loading Diskusi...</p>
+          <hr />
+          <h4 className="text-success text-decoration-underline">Detail Produk</h4>
+          <p>{barang.barang.deskripsi}</p>
+        </Col>
+      </Row>
+
+      {/* Tombol Aksi */}
+      <Row className="my-4">
+        <Col md={12} className="d-flex justify-content-end">
+          <div className="d-flex gap-2 w-50">
+            <button className="btn btn-outline-success w-50">+ Keranjang</button>
+            <button className="btn btn-success w-50">Checkout</button>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Diskusi Produk */}
+      <hr />
+      <h4 className="text-success text-decoration-underline">Diskusi Produk</h4>
+      <div className="border rounded p-4">
+        {loadingDiskusi ? (
+          <Spinner animation="border" variant="success" />
+        ) : diskusiList.length > 0 ? (
+          diskusiList.map((diskusi, index) => (
+            <div key={index} className="border bg-light rounded p-2 mb-3 d-flex align-items-center px-3">
+              <img
+                src={
+                  diskusi.id_pegawai
+                    ? logo
+                    : `http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`
+                }
+                alt="icon user"
+                width={35}
+                height={35}
+                className="me-2 border rounded-circle"
+              />
+              <div className="w-100 d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>
+                    {diskusi.nama_pembeli || diskusi.nama_pegawai}
+                    {diskusi.id_pegawai && (
+                      <>
+                        <span className="ms-1 text-success">(Customer Service)</span>{" "}
+                        <BsPatchCheckFill className="text-success ms-1" />
+                      </>
+                    )}
+                  </strong>
+                  <p className="mb-0">{diskusi.komentar}</p>
+                </div>
+                <div>
+                  <p className="text-muted mb-0">{formatDate(diskusi.tanggal_diskusi)}</p>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+          ))
+        ) : (
+          <Alert variant="light" className="text-center mb-0">
+            <p className="mb-0">Tidak ada diskusi untuk produk ini.</p>
+          </Alert>
+        )}
 
-      </Container>
-
-      <FooterBar />
-    </>
+        <Form className="d-flex align-items-center mt-4" onSubmit={submitDiskusi}>
+          <FaRegCommentDots size={20} className="me-2" />
+          <Form.Control
+            type="text"
+            placeholder="Masukkan komentar Anda..."
+            className="me-2"
+            name="komentar"
+            value={diskusiInput.komentar}
+            onChange={handleChange}
+          />
+          <Button type="submit" disabled={isPending}>
+            Kirim
+          </Button>
+        </Form>
+      </div>
+    </Container>
   );
 };
 

@@ -19,6 +19,7 @@ const MainLayout = ({ children }) => {
   const [token,  setToken] = useState("");
   const [userType, setUserType] = useState("");
   const [jabatan, setJabatan] = useState("");
+  const [idPegawai, setIdPegawai] = useState("");
   const [namaPegawai, setNamaPegawai] = useState("");
   const [fotoPegawai, setFotoPegawai] = useState("");
   const [pathFotoPegawai, setPathFotoPegawai] = useState(null);
@@ -43,11 +44,14 @@ const MainLayout = ({ children }) => {
           setJabatan(jabatanData.jabatan);
           setNamaPegawai(jabatanData.nama_pegawai);
           setFotoPegawai(jabatanData.foto_profile);
+          setIdPegawai(jabatanData.id_pegawai);
 
           const fotoPegawaiLaravel = await getFotoPegawai(jabatanData.foto_profile);
           
           const fileFoto =  URL.createObjectURL(fotoPegawaiLaravel);
           setPathFotoPegawai(fileFoto);
+
+          sessionStorage.setItem("id_pegawai", jabatanData.id_pegawai);
         }
       } catch (err) { 
         console.log(err);
@@ -271,17 +275,21 @@ const MainLayout = ({ children }) => {
           { path: "/pegawai/Admin/kelolaMerchandise", name: "Kelola Merchandise" },
         ];
       }
-    
     //  else if (jabatan === "Gudang") {
 
     //     return [
           
     //     ];
-    //   } else if (jabatan === "Owner") {
-    //     return [
-          
-    //     ];
-//       } 
+    //   } 
+      else if (jabatan === "Owner") {
+        return [
+          { path: "/pegawai/Owner/kelolaRequestDonasi", name: "Kelola Request Donasi" },
+          { path: "/pegawai/Owner/historyDonasi", name: "History Donasi" },
+          { path: "/pegawai/Owner/kelolaDonasi", name: "Kelola Donasi" },
+          { path: "/pegawai/Owner/cetakLaporan", name: "Cetak Laporan" },
+        ];
+      } 
+
       else if (jabatan === "Customer Service") {
         return [
           { path: "/pegawai/Customer%20Service/verifikasi", name: "Verifikasi Bukti Bayar" },
