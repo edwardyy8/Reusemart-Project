@@ -123,7 +123,7 @@ Route::middleware('auth:penitip')->group(function () {
     Route::get('/getPenitipanByIdPenitip/{id}', [PenitipanController::class, 'getPenitipanData']);
     Route::put('/perpanjangRincianPenitipan/{id}', [RincianPenitipanController::class, 'perpanjangRincianPenitipan']);
     Route::put('/donasiByPenitip/{id}', [BarangController::class, 'donasiByPenitip']);
-    Route::put('/ambilTitipan/{id}', [RincianPenitipanController::class, 'ambilTitipan']);
+    Route::put('/ambilTitipan/{id}', [BarangController::class, 'ambilTitipan']);
 });
 
 Route::middleware('auth:organisasi')->group(function () {
