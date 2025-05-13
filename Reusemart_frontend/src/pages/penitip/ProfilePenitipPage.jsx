@@ -103,7 +103,6 @@ const ProfilePenitipPage = () => {
       ));
       toast.success("Pengambilan titipan berhasil dijadwalkan");
       setPenitipanHabis(false);
-      setShowPengambilan(true);
     } catch (error) {
       toast.error("Gagal mengambil titipan");
     }
@@ -134,7 +133,7 @@ const ProfilePenitipPage = () => {
     const sisaHari = Math.ceil((tanggalAkhir - hariIni) / (1000 * 60 * 60 * 24));
     const sudahLewat = hariIni > tanggalAkhir;
     const tersedia = titipan.barang.status_barang === "Tersedia";
-    const terproses = ["Terjual", "Didonasikan"].includes(titipan.barang.status_barang);
+    const terproses = ["Terjual", "Didonasikan", "Barang untuk Donasi"].includes(titipan.barang.status_barang);
     const sudahPerpanjang = titipan.perpanjangan === "Ya";
     const diambil = titipan.status_penitipan === "Diambil Kembali";
 
@@ -381,17 +380,32 @@ const ProfilePenitipPage = () => {
                               </Card.Text>
                             </Card.Body>
                             <Card.Footer className="d-flex gap-2">
-                              <Button
-                                className={terproses ? "w-100" : "w-50"}
-                                variant="outline-secondary"
-                                onClick={() => {
-                                  setSelectedPenitipan(titipan);
-                                  setShowDetail(true);
-                                }}
-                              >
-                                Lihat Detail
-                              </Button>
-                              {renderAdditionalButton(titipan)}
+                              {renderAdditionalButton(titipan) ? (
+                                <>
+                                  <Button
+                                    className="w-50"
+                                    variant="outline-secondary"
+                                    onClick={() => {
+                                      setSelectedPenitipan(titipan);
+                                      setShowDetail(true);
+                                    }}
+                                  >
+                                    Lihat Detail
+                                  </Button>
+                                  {renderAdditionalButton(titipan)}
+                                </>
+                              ) : (
+                                <Button
+                                  className="w-100"
+                                  variant="outline-secondary"
+                                  onClick={() => {
+                                    setSelectedPenitipan(titipan);
+                                    setShowDetail(true);
+                                  }}
+                                >
+                                  Lihat Detail
+                                </Button>
+                              )}
                             </Card.Footer>
                           </Card>
                         </Col>
