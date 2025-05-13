@@ -14,6 +14,7 @@ class PegawaiController extends Controller
     public function index()
 {
     try {
+
         $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'id_jabatan', 'tanggal_lahir', 'foto_profile', 'is_aktif')->get();
 
         return response()->json($pegawai, 200);
