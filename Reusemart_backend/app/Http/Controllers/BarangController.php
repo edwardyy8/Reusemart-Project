@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class BarangController extends Controller
 {
@@ -125,18 +126,44 @@ class BarangController extends Controller
         try {
             $barang = Barang::with('rincian_penitipan')->findOrFail($id);
 
-            $barang->rincian_penitipan->status_penitipan = 'Didonasikan';
-            $barang->status_barang = 'Didonasikan';
+            $barang->rincian_penitipan->status_penitipan = 'Barang untuk Donasi';
+            $barang->status_barang = 'Barang untuk Donasi';
             $barang->save();
             $barang->rincian_penitipan->save();
 
-            return response()->json(['message' => 'Status barang berhasil diubah'], 200);
+            return response()->json(
+                ['message' => 'Status barang berhasil diubah'
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Terjadi kesalahan saat mengubah status barang.',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 
+            ], 500);
+        }
+    }
+
+    public function ambilTitipan($id)
+    {
+        try {
+            $barang = Barang::with('rincian_penitipan')->findOrFail($id);
+            $batas_akhir = Carbon::now('Asia/Jakarta')->addDays(7);
+
+            $barang->rincian_penitipan->status_penitipan = 'Diambil Kembali';
+            $barang->rincian_penitipan->batas_akhir = $batas_akhir;
+            $barang->status_barang = 'Diambil Kembali';
+            $barang->save();
+            $barang->rincian_penitipan->save();
+    
+            return response()->json([
+                'message' => 'Berhasil Memilih Ambil Penitipan',
+                'batas_akhir' => $batas_akhir->toDateTimeString(),
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat memperpanjang.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
