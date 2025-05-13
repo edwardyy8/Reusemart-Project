@@ -20,16 +20,16 @@ const KelolaPegawaiPage = () => {
   const navigate = useNavigate();
 
   const filteredPegawai = dataPegawai.filter((pegawai) => {
-  const keyword = searchKeyword.toLowerCase();
-  return (
-    pegawai.nama?.toLowerCase().includes(keyword) ||
-    pegawai.email?.toLowerCase().includes(keyword) ||
-    pegawai.tanggal_lahir?.toLowerCase().includes(keyword) ||
-    pegawai.id_pegawai?.toLowerCase().includes(keyword) ||
-    pegawai.id_jabatan?.toString().toLowerCase().includes(keyword) ||
-    pegawai.is_aktif?.toString().toLowerCase().includes(keyword)
-  );
-});
+    const keyword = searchKeyword.toLowerCase();
+    return (
+      pegawai.nama?.toLowerCase().includes(keyword) ||
+      pegawai.email?.toLowerCase().includes(keyword) ||
+      pegawai.tanggal_lahir?.toLowerCase().includes(keyword) ||
+      pegawai.id_pegawai?.toLowerCase().includes(keyword) ||
+      pegawai.id_jabatan?.toString().toLowerCase().includes(keyword) ||
+      pegawai.is_aktif?.toString().toLowerCase().includes(keyword)
+    );
+  });
 
 
   const fetchData = async () => {
@@ -61,6 +61,11 @@ const KelolaPegawaiPage = () => {
     return dataPegawai.filter(pegawai => pegawai.id_jabatan === jabatanId).length;
   };
 
+  const countNonAktif = () => {
+    return dataPegawai.filter((pegawai) => pegawai.is_aktif === "Tidak").length;
+  };
+
+
   const handleResetPasswordPegawai = async (id) => {
     try {
       const response = await ResetPasswordPegawai(id);
@@ -74,129 +79,144 @@ const KelolaPegawaiPage = () => {
 
   return (
     <Container className="p-0">
-<Row className="d-flex justify-content-between align-items-center mb-4">
-  <Col
-    xs={12}
-    sm={6}
-    md={3}
-    lg={1}
-    className="boxHijau p-3 rounded-3 text-center mb-4"
-    style={{ minHeight: '100px', minWidth: '150px' }} // Menetapkan lebar minimal
-  >
-    <Row>
-      <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah</p><p className="mb-0" style={{ fontSize: '1rem' }}>Pegawai</p></Col>
-      <Col className="d-flex justify-content-center align-items-center">
-        <h3>{dataPegawai.length}</h3>
-      </Col>
-    </Row>
-  </Col>
-  <Col
-    xs={12}
-    sm={6}
-    md={3}
-    lg={1}
-    className="p-3 rounded-3 text-center mb-4"
-    style={{ minHeight: '100px', minWidth: '150px', backgroundColor:'#2B74F8', color:'white'}}
-  >
-    <Row>
-      <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Owner</p></Col>
-      <Col className="d-flex justify-content-center align-items-center">
-        <h3>{countByJabatan(1)}</h3>
-      </Col>
-    </Row>
-  </Col>
-  <Col
-    xs={12}
-    sm={6}
-    md={3}
-    lg={1}
-    className=" p-3 rounded-3 text-center mb-4"
-    style={{ minHeight: '100px', minWidth: '150px', backgroundColor:'#FF5959', color:'white' }}
-  >
-    <Row>
-      <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Admin</p></Col>
-      <Col className="d-flex justify-content-center align-items-center">
-        <h3>{countByJabatan(2)}</h3>
-      </Col>
-    </Row>
-  </Col>
-  <Col
-    xs={12}
-    sm={6}
-    md={3}
-    lg={1}
-    className="boxHijau p-3 rounded-3 text-center mb-4"
-    style={{ minHeight: '100px', minWidth: '150px' }}
-  >
-    <Row>
-      <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Customer Service</p></Col>
-      <Col className="d-flex justify-content-center align-items-center">
-        <h3>{countByJabatan(3)}</h3>
-      </Col>
-    </Row>
-  </Col>
-  <Col
-    xs={12}
-    sm={6}
-    md={3}
-    lg={1}
-    className="p-3 rounded-3 text-center mb-4"
-    style={{ minHeight: '100px', minWidth: '150px', backgroundColor:'#2B74F8', color:'white' }}
-  >
-    <Row>
-      <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Hunter</p></Col>
-      <Col className="d-flex justify-content-center align-items-center">
-        <h3>{countByJabatan(4)}</h3>
-      </Col>
-    </Row>
-  </Col>
-  <Col
-    xs={12}
-    sm={6}
-    md={3}
-    lg={1}
-    className="p-3 rounded-3 text-center mb-4"
-    style={{ minHeight: '100px', minWidth: '150px', backgroundColor:'#FF5959', color:'white'}}
-  >
-    <Row>
-      <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Gudang</p></Col>
-      <Col className="d-flex justify-content-center align-items-center">
-        <h3>{countByJabatan(5)}</h3>
-      </Col>
-    </Row>
-  </Col>
-  <Col
-    xs={12}
-    sm={6}
-    md={3}
-    lg={1}
-    className="boxHijau p-3 rounded-3 text-center mb-4"
-    style={{ minHeight: '100px', minWidth: '150px' }}
-  >
-    <Row>
-      <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Quality Control</p></Col>
-      <Col className="d-flex justify-content-center align-items-center">
-        <h3>{countByJabatan(6)}</h3>
-      </Col>
-    </Row>
-  </Col>
-  <Col
-    xs={12}
-    sm={6}
-    md={3}
-    lg={1}
-    className="p-3 rounded-3 text-center mb-4"
-    style={{ minHeight: '100px', minWidth: '150px', backgroundColor:'#2B74F8', color:'white'}}
-  >
-    <Row>
-      <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Kurir</p></Col>
-      <Col className="d-flex justify-content-center align-items-center">
-        <h3>{countByJabatan(7)}</h3>
-      </Col>
-    </Row>
-  </Col>
-</Row>
+      <Row className="d-flex justify-content-between align-items-center mb-4">
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="boxHijau p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px' }} // Menetapkan lebar minimal
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah</p><p className="mb-0" style={{ fontSize: '1rem' }}>Pegawai</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{dataPegawai.length}</h3>
+            </Col>
+          </Row>
+        </Col>
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Owner</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countByJabatan(1)}</h3>
+            </Col>
+          </Row>
+        </Col>
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className=" p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#FF5959', color: 'white' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Admin</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countByJabatan(2)}</h3>
+            </Col>
+          </Row>
+        </Col>
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="boxHijau p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Customer Service</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countByJabatan(3)}</h3>
+            </Col>
+          </Row>
+        </Col>
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Hunter</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countByJabatan(4)}</h3>
+            </Col>
+          </Row>
+        </Col>
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#FF5959', color: 'white' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Gudang</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countByJabatan(5)}</h3>
+            </Col>
+          </Row>
+        </Col>
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="boxHijau p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Quality Control</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countByJabatan(6)}</h3>
+            </Col>
+          </Row>
+        </Col>
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Kurir</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countByJabatan(7)}</h3>
+            </Col>
+          </Row>
+        </Col>
 
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#FF5959', color: 'white' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Pegawai NonAktif</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countNonAktif()}</h3>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
 
 
 
@@ -217,7 +237,7 @@ const KelolaPegawaiPage = () => {
               style={{ borderColor: 'rgba(83, 83, 83, 1)' }}
             />
           </Form>
-          <Button className="border-0" style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}   onClick={() => navigate("/pegawai/Admin/kelolaPegawai/tambahPegawai")}>+ Tambah</Button>
+          <Button className="border-0" style={{ backgroundColor: "rgba(4, 121, 2, 1)" }} onClick={() => navigate("/pegawai/Admin/kelolaPegawai/tambahPegawai")}>+ Tambah</Button>
 
         </div>
 
@@ -248,15 +268,29 @@ const KelolaPegawaiPage = () => {
                     <td>{pegawai.id_pegawai}</td>
                     <td>{pegawai.nama}</td>
                     <td className="d-flex justify-content-center">
-                      <Button variant='secondary' onClick={() => handleResetPasswordPegawai(pegawai.id_pegawai)} className="me-2">
-                        Reset Password?
-                      </Button>
-                      <ModalShowPegawai pegawai={pegawai} />
-                      <Button onClick={() => navigate(`/pegawai/Admin/kelolaPegawai/${pegawai.id_pegawai}`)} className="me-2">
-                        <FaRegPenToSquare size={20} />
-                      </Button>
-                      <ModalDeletePegawai pegawai={pegawai} onClose={fetchData} />
+                      {pegawai.is_aktif === "Tidak" ? (
+                        <ModalShowPegawai pegawai={pegawai} />
+                      ) : (
+                        <>
+                          <Button
+                            variant="secondary"
+                            onClick={() => handleResetPasswordPegawai(pegawai.id_pegawai)}
+                            className="me-2"
+                          >
+                            Reset Password?
+                          </Button>
+                          <ModalShowPegawai pegawai={pegawai} />
+                          <Button
+                            onClick={() => navigate(`/pegawai/Admin/kelolaPegawai/${pegawai.id_pegawai}`)}
+                            className="me-2"
+                          >
+                            <FaRegPenToSquare size={20} />
+                          </Button>
+                          <ModalDeletePegawai pegawai={pegawai} onClose={fetchData} />
+                        </>
+                      )}
                     </td>
+
                   </tr>
                 ))}
               </tbody>
