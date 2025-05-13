@@ -19,16 +19,17 @@ export const GetAllPegawai = async () => {
 // Hapus pegawai
 export const DeletePegawai = async (id_pegawai) => {
     try {
-        const response = await axios.delete(`/deletePegawai/${id_pegawai}`, {
+        const response = await axios.post(`/deletePegawai/${id_pegawai}`, null, {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
         return response.data;
     } catch (error) {
-        throw error.response?.data || { message: "Gagal menghapus data pegawai." };
+        throw error.response?.data || { message: "Gagal menonaktifkan data pegawai." };
     }
 };
+
 
 // Tambah pegawai
 export const tambahPegawai = async (data) => {

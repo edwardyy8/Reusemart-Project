@@ -19,9 +19,18 @@ const KelolaPegawaiPage = () => {
   const itemsPerPage = 10;
   const navigate = useNavigate();
 
-  const filteredPegawai = dataPegawai.filter((pegawai) =>
-    pegawai.nama.toLowerCase().includes(searchKeyword.toLowerCase())
+  const filteredPegawai = dataPegawai.filter((pegawai) => {
+  const keyword = searchKeyword.toLowerCase();
+  return (
+    pegawai.nama?.toLowerCase().includes(keyword) ||
+    pegawai.email?.toLowerCase().includes(keyword) ||
+    pegawai.tanggal_lahir?.toLowerCase().includes(keyword) ||
+    pegawai.id_pegawai?.toLowerCase().includes(keyword) ||
+    pegawai.id_jabatan?.toString().toLowerCase().includes(keyword) ||
+    pegawai.is_aktif?.toString().toLowerCase().includes(keyword)
   );
+});
+
 
   const fetchData = async () => {
     try {
