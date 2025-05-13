@@ -14,15 +14,14 @@ class PegawaiController extends Controller
     public function index()
 {
     try {
-        $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'id_jabatan', 'tanggal_lahir', 'foto_profile')
-            ->where('is_aktif', 1) // cuma ambil yang aktif
-            ->get();
+        $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'id_jabatan', 'tanggal_lahir', 'foto_profile', 'is_aktif')->get();
 
         return response()->json($pegawai, 200);
     } catch (\Exception $e) {
         return response()->json(['error' => 'Server Error', 'message' => $e->getMessage()], 500);
     }
 }
+
 
 
     public function generatePegawaiId()
@@ -183,8 +182,7 @@ public function tambahPegawai(Request $request)
         ], 404);
     }
 
-    // Soft delete: Ubah is_aktif jadi 0
-    $pegawai->is_aktif = 0;
+    $pegawai->is_aktif = 'Tidak'; // ubah ke string 'Tidak'
     $pegawai->save();
 
     return response()->json([
@@ -192,6 +190,7 @@ public function tambahPegawai(Request $request)
         'message' => 'Pegawai berhasil dinonaktifkan',
     ]);
 }
+
 
     public function updatePegawai(Request $request, $id)
 {
