@@ -7,8 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import ModalDeletePegawai from "../../../components/modals/pegawai/ModalDeletePegawai";
 import ModalShowPegawai from "../../../components/modals/pegawai/ModalShowPegawai";
 
-import { ResetPasswordPegawai } from '../../../api/apiAuth';
 import { toast } from 'react-toastify';
+
+import ModalResetPass from '../../../components/modals/pegawai/ModalResetPass';
 
 const KelolaPegawaiPage = () => {
   const [dataPegawai, setDataPegawai] = useState([]);
@@ -65,17 +66,6 @@ const KelolaPegawaiPage = () => {
     return dataPegawai.filter((pegawai) => pegawai.is_aktif === "Tidak").length;
   };
 
-
-  const handleResetPasswordPegawai = async (id) => {
-    try {
-      const response = await ResetPasswordPegawai(id);
-      if (!response.ok) throw new Error('Gagal reset password');
-      toast.success('Password berhasil direset!');
-    } catch (err) {
-      setError(err.message);
-      toast.error('Gagal reset password');
-    }
-  }
 
   return (
     <Container className="p-0">
@@ -200,6 +190,7 @@ const KelolaPegawaiPage = () => {
             </Col>
           </Row>
         </Col>
+
         <Col
           xs={12}
           sm={6}
@@ -216,6 +207,8 @@ const KelolaPegawaiPage = () => {
           </Row>
         </Col>
       </Row>
+
+
 
       <Container className="mb-5 ms-0 me-0">
         <div className="mb-3 d-flex justify-content-between align-items-center">
@@ -269,13 +262,7 @@ const KelolaPegawaiPage = () => {
                         <ModalShowPegawai pegawai={pegawai} />
                       ) : (
                         <>
-                          <Button
-                            variant="secondary"
-                            onClick={() => handleResetPasswordPegawai(pegawai.id_pegawai)}
-                            className="me-2"
-                          >
-                            Reset Password?
-                          </Button>
+                          <ModalResetPass pegawai={pegawai} onClose={fetchData} />
                           <ModalShowPegawai pegawai={pegawai} />
                           <Button
                             onClick={() => navigate(`/pegawai/Admin/kelolaPegawai/${pegawai.id_pegawai}`)}

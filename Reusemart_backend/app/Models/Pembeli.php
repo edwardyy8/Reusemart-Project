@@ -25,7 +25,8 @@ class Pembeli extends Authenticatable
         'password',
         'is_aktif',
         'poin_pembeli',
-        'foto_profile'
+        'foto_profile',
+        'is_aktif'
     ];
 
     public function getUserType() {

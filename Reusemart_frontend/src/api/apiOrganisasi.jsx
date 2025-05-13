@@ -16,7 +16,7 @@ export const GetAllOrganisasi = async () => {
 
 export const DeleteOrganisasi = async (id) => {
     try {
-        const response = await axios.delete(`/deleteOrganisasi/${id}`, {
+        const response = await axios.post(`/deleteOrganisasi/${id}`, {}, {
             headers: {
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },

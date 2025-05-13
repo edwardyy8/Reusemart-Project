@@ -18,7 +18,7 @@ const ProfilePenitipPage = () => {
   const [titipanData, setTitipanData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetail, setShowDetail] = useState(false);
-  const [showPerpanjangan, setShowPerpanjangan] = useState(false);
+  const [sudahPerpanjang, setSudahPerpanjang] = useState(false);
   const [penitipanHabis, setPenitipanHabis] = useState(false);
   const [showPengambilan, setShowPengambilan] = useState(false);
   const [selectedPenitipan, setSelectedPenitipan] = useState(null);
@@ -82,7 +82,7 @@ const ProfilePenitipPage = () => {
           : titipan
       ));
       
-      setShowPerpanjangan(false);
+      setPenitipanHabis(false);
       toast.success("Berhasil memperpanjang masa penitipan");
     } catch (error) {
       toast.error("Gagal memperpanjang masa penitipan");
@@ -91,17 +91,19 @@ const ProfilePenitipPage = () => {
 
   const handleAmbil = async () => {
     try {
-      const response = await ambilTitipan(selectedPenitipan.id_rincianpenitipan);
+      const response = await ambilTitipan(selectedPenitipan.id_barang);
       setTitipanData(titipanData.map(titipan => 
       titipan.id_rincianpenitipan === selectedPenitipan.id_rincianpenitipan
         ? { 
             ...titipan, 
             status_penitipan: "Diambil Kembali",
+            status_barang: "Barang Diambil Kembali",
             batas_akhir: response.batas_akhir
           } 
         : titipan
       ));
       toast.success("Pengambilan titipan berhasil dijadwalkan");
+      setSudahPerpanjang(false);
       setPenitipanHabis(false);
     } catch (error) {
       toast.error("Gagal mengambil titipan");
@@ -112,16 +114,19 @@ const ProfilePenitipPage = () => {
     try {
       await donasiByPenitip(selectedPenitipan.id_barang);
       setTitipanData(titipanData.map(titipan => 
-      titipan.id_rincianpenitipan === selectedPenitipan.id_rincianpenitipan
-        ? { 
-            ...titipan, 
-            status_penitipan: "Didonasikan",
-            status_barang: "Didonasikan"
-          } 
-        : titipan
+        titipan.id_rincianpenitipan === selectedPenitipan.id_rincianpenitipan
+          ? { 
+              ...titipan, 
+              status_penitipan: "Barang Untuk Donasi",
+              barang: {
+                ...titipan.barang,
+                status_barang: "Barang Untuk Donasi"
+              }
+            } 
+          : titipan
       ));
       toast.success("Terima kasih telah mendonasikan barang anda");
-      setPenitipanHabis(false);
+      setSudahPerpanjang(false);
     } catch (error) {
       toast.error("Gagal mendonasikan barang");
     }
@@ -130,19 +135,23 @@ const ProfilePenitipPage = () => {
   const renderAdditionalButton = (titipan) => {
     const hariIni = new Date();
     const tanggalAkhir = new Date(titipan.tanggal_akhir);
+    const batasAkhir = new Date(titipan.batas_akhir)
     const sisaHari = Math.ceil((tanggalAkhir - hariIni) / (1000 * 60 * 60 * 24));
     const sudahLewat = hariIni > tanggalAkhir;
+    const wajibDonasi = hariIni > batasAkhir;
     const tersedia = titipan.barang.status_barang === "Tersedia";
     const terproses = ["Terjual", "Didonasikan", "Barang untuk Donasi"].includes(titipan.barang.status_barang);
     const sudahPerpanjang = titipan.perpanjangan === "Ya";
     const diambil = titipan.status_penitipan === "Diambil Kembali";
+    const hampirHabis = sisaHari <=3;
 
     if (terproses) return null;
 
-    if (diambil){
+    if (diambil && !wajibDonasi){
       return (
         <Button 
-          className="btnHijau w-50"
+          variant="secondary"
+          className="w-50"
           onClick={() => {
             setSelectedPenitipan(titipan);
             setShowPengambilan(true);
@@ -152,30 +161,30 @@ const ProfilePenitipPage = () => {
         </Button>
       );
     }
-    
-    if (!sudahPerpanjang && !sudahLewat && tersedia) {
-      return (
-        <Button 
-          variant="danger" 
-          className="w-50"
-          onClick={() => {
-            setSelectedPenitipan(titipan);
-            setShowPerpanjangan(true);
-          }}
-        >
-          Perpanjang ({sisaHari} hari tersisa)
-        </Button>
-      );
-    }
-    
-    if ((!sudahPerpanjang && sudahLewat && tersedia) || 
-        (sudahPerpanjang && sudahLewat && tersedia)) {
+
+    //cuma boleh perpanjang pas sisa 2 hari
+    if (hampirHabis && !sudahPerpanjang &&tersedia) {
       return (
         <Button 
           className="btnHijau w-50"
           onClick={() => {
             setSelectedPenitipan(titipan);
             setPenitipanHabis(true);
+          }}
+        >
+          Ambil/Perpanjang ({sisaHari} hari tersisa)
+        </Button>
+      );
+    }
+    
+     if (sudahPerpanjang && hampirHabis && tersedia) {
+      return (
+        <Button 
+          variant="danger"
+          className="w-50"
+          onClick={() => {
+            setSelectedPenitipan(titipan);
+            setSudahPerpanjang(true);
           }}
         >
           Ambil/Donasi
@@ -186,15 +195,15 @@ const ProfilePenitipPage = () => {
     if (sudahPerpanjang && !sudahLewat && tersedia) {
       return (
         <Button 
-          variant="danger" 
+          variant="secondary"
           className="w-50"
           disabled
         >
-          Perpanjang ({sisaHari} hari tersisa)
+          Sudah Diperpanjang
         </Button>
       );
     }
-  
+
     return null;
   };
 
@@ -277,7 +286,7 @@ const ProfilePenitipPage = () => {
                           <h5 className="fw-bold mb-0">{item.barang.nama_barang}</h5>
                           </div>
                           <div>
-                            <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.rincian_pemesanan?.[0].barang?.[0].foto_barang}`} 
+                            <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.barang.foto_barang}`} 
                                   alt="Foto Barang" 
                                   height={100}
                                   className="rounded-2"/>
@@ -460,26 +469,9 @@ const ProfilePenitipPage = () => {
         </Modal.Body>
       </Modal>
 
-      <Modal show={showPerpanjangan} onHide={() => setShowPerpanjangan(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Konfirmasi Perpanjangan</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Apakah anda yakin ingin memperpanjang masa penitipan (30 hari)?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowPerpanjangan(false)}>
-            Batal
-          </Button>
-          <Button variant="success" onClick={handlePerpanjang}>
-            Perpanjang
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
       <Modal show={penitipanHabis} onHide={() => setPenitipanHabis(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Konfirmasi Ambil/Donasi</Modal.Title>
+          <Modal.Title>Konfirmasi Ambil/Perpanjang</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedPenitipan && (
@@ -528,8 +520,67 @@ const ProfilePenitipPage = () => {
               </Button>
             </Col>
             <Col xs={6} className="ps-1">
-              <Button variant="warning" className="w-100" onClick={handleDonasi}>
+              <Button variant="warning" className="w-100" onClick={handlePerpanjang}>
+                Perpanjang
+              </Button>
+            </Col>
+          </Row>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={sudahPerpanjang} onHide={() => setSudahPerpanjang(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Ambil/Donasi</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedPenitipan && (
+            <>
+            <Row>
+              <Col md={8} className="gap-4">
+                <h3><b>{selectedPenitipan.barang.nama_barang}</b></h3>
+                <div className="d-flex flex-column gap-1">
+                  <span>Status: <span className="text-muted">{selectedPenitipan.barang.status_barang}</span></span>
+                  <span>Harga: <span className="text-muted">{selectedPenitipan.barang.harga_barang}</span></span>
+                  <span>Garansi: <span className="text-muted">{selectedPenitipan.barang.garansi}</span></span>
+                  <span>Tanggal Masuk: <span className="text-muted">{formatTanpaDetik(selectedPenitipan.barang.tanggal_masuk)}</span></span>
+                  <span>Tanggal Berakhir: <span className="text-muted">{formatTanpaDetik(selectedPenitipan.tanggal_akhir)}</span></span>
+                  <span>Perpanjangan: <span className="text-muted">{selectedPenitipan.perpanjangan}</span></span>
+                  <span>Deskripsi: </span>
+                  <InputFloatingForm
+                    as="textarea"
+                    className="text-muted"
+                    placeholder={selectedPenitipan.barang.deskripsi}
+                    disabled
+                  />
+                </div>
+              </Col>
+              <Col ms={6} className="d-flex flex-column align-items-end mt-5">
+                <img 
+                  src={`http://127.0.0.1:8000/storage/foto_barang/${selectedPenitipan.barang.foto_barang}`}
+                  alt="Foto barang" 
+                  style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
+                />
+              </Col>
+            </Row>
+            
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer className="d-flex flex-column gap-2">
+          <Row className="w-100">
+            <p className="text-danger mb-0 text-start">
+              ⚠️ Peringatan! Aksi ini tidak bisa dibatalkan.
+            </p>
+          </Row>
+          <Row className="w-100">
+            <Col xs={6} className="pe-1">
+              <Button className="btnHijau w-100" onClick={handleDonasi}>
                 Donasi
+              </Button>
+            </Col>
+            <Col xs={6} className="ps-1">
+              <Button variant="warning" className="w-100" onClick={handleAmbil}>
+                Ambil
               </Button>
             </Col>
           </Row>
