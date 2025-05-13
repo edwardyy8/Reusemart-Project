@@ -119,4 +119,26 @@ public function show($id)
             'data' => array_values($filtered->toArray())
         ]);
     }
+
+    public function donasiByPenitip($id)
+    {
+        try {
+            $barang = Barang::with('rincian_penitipan')->findOrFail($id);
+
+            $barang->rincian_penitipan->status_penitipan = 'Didonasikan';
+            $barang->status_barang = 'Didonasikan';
+            $barang->save();
+            $barang->rincian_penitipan->save();
+
+            return response()->json(['message' => 'Status barang berhasil diubah'], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat mengubah status barang.',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                
+            ], 500);
+        }
+    }
+
 }
