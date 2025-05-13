@@ -27,6 +27,7 @@ class Barang extends Model
         'tanggal_masuk',
         'berat_barang',
         'tanggal_donasi',
+        'foto_barang',
     ];
 
     public function kategori()

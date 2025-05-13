@@ -86,3 +86,40 @@ thead.custom-table {
     background: rgba(171, 172, 176, 1) !important;
     color: #fff !important;
 }
+
+/* checkbox Hijau */
+.checkHijau {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+            
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.checkHijau:checked {
+    background-color: rgba(4, 121, 2, 1);
+    border-color: rgba(4, 121, 2, 1);
+}
+
+.checkHijau:checked::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkHijau:hover {
+    border-color: rgba(4, 121, 2, 1);
+}

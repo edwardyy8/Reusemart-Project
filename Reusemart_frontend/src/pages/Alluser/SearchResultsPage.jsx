@@ -67,11 +67,11 @@ const SearchResultPage = () => {
                                         >
                                             <div className="position-relative">
                                                 <Card.Img
-                                                    variant="top"
-                                                    src={reusemart}
-                                                    alt={barang.nama_barang}
-                                                    style={{ height: "200px", objectFit: "cover" }}
-                                                />
+  variant="top"
+  src={`http://127.0.0.1:8000/storage/foto_barang/${barang.foto_barang}`}
+  alt={barang.nama_barang}
+  style={{ maxHeight: "400px", objectFit: "contain" }}
+/>
                                                 <Button
                                                     variant="light"
                                                     size="sm"

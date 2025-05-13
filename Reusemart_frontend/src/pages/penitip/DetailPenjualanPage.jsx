@@ -116,7 +116,7 @@ const DetailPenjualanPage = () => {
                     <Card>
                         <Card.Body>
                             <Card.Text className="mb-3 d-flex gap-3">
-                                <img src={`http://127.0.0.1:8000/storage/foto_barang/${rincianData.barang.foto_barang[0].foto_barang}`} 
+                                <img src={`http://127.0.0.1:8000/storage/foto_barang/${rincianData.barang.foto_barang}`} 
                                       alt="Foto Barang" 
                                       height={100}
                                       className="rounded-2"/>
