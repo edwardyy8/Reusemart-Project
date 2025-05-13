@@ -61,41 +61,41 @@ const CategoriesPage = () => {
             <Container fluid className="d-flex" style={{ minHeight: "100vh", backgroundColor: "rgba(252, 251, 249, 1)" }}>
                 {/* Sidebar kategori */}
                 <div className="p-3 shadow-sm" style={{ width: "250px", backgroundColor: "#ffffff" }}>
-                <h5 className="mb-4 mt-4">KATEGORI</h5>
+                    <h5 className="mb-4 mt-4">KATEGORI</h5>
 
-                {isLoadingKategori ? (
-                    <p>Loading kategori...</p>
-                ) : (
-                    <Accordion alwaysOpen>
-                        {Object.entries(groupedKategoris).map(([mainId, mainKategori], idx) => (
-                            <Accordion.Item eventKey={idx.toString()} key={mainId}>
-                                <Accordion.Header>{mainKategori.nama_kategori || "Kategori"}</Accordion.Header>
-                                <Accordion.Body>
-                                    {mainKategori.subcategories.length > 0 ? (
-                                        mainKategori.subcategories.map((sub) => (
+                    {isLoadingKategori ? (
+                        <p>Loading kategori...</p>
+                    ) : (
+                        <Accordion alwaysOpen>
+                            {Object.entries(groupedKategoris).map(([mainId, mainKategori], idx) => (
+                                <Accordion.Item eventKey={idx.toString()} key={mainId}>
+                                    <Accordion.Header>{mainKategori.nama_kategori || "Kategori"}</Accordion.Header>
+                                    <Accordion.Body>
+                                        {mainKategori.subcategories.length > 0 ? (
+                                            mainKategori.subcategories.map((sub) => (
+                                                <div
+                                                    key={sub.id_kategori}
+                                                    className="mb-2"
+                                                    onClick={() => navigate(`/kategori/${sub.id_kategori}/${sub.nama_kategori}`)}  // Pass subcategory name to the next page
+                                                    style={{ cursor: "pointer", color: "#555" }}
+                                                >
+                                                    - {sub.nama_kategori}
+                                                </div>
+                                            ))
+                                        ) : (
                                             <div
-                                                key={sub.id_kategori}
-                                                className="mb-2"
-                                                onClick={() => navigate(`/kategori/${sub.id_kategori}/${sub.nama_kategori}`)}  // Pass subcategory name to the next page
+                                                onClick={() => navigate(`/kategori/${mainKategori.id_kategori}`)}
                                                 style={{ cursor: "pointer", color: "#555" }}
                                             >
-                                                - {sub.nama_kategori}
+                                                (Tidak ada subkategori)
                                             </div>
-                                        ))
-                                    ) : (
-                                        <div
-                                            onClick={() => navigate(`/kategori/${mainKategori.id_kategori}`)}
-                                            style={{ cursor: "pointer", color: "#555" }}
-                                        >
-                                            (Tidak ada subkategori)
-                                        </div>
-                                    )}
-                                </Accordion.Body>
-                            </Accordion.Item>
-                        ))}
-                    </Accordion>
-                )}
-            </div>
+                                        )}
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                            ))}
+                        </Accordion>
+                    )}
+                </div>
 
                 {/* Konten produk */}
                 <Container fluid className="p-5">
@@ -120,9 +120,9 @@ const CategoriesPage = () => {
                                             <div className="position-relative">
                                                 <Card.Img
                                                     variant="top"
-                                                    src={reusemart}
+                                                    src={`http://127.0.0.1:8000/storage/foto_barang/${barang.foto_barang}`}
                                                     alt={barang.nama_barang}
-                                                    style={{ height: "200px", objectFit: "cover" }}
+                                                    style={{ maxHeight: "400px", objectFit: "contain" }}
                                                 />
                                                 <Button
                                                     variant="light"

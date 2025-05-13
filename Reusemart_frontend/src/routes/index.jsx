@@ -11,17 +11,15 @@ import DonationPage from "../pages/Alluser/DonationPage";
 import CategoriesPage from "../pages/Alluser/CategoriesPage";
 import KategoriUtamaPage from "../pages/Alluser/KategoriUtamaPage";
 import SearchResultPage from "../pages/Alluser/SearchResultsPage";
+import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
 
 import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
 import LupaPassPage from "../pages/auth/LupaPassPage";
 import ResetPassPage from "../pages/auth/ResetPassPage";
 
-
 import ProfilePenitipPage from "../pages/penitip/ProfilePenitipPage";
-import DetailBarangPage from "../pages/Alluser/DetailBarangPage";
 import DetailPenjualanPage from "../pages/penitip/DetailPenjualanPage";
-
 
 import KelolaOrganisasiPage from "../pages/AllPegawai/Admin/KelolaOrganisasiPage";
 import EditOrganisasiPage from "../pages/AllPegawai/Admin/EditOrganisasiPage";
@@ -33,278 +31,129 @@ import TambahPegawaiPage from "../pages/AllPegawai/Admin/TambahPegawaiPage";
 import KelolaJabatanPage from "../pages/AllPegawai/Admin/KelolaJabatanPage";
 import EditJabatanPage from "../pages/AllPegawai/Admin/EditJabatanPage";
 
+import HistoryDonasiPage from "../pages/AllPegawai/Owner/HistoryDonasiPage";
+import KelolaRequestDonasiPage from "../pages/AllPegawai/Owner/KelolaRequestDonasiPage";
+import KelolaDonasiPage from "../pages/AllPegawai/Owner/KelolaDonasiPage";
+import TambahDonasiOwner from "../pages/AllPegawai/Owner/TambahDonasiOwner";
+
 import ManagePenitipPage from "../pages/AllPegawai/CS/ManagePenitipPage";
 import ClaimMerchandisePage from "../pages/AllPegawai/CS/ClaimMerchandisePage";
 import VerifikasiPage from "../pages/AllPegawai/CS/VerifikasiPage";
 import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
 import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
-import BalasDiskusiPage from "../pages/AllPegawai/CS/balasDiskusiPage";
 
 import ProfilePembeliPage from "../pages/pembeli/ProfilePembeliPage";
 import EditAlamatPage from "../pages/pembeli/EditAlamatPage";
 import TambahAlamatPage from "../pages/pembeli/TambahAlamatPage";
 import DetailPembelianPage from "../pages/pembeli/DetailPembelianPage";
 
-
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProtectedFromPegawai from "./ProtectedFromPegawai";
+
 import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
 import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
 import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
 import KeranjangPage from "../pages/pembeli/KeranjangPage";
 
+
 const router = createBrowserRouter([
-  {
-    path: "*",
-    element: <NoPage />,
-  },
-  {
-    path: "/tidaksah",
-    element: <UnauthorizedPage />,
-  },
+  { path: "*", element: <NoPage /> },
+  { path: "/tidaksah", element: <UnauthorizedPage /> },
   {
     element: <MainLayout />,
     children: [
       {
         path: "/",
-        element: (
-          <ProtectedFromPegawai>
-            <Outlet />
-          </ProtectedFromPegawai>
-        ),
+        element: <ProtectedFromPegawai><Outlet /></ProtectedFromPegawai>,
         children: [
-          {
-            path: "/",
-            element: <HomePage />,
-          },
-          {
-            path: "/lupaPassword",
-            element: <LupaPassPage />,
-          },
-          {
-            path: "/password-reset/:token",
-            element: <ResetPassPage />,
-          },
-          {
-            path: "/register",
-            element: <RegisterPage />,
-          },
-          {
-            path: "/donasi",
-            element: <DonationPage />,
-          },
-          {
-            path: "/login",
-            element: <LoginPage />,
-          },
-          {
-            path: "/kategori",
-            element: <CategoriesPage />,
-          },
-          {
-            path: "/kategori/:id/:subkategoriName",
-            element: <KategoriUtamaPage />,
-          },
-          {
-            path: "/search",
-            element: <SearchResultPage />,
-          },
-          {
-            path: "/barang/:id",
-            element: <DetailBarangPage />,
-          }
+          { path: "/", element: <HomePage /> },
+          { path: "/lupaPassword", element: <LupaPassPage /> },
+          { path: "/password-reset/:token", element: <ResetPassPage /> },
+          { path: "/register", element: <RegisterPage /> },
+          { path: "/login", element: <LoginPage /> },
+          { path: "/donasi", element: <DonationPage /> },
+          { path: "/kategori", element: <CategoriesPage /> },
+          { path: "/kategori/:id/:subkategoriName", element: <KategoriUtamaPage /> },
+          { path: "/search", element: <SearchResultPage /> },
+          { path: "/barang/:id", element: <DetailBarangPage /> }
         ],
       },
-
       {
         path: "/penitip",
-        element: (
-          <ProtectedRoutes allowedRoles={['penitip']}>
-            <Outlet />
-          </ProtectedRoutes>
-        ),
+        element: <ProtectedRoutes allowedRoles={["penitip"]}><Outlet /></ProtectedRoutes>,
         children: [
-          {
-            path: "",
-            element: <ProfilePenitipPage />,
-          },
-          {
-            path: "profile",
-            element: <ProfilePenitipPage />,
-          },
-          {
-            path: "detailPenjualan/:id",
-            element: <DetailPenjualanPage />,
-          },
-          
+          { path: "", element: <ProfilePenitipPage /> },
+          { path: "profile", element: <ProfilePenitipPage /> },
+          { path: "detailPenjualan/:id", element: <DetailPenjualanPage /> },
         ],
       },
-
       {
-        path:  "/pegawai/Customer Service",
-        element: (
-          <ProtectedRoutes allowedRoles={['pegawai']} allowedJabatan={['Customer Service']}>
-          <Outlet />
-          </ProtectedRoutes>
-        ),
+        path: "/pegawai/Customer Service",
+        element: <ProtectedRoutes allowedRoles={["pegawai"]} allowedJabatan={["Customer Service"]}><Outlet /></ProtectedRoutes>,
         children: [
-          {
-            path: "",
-            element: <ManagePenitipPage />,
-          },
-          {
-            path: "verifikasi",
-            element: <VerifikasiPage />,
-          },
-          {
-            path: "managePenitip",
-            element: <ManagePenitipPage />,
-          },
-          {
-            path: "claimMerchandise",
-            element: <ClaimMerchandisePage />,
-          },
-          {
-            path: "managePenitip/tambahPenitip",
-            element: <TambahPenitipPage />,
-          },
-          {
-            path: "managePenitip/editPenitip/:id",
-            element: <EditPenitipPage />,
-          },
-          {
-            path: "balasDiskusi",
-            element: <BalasDiskusiPage />,
-          }
+          { path: "", element: <ManagePenitipPage /> },
+          { path: "verifikasi", element: <VerifikasiPage /> },
+          { path: "managePenitip", element: <ManagePenitipPage /> },
+          { path: "claimMerchandise", element: <ClaimMerchandisePage /> },
+          { path: "managePenitip/tambahPenitip", element: <TambahPenitipPage /> },
+          { path: "managePenitip/editPenitip/:id", element: <EditPenitipPage /> },
         ],
       },
-
-
+      {
+        path: "/pegawai/Owner",
+        element: <ProtectedRoutes allowedRoles={["pegawai"]} allowedJabatan={["Owner"]}><Outlet /></ProtectedRoutes>,
+        children: [
+          { path: "", element: <HistoryDonasiPage /> },
+          { path: "historyDonasi", element: <HistoryDonasiPage /> },
+          { path: "kelolaRequestDonasi", element: <KelolaRequestDonasiPage /> },
+          { path: "kelolaDonasi", element: <KelolaDonasiPage /> },
+          { path: "kelolaDonasi/tambahDonasiOwner", element: <TambahDonasiOwner /> },
+        ],
+      },
       {
         path: "/pegawai/Admin",
-        element: (
-          <ProtectedRoutes allowedRoles={['pegawai']} allowedJabatan={['Admin']}>
-          <Outlet />
-          </ProtectedRoutes>
-        ),
+        element: <ProtectedRoutes allowedRoles={["pegawai"]} allowedJabatan={["Admin"]}><Outlet /></ProtectedRoutes>,
         children: [
-          {
-            path: "",
-            element: <KelolaJabatanPage />,
-          },
-          {
-            path: "kelolaPegawai",
-            element: <KelolaPegawaiPage />,
-          },
-          {
-            path: "kelolaPegawai/:id",
-            element: <EditPegawaiPage />,
-          },
-          {
-            path: "kelolaPegawai/tambahPegawai",
-            element: <TambahPegawaiPage />,
-          },
-          {
-            path: "kelolaJabatan",
-            element: <KelolaJabatanPage />,
-          },
-          {
-            path: "kelolaJabatan/:id",
-            element: <EditJabatanPage />,
-          },
-          {
-            path: "",
-            element: <KelolaOrganisasiPage />,
-          },
-          {
-            path: "kelolaOrganisasi",
-            element: <KelolaOrganisasiPage />,
-          },
-          {
-            path: "kelolaOrganisasi/:id",
-            element: <EditOrganisasiPage />,
-          }
+          { path: "", element: <KelolaOrganisasiPage /> },
+          { path: "kelolaPegawai", element: <KelolaPegawaiPage /> },
+          { path: "kelolaPegawai/:id", element: <EditPegawaiPage /> },
+          { path: "kelolaPegawai/tambahPegawai", element: <TambahPegawaiPage /> },
+          { path: "kelolaJabatan", element: <KelolaJabatanPage /> },
+          { path: "kelolaJabatan/:id", element: <EditJabatanPage /> },
+          { path: "kelolaOrganisasi", element: <KelolaOrganisasiPage /> },
+          { path: "kelolaOrganisasi/:id", element: <EditOrganisasiPage /> },
         ],
       },
-
       {
         path: "/pembeli",
-        element: (
-          <ProtectedRoutes allowedRoles={['pembeli']}>
-            <Outlet />
-          </ProtectedRoutes>
-        ),
+        element: <ProtectedRoutes allowedRoles={["pembeli"]}><Outlet /></ProtectedRoutes>,
         children: [
-          {
-            path: "profile",
-            element: <ProfilePembeliPage />,
-          },
-          {
-            path: "editAlamat/:id",
-            element: <EditAlamatPage />,
-          },
-          {
-            path: "tambahAlamat",
-            element: <TambahAlamatPage />,
-          },
-          {
-            path: "detailPembelian/:id",
-            element: <DetailPembelianPage />,
-          },
-          {
-            path: "keranjang",
-            element: <KeranjangPage />,
-          }
+          { path: "profile", element: <ProfilePembeliPage /> },
+          { path: "editAlamat/:id", element: <EditAlamatPage /> },
+          { path: "tambahAlamat", element: <TambahAlamatPage /> },
+          { path: "detailPembelian/:id", element: <DetailPembelianPage /> },
+          { path: "keranjang", element: <KeranjangPage /> }, 
         ],
       },
       {
         path: "/organisasi",
-        element: (
-          <ProtectedRoutes allowedRoles={['organisasi']}>
-            <Outlet />
-          </ProtectedRoutes>
-        ),
+        element: <ProtectedRoutes allowedRoles={["organisasi"]}><Outlet /></ProtectedRoutes>,
         children: [
-          {
-            path: "",
-            element: <OrganisasiPage />,
-          },
-          {
-            path: "organisasiPage",
-            element: <OrganisasiPage />,
-          },
-          {
-            path: "organisasiPage/tambahRequest",
-            element: <CreateRequestPage />,
-          },
-          {
-            path: "organisasiPage/editRequest/:id",
-            element: <EditRequestPage />,
-          },
+          { path: "", element: <OrganisasiPage /> },
+          { path: "organisasiPage", element: <OrganisasiPage /> },
+          { path: "organisasiPage/tambahRequest", element: <CreateRequestPage /> },
+          { path: "organisasiPage/editRequest/:id", element: <EditRequestPage /> },
         ],
       },
-                                   
     ],
   },
-  
 ]);
 
 const AppRouter = () => {
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
       <RouterProvider router={router} />
     </>
   );
