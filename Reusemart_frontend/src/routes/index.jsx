@@ -54,6 +54,9 @@ import OrganisasiPage from "../pages/Organisasi/OrganisasiPage";
 import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
 import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
+import KeranjangPage from "../pages/pembeli/KeranjangPage";
+
+
 const router = createBrowserRouter([
   { path: "*", element: <NoPage /> },
   { path: "/tidaksah", element: <UnauthorizedPage /> },
@@ -130,6 +133,7 @@ const router = createBrowserRouter([
           { path: "editAlamat/:id", element: <EditAlamatPage /> },
           { path: "tambahAlamat", element: <TambahAlamatPage /> },
           { path: "detailPembelian/:id", element: <DetailPembelianPage /> },
+          { path: "keranjang", element: <KeranjangPage /> }, 
         ],
       },
       {

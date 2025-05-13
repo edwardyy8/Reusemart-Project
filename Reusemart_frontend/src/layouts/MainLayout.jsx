@@ -6,13 +6,15 @@ import TopNavbar from "../components/TopNavbar";
 import SideBarPegawai from "../components/SideBarPegawai"; 
 import { getRole, getJabatan } from "../api/apiAuth";
 
-import { Container, Spinner, Button } from "react-bootstrap";
+import { Container, Spinner, Button, Badge } from "react-bootstrap";
 
 import { LogOut } from "../api/apiAuth";
 import { getFotoPegawai } from "../api/apiPegawai";
 
 import ModalLogout from "../components/modals/ModalLogout";
 import ModalLogoutUser from "../components/modals/ModalLogoutUser";
+
+import { useKeranjang } from "../context/KeranjangContext";
 
 const MainLayout = ({ children }) => {
   const location = useLocation();
@@ -25,6 +27,7 @@ const MainLayout = ({ children }) => {
   const [pathFotoPegawai, setPathFotoPegawai] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
  
+  const { itemKeranjang } = useKeranjang();
 
   useEffect(() => {
     const fetchRoleDanFoto = async () => { 
@@ -306,17 +309,30 @@ const MainLayout = ({ children }) => {
         { path: "/kategori", name: "KATEGORI" },
         { path: "/register", name: "BUAT AKUN" },
         {
-          path: "/pembeli/keranjang/:id",
-          name: location.pathname === "/pembeli/keranjang/:id" ? (
-            <BsCartFill
-              size={25}
-              color="rgba(4, 121, 2, 1)"
-            />
-          ) : (
-            <BsCart
-              size={25}
-              color="rgba(4, 121, 2, 1)"
-            />
+          path: "/pembeli/keranjang",
+          name: (
+            <div style={{ position: "relative" }}>
+              { location.pathname === "/pembeli/keranjang" ? (
+                  <BsCartFill size={25} color="rgba(4, 121, 2, 1)" />
+                ) : (
+                  <BsCart size={25} color="rgba(4, 121, 2, 1)" />
+                )
+              }
+              {itemKeranjang.length > 0 && (
+                <Badge
+                  pill
+                  bg="danger"
+                  style={{
+                    position: "absolute",
+                    top: -5,
+                    right: -10,
+                    fontSize: "0.7rem",
+                  }}
+                >
+                  {itemKeranjang.length}
+                </Badge>
+              )}
+            </div>
           )
         },
         {
