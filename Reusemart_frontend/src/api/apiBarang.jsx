@@ -35,3 +35,18 @@ export const SearchBarang = async (query) => {
     throw error.response?.data || error;
   }
 };
+
+export const donasiByPenitip = async (id_barang) => {
+  try {
+    const response = await useAxios.put(`/donasiByPenitip/${id_barang}`, {
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
