@@ -26,6 +26,7 @@ const ModalShowPegawai = ({ pegawai }) => {
                             <h5>Email : {pegawai.email}</h5>
                             <h5>ID Jabatan : {pegawai.id_jabatan}</h5>
                             <h5>Tanggal Lahir : {pegawai.tanggal_lahir}</h5>
+                            <h5>Status : {pegawai.is_aktif}</h5>
                         </Col>
                         <Col md={4} className="d-flex justify-content-center align-items-center">
                             <img

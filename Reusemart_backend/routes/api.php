@@ -102,6 +102,10 @@ Route::middleware('auth:pegawai')->group(function () {
     Route::middleware(CekJabatan::class.':Customer Service')->group(function () {
         Route::post('/penitip',[PenitipController::class,'store']);
         Route::get('/getAllDiskusiKecualiCS', [DiskusiController::class, 'getAllDiskusiKecualiCS']);
+        Route::get('/penitip', [PenitipController::class, 'index']);
+        Route::get('/penitip/{id}', [PenitipController::class, 'show']);
+        Route::put('/penitip/{id}', [PenitipController::class, 'update']);
+        Route::post('/deletePenitip/{id}', [PenitipController::class, 'destroy']);
     });
 
     Route::middleware(CekJabatan::class.':Owner')->group(function () {
@@ -136,10 +140,7 @@ Route::middleware('auth:organisasi')->group(function () {
     Route::get('/organisasi', [OrganisasiController::class, 'index']);
 });
 
-Route::get('/penitip', [PenitipController::class, 'index']);
-Route::get('/penitip/{id}', [PenitipController::class, 'show']);
-Route::put('/penitip/{id}', [PenitipController::class, 'update']);
-Route::delete('/penitip/{id}', [PenitipController::class, 'destroy']);
+
 
 Route::post('/fotobarang', [FotoBarangController::class, 'store']);
 Route::get('/fotobarang/barang/{id_barang}', [FotoBarangController::class, 'getByBarangId']);

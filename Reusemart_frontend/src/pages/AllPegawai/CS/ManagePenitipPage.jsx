@@ -3,6 +3,7 @@ import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination } fro
 import { FaEye} from "react-icons/fa";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
 import { useNavigate, Outlet } from "react-router-dom";
+import { toast } from "react-toastify";
 import reusemart from "../../../assets/images/titlereuse.png";
 import { GetAllPenitip, deletePenitipById } from "../../../api/apiPenitip";
 
@@ -35,15 +36,29 @@ const ManagePenitipPage = () => {
   const handleDelete = async () => {
     if (!selectedPenitip) return;
     await deletePenitipById(selectedPenitip.id_penitip);
+    toast.success("Penitip berhasil dinonaktifkan");
     setShowDelete(false);
     fetchPenitip();
   };
 
   const totalTopSeller = penitipList.filter((p) => p.is_top==="Ya").length;
+  const totalAktif = penitipList.filter((p) => p.is_aktif==="Ya").length;
+  const tidakAktif = penitipList.filter((p) => p.is_aktif==="Tidak").length;
 
-  const filteredData = penitipList.filter((p) => 
-    p.nama.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = penitipList.filter((p) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      p.id_penitip.toLowerCase().includes(term) ||
+      p.nama.toLowerCase().includes(term) ||
+      p.rating_penitip.toString().toLowerCase().includes(term) ||
+      p.saldo_penitip.toString().toLowerCase().includes(term) ||
+      p.poin_penitip.toString().toLowerCase().includes(term) ||
+      p.no_ktp.toString().toLowerCase().includes(term) ||
+      p.email.toLowerCase().includes(term) ||
+      p.is_top.toLowerCase().includes(term) ||
+      p.is_aktif.toLowerCase().includes(term)
+    );
+  });
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentItems = filteredData.slice(
@@ -61,8 +76,16 @@ const ManagePenitipPage = () => {
         <Col md={3}>
           <Card style={{backgroundColor:"rgba(4, 121, 2, 1"}} text="white">
             <Card.Body>
-              <Card.Title>Jumlah Penitip</Card.Title>
-              <h3>{penitipList.length}</h3>
+              <Card.Title>Jumlah Penitip Aktif</Card.Title>
+              <h3>{totalAktif}</h3>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3}>
+          <Card bg="danger" text="white">
+            <Card.Body>
+              <Card.Title className="d-flex flex-column">Jumlah Penitip Tidak Aktif</Card.Title>
+              <h3>{tidakAktif}</h3>
             </Card.Body>
           </Card>
         </Col>
@@ -74,7 +97,6 @@ const ManagePenitipPage = () => {
             </Card.Body>
           </Card>
         </Col>
-            
       </Row>
       <Row className="mb-4 d-flex align-items-end">
         <Col>
@@ -211,11 +233,11 @@ const ManagePenitipPage = () => {
 
       <Modal show={showDelete} onHide={() => setShowDelete(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Hapus Data</Modal.Title>
+          <Modal.Title>Nonaktifkan Penitip</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Apakah Anda yakin ingin menghapus data penitip ini?</Modal.Body>
+        <Modal.Body>Apakah Anda yakin ingin menonaktifkan penitip ini?</Modal.Body>
         <Modal.Footer>
-          <Button variant="danger" onClick={handleDelete}>Hapus</Button>
+          <Button variant="danger" onClick={handleDelete}>Yakin</Button>
           <Button variant="secondary" onClick={() => setShowDelete(false)}>Batal</Button>
         </Modal.Footer>
       </Modal>

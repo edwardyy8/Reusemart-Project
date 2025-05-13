@@ -62,6 +62,11 @@ const KelolaPegawaiPage = () => {
     return dataPegawai.filter(pegawai => pegawai.id_jabatan === jabatanId).length;
   };
 
+  const countNonAktif = () => {
+    return dataPegawai.filter((pegawai) => pegawai.is_aktif === "Tidak").length;
+  };
+
+
   return (
     <Container className="p-0">
       <Row className="d-flex justify-content-between align-items-center mb-4">
@@ -185,8 +190,23 @@ const KelolaPegawaiPage = () => {
             </Col>
           </Row>
         </Col>
-      </Row>
 
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="p-3 rounded-3 text-center mb-4"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#FF5959', color: 'white' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Pegawai NonAktif</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countNonAktif()}</h3>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
 
 
 
@@ -238,13 +258,23 @@ const KelolaPegawaiPage = () => {
                     <td>{pegawai.id_pegawai}</td>
                     <td>{pegawai.nama}</td>
                     <td className="d-flex justify-content-center">
-                      <ModalResetPass pegawai={pegawai} onClose={fetchData} />
-                      <ModalShowPegawai pegawai={pegawai} />
-                      <Button onClick={() => navigate(`/pegawai/Admin/kelolaPegawai/${pegawai.id_pegawai}`)} className="me-2">
-                        <FaRegPenToSquare size={20} />
-                      </Button>
-                      <ModalDeletePegawai pegawai={pegawai} onClose={fetchData} />
+                      {pegawai.is_aktif === "Tidak" ? (
+                        <ModalShowPegawai pegawai={pegawai} />
+                      ) : (
+                        <>
+                          <ModalResetPass pegawai={pegawai} onClose={fetchData} />
+                          <ModalShowPegawai pegawai={pegawai} />
+                          <Button
+                            onClick={() => navigate(`/pegawai/Admin/kelolaPegawai/${pegawai.id_pegawai}`)}
+                            className="me-2"
+                          >
+                            <FaRegPenToSquare size={20} />
+                          </Button>
+                          <ModalDeletePegawai pegawai={pegawai} onClose={fetchData} />
+                        </>
+                      )}
                     </td>
+
                   </tr>
                 ))}
               </tbody>

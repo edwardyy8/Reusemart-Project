@@ -124,7 +124,12 @@ class AuthController extends Controller
         foreach ($userTypes as $type => $model) {
             $user = $model::where('email', $request->email)->first();
 
-            if ($user && Hash::check($request->password, $user->password)) {
+            if ($user){
+                if ($user->is_aktif==="Tidak" && strtolower($user->is_aktif) === "tidak"){
+                    return response(['message' => 'Akun Anda tidak aktif'], 401);
+                }
+
+                if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('Authentication Token')->plainTextToken;
 
                 return response([
@@ -134,7 +139,8 @@ class AuthController extends Controller
                     'jabatan' => $user->jabatan->nama_jabatan ?? null,
                 ]);
 
-            }
+                }
+            }    
         }
 
         return response(['message' => 'Email & password tidak cocok'], 401);
