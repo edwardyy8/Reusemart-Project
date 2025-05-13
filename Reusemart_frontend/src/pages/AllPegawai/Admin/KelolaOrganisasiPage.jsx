@@ -12,7 +12,8 @@ import ModalDeleteOrg from "../../../components/modals/organisasi/ModalDeleteOrg
 
 const KelolaOrganisasiPage = () => {
     const [organisasis, setOrganisasis] = useState([]);
-    const [jumlah, setJumlah] = useState(0);
+    const [jumlahAktif, setJumlahAktif] = useState(0);
+    const [jumlahNon, setJumlahNon] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState("");
     const [filteredOrganisasis, setFilteredOrganisasis] = useState([]);
@@ -38,7 +39,8 @@ const KelolaOrganisasiPage = () => {
             .then((data) => {
                 console.log(data);
                 setOrganisasis(data.data);
-                setJumlah(data.jumlah);
+                setJumlahAktif(data.jumlah_aktif);
+                setJumlahNon(data.jumlah_non);
                 setIsLoading(false);
             })
             .catch((err) => {
@@ -68,16 +70,32 @@ const KelolaOrganisasiPage = () => {
 
     return (
         <Container className="p-0">
-            <Container className="boxHijau p-3 rounded-3 mb-4 mt-4 ms-3" style={{ width: "13vw" }}>
-                <Row>
-                    <Col>
-                        <p>Jumlah</p>
-                        <p>Organisasi</p>
-                    </Col>
-                    <Col className="text-center d-flex justify-content-center align-items-center">
-                        <h3>{jumlah}</h3>
-                    </Col>
-                </Row>
+            <Container className="d-flex flex-col ms-0 w-50">
+                <Container className="boxHijau p-3 rounded-3 mb-4 mt-4 ms-3" >
+                    <Row>
+                        <Col>
+                            <p>Jumlah</p>
+                            <p>Organisasi</p>
+                            <p>Aktif</p>
+                        </Col>
+                        <Col className="text-center d-flex justify-content-center align-items-center">
+                            <h3>{jumlahAktif}</h3>
+                        </Col>
+                    </Row>
+                </Container>
+
+                <Container className="bg-danger text-white p-3 rounded-3 mb-4 mt-4 ms-3">
+                    <Row>
+                        <Col>
+                            <p>Jumlah</p>
+                            <p>Organisasi</p>
+                            <p>Non Aktif</p>
+                        </Col>
+                        <Col className="text-center d-flex justify-content-center align-items-center">
+                            <h3>{jumlahNon}</h3>
+                        </Col>
+                    </Row>
+                </Container>
             </Container>
 
             <Container className="mb-5 ms-0 me-0">
@@ -129,6 +147,7 @@ const KelolaOrganisasiPage = () => {
                                     <tr>
                                         <th>ID</th>
                                         <th>Nama Organisasi</th>
+                                        <th>Status Aktif</th>
                                         <th className="text-center">Action</th>
                                     </tr>
                                 </thead>
@@ -137,12 +156,18 @@ const KelolaOrganisasiPage = () => {
                                         <tr key={org.id_organisasi}>
                                             <td>{org.id_organisasi}</td>
                                             <td>{org.nama}</td>
+                                            <td>{org.is_aktif}</td>
                                             <td className="d-flex justify-content-center">
                                                 <ModalShowOrg organisasi={org} />
-                                                <Button onClick={() => navigate(`/pegawai/Admin/kelolaOrganisasi/${org.id_organisasi}`)} className="me-2">
-                                                    <FaRegPenToSquare size={20} />
-                                                </Button>
-                                                <ModalDeleteOrg organisasi={org} onClose={fetchAllOrganisasi} />
+                                                {org.is_aktif === "Ya" && (
+                                                    <>
+                                                        <Button onClick={() => navigate(`/pegawai/Admin/kelolaOrganisasi/${org.id_organisasi}`)} className="me-2">
+                                                            <FaRegPenToSquare size={20} />
+                                                        </Button>
+                                                        <ModalDeleteOrg organisasi={org} onClose={fetchAllOrganisasi} />
+                                                    </>
+                                                )}
+                                                
                                             </td>
                                         </tr>
                                     ))}

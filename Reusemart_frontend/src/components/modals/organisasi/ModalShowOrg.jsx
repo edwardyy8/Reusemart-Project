@@ -31,6 +31,7 @@ const ModalShowOrg = ({ organisasi }) => {
                             <h5>ID : {organisasi.id_organisasi}</h5>
                             <h5>Email : {organisasi.email}</h5>
                             <h5>Alamat : {organisasi.alamat_organisasi}</h5>
+                            <h5>Status Aktif : {organisasi.is_aktif}</h5>
                         </div>
                         <div>
                             <img style={{ width: "150px", height: "150px" }}

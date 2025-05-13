@@ -55,11 +55,15 @@ class OrganisasiController extends Controller
     {
         $organisasi = Organisasi::orderBy('createdAt', 'asc')->get();
 
+        $organisasiAktif = Organisasi::where('is_aktif', 'Ya')->get();
+        $organisasiNon = Organisasi::where('is_aktif', 'Tidak')->get();
+
         return response()->json([
             'status' => true,
             'message' => 'Data Organisasi',
             'data' => $organisasi,
-            'jumlah' => $organisasi->count(),
+            'jumlah_aktif' => $organisasiAktif->count(),
+            'jumlah_non' => $organisasiNon->count(),
         ]);
     }
 
@@ -92,7 +96,15 @@ class OrganisasiController extends Controller
             ], 404);
         }
 
-        $organisasi->delete();
+        if($organisasi->is_aktif == "Tidak"){
+            return response()->json([
+                'status' => false,
+                'message' => 'Organisasi sudah nonaktif',
+            ], 404);
+        }
+
+        $organisasi->is_aktif = "Tidak";
+        $organisasi->save();
 
         return response()->json([
             'status' => true,
