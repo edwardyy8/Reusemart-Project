@@ -1,13 +1,11 @@
-import { Modal, Button, Spinner, Form } from "react-bootstrap";
+import { Modal, Button, Spinner } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
-
 import { toast } from "react-toastify";
-import { DeleteOrganisasi } from "../../../api/apiOrganisasi";
+import { ResetPasswordPegawai } from '../../../api/apiAuth';
 
-const ModalDeleteOrg = ({ organisasi, onClose }) => { 
+const ModalResetPass = ({ pegawai, onClose }) => {
     const [show, setShow] = useState(false);
-
     const [isPending, setIsPending] = useState(false);
 
     const handleClose = () => {
@@ -21,52 +19,55 @@ const ModalDeleteOrg = ({ organisasi, onClose }) => {
 
     const handleShow = () => setShow(true);
 
-    const handleDelete = async () => {
+    const handleResetPasswordPegawai = async (id) => {
         setIsPending(true);
         try {
-            const res = await DeleteOrganisasi(organisasi.id_organisasi);
-            toast.success("Berhasil menonaktifkan organisasi.");
-            handleClose();
-        } catch (error) {
-            toast.error(error.message);
+          const response = await ResetPasswordPegawai(id);
+          console.log(response);
+          if (!response.sukses) throw new Error('Gagal reset password');
+          toast.success('Password berhasil direset!');
+          
+        } catch (err) {
+          setError(err.message);
+          toast.error('Gagal reset password');
         } finally {
             setIsPending(false);
+            handleClose();
         }
-    }
+      }
 
     return (
         <>
-            <Button variant="danger" className="shadow-sm" onClick={handleShow}>
-                <FaTrash size={20} />
+            <Button variant="secondary" className="shadow-sm me-2" onClick={handleShow}>
+                Reset Password?
             </Button>
 
-            <Modal size="lg" show={show} onHide={handleBatal} centered>
+            <Modal size="lg" show={show} onHide={handleClose} centered>
                 <Modal.Header className="boxHijau" closeButton>
-                    <Modal.Title className="ms-3">Nonaktifkan Data Organisasi</Modal.Title>
+                    <Modal.Title className="ms-3">Reset Password Pegawai</Modal.Title>
                 </Modal.Header>
-                
-                <Modal.Body >
+
+                <Modal.Body>
                     <div className="p-3">
-                       <h5>Apakah Anda yakin ingin menonaktifkan data organisasi ini?</h5>
-                       <h4 className="fw-bold">{organisasi.nama}</h4>
+                        <h5>Apakah Anda yakin ingin mereset password pegawai ini?</h5>
+                        <h4 className="fw-bold">{pegawai.nama}</h4>
                     </div>
-                   
                 </Modal.Body>
 
                 <Modal.Footer>
                     <Button 
                         variant="danger"
-                        onClick={handleDelete}
+                        onClick={() => handleResetPasswordPegawai(pegawai.id_pegawai)}
                         disabled={isPending}
                     >
                         {isPending ? (
                             <>
                                 <Spinner
-                                as="span"
-                                animation="grow"
-                                size="sm"
-                                role="status"
-                                aria-hidden="true"
+                                    as="span"
+                                    animation="grow"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
                                 />{" "}
                                 Loading...
                             </>
@@ -82,6 +83,6 @@ const ModalDeleteOrg = ({ organisasi, onClose }) => {
             </Modal>
         </>
     );
-}
+};
 
-export default ModalDeleteOrg;
+export default ModalResetPass;

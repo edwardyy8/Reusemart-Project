@@ -146,7 +146,7 @@ const DetailPembelianPage = () => {
                                    </div>
                                 </div>
                             ) : (
-                                <div className="d-flex justify-content-between">
+                                <div className="d-flex flex-column">
                                     <Card.Title>Alamat Penjemputan</Card.Title>
                                     <Card.Text className="text-muted mb-3">
                                         Gudang ReuseMart <br />

@@ -26,15 +26,15 @@ class PenitipanController extends Controller
 
             foreach ($titipanList as $titipan){
                 $batasAkhir = Carbon::parse($titipan->batas_akhir);
-                $hariIni = Carbon::today();
+                $hariIni = Carbon::now('Asia/Jakarta');
 
-                if ($batasAkhir->lt($hariIni) && $titipan->barang->status_barang === 'Tersedia') {
+                if ($batasAkhir->lt($hariIni) && $titipan->barang->status_barang === 'Diambil Kembali') {
                     $titipan->barang->update([
                         'status_barang' => 'Barang untuk Donasi',
                     ]);
 
                     $titipan->update([
-                        'status_penitipan' => 'Didonasikan',
+                        'status_penitipan' => 'Barang untuk Donasi',
                     ]);
                 }
             }

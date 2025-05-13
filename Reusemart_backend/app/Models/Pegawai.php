@@ -29,7 +29,8 @@ class Pegawai extends Authenticatable
         'foto_profile',
         'tanggal_lahir',
         'is_aktif',
-        'createdAt'
+        'createdAt',
+        'is_aktif'
     ];
 
     public function getUserType() {

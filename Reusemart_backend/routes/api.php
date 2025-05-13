@@ -71,7 +71,7 @@ Route::middleware('auth:pegawai')->group(function () {
             ->middleware(EnsureApiTokenIsValid::class);
 
         Route::get('/getAllOrganisasi', [OrganisasiController::class, 'getAllOrganisasi']);
-        Route::delete('/deleteOrganisasi/{id}', [OrganisasiController::class, 'deleteOrganisasi']);
+        Route::post('/deleteOrganisasi/{id}', [OrganisasiController::class, 'deleteOrganisasi']);
         Route::post('/editOrganisasi/{id}', [OrganisasiController::class, 'editOrganisasi']);
         Route::get('/getOrganisasi/{id}', [OrganisasiController::class, 'getOrganisasi']);
 
@@ -102,6 +102,10 @@ Route::middleware('auth:pegawai')->group(function () {
     Route::middleware(CekJabatan::class.':Customer Service')->group(function () {
         Route::post('/penitip',[PenitipController::class,'store']);
         Route::get('/getAllDiskusiKecualiCS', [DiskusiController::class, 'getAllDiskusiKecualiCS']);
+        Route::get('/penitip', [PenitipController::class, 'index']);
+        Route::get('/penitip/{id}', [PenitipController::class, 'show']);
+        Route::put('/penitip/{id}', [PenitipController::class, 'update']);
+        Route::post('/deletePenitip/{id}', [PenitipController::class, 'destroy']);
     });
 
     Route::middleware(CekJabatan::class.':Owner')->group(function () {
@@ -123,7 +127,7 @@ Route::middleware('auth:penitip')->group(function () {
     Route::get('/getPenitipanByIdPenitip/{id}', [PenitipanController::class, 'getPenitipanData']);
     Route::put('/perpanjangRincianPenitipan/{id}', [RincianPenitipanController::class, 'perpanjangRincianPenitipan']);
     Route::put('/donasiByPenitip/{id}', [BarangController::class, 'donasiByPenitip']);
-    Route::put('/ambilTitipan/{id}', [RincianPenitipanController::class, 'ambilTitipan']);
+    Route::put('/ambilTitipan/{id}', [BarangController::class, 'ambilTitipan']);
 });
 
 Route::middleware('auth:organisasi')->group(function () {
@@ -136,10 +140,7 @@ Route::middleware('auth:organisasi')->group(function () {
     Route::get('/organisasi', [OrganisasiController::class, 'index']);
 });
 
-Route::get('/penitip', [PenitipController::class, 'index']);
-Route::get('/penitip/{id}', [PenitipController::class, 'show']);
-Route::put('/penitip/{id}', [PenitipController::class, 'update']);
-Route::delete('/penitip/{id}', [PenitipController::class, 'destroy']);
+
 
 Route::post('/fotobarang', [FotoBarangController::class, 'store']);
 Route::get('/fotobarang/barang/{id_barang}', [FotoBarangController::class, 'getByBarangId']);

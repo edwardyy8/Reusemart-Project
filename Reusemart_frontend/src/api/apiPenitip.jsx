@@ -6,7 +6,7 @@ export const GetAllPenitip = async () => {
     const response = await useAxios.get("/penitip", {
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
     return response.data.data;
@@ -21,7 +21,7 @@ export const GetPenitipById = async (id_penitip) => {
     const response = await useAxios.get(`/penitip/${id_penitip}`, {
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
     return response.data.data;
@@ -74,10 +74,10 @@ export const getPenitipanData = async (id_penitip) => {
 
 export const deletePenitipById = async (id_penitip) => {
   try {
-    const response = await useAxios.delete(`/penitip/${id_penitip}`, {
+    const response = await useAxios.post(`/deletePenitip/${id_penitip}`, {}, {
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
     return response.data.data;
