@@ -233,7 +233,7 @@ const ManagePenitipPage = () => {
 
       <Modal show={showDelete} onHide={() => setShowDelete(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Hapus Data</Modal.Title>
+          <Modal.Title>Nonaktifkan Penitip</Modal.Title>
         </Modal.Header>
         <Modal.Body>Apakah Anda yakin ingin menonaktifkan penitip ini?</Modal.Body>
         <Modal.Footer>
