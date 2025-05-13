@@ -5,6 +5,7 @@ import { FaRegTrashCan } from "react-icons/fa6";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useKeranjang } from "../../context/KeranjangContext";
 import { HandleSelectKeranjang, DeleteKeranjang, DeleteKeranjangHabis } from "../../api/apiKeranjang";
+import { toast } from "react-toastify";
 
 
 const KeranjangPage = () => {
@@ -46,8 +47,10 @@ const KeranjangPage = () => {
         try {
             const response = await DeleteKeranjangHabis(id);
             fetchKeranjang();
+            toast.success("Berhasil menghapus barang stok habis");
         } catch (error) {
             console.error("Gagal menghapus barang habis:", error);
+            toast.error("Gagal menghapus barang stok habis");
         } finally {
             setIsLoading(false);
         }
