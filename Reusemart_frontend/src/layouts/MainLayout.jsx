@@ -249,6 +249,84 @@ const MainLayout = ({ children }) => {
     );
   }
 
+  function ProfileDropdownOrganisasi({ active }) {
+    const [open, setOpen] = useState(false);
+    const [showModalLogout, setShowModalLogout] = useState(false);
+    const navigate = useNavigate();
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setOpen(false);
+        }
+      };
+  
+      if (open) {
+        document.addEventListener("mousedown", handleClickOutside);
+      } else {
+        document.removeEventListener("mousedown", handleClickOutside);
+      }
+
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [open]);
+  
+    const handleToggle = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(!open);
+    };
+  
+    return (
+      <div ref={dropdownRef} style={{ position: "relative" }}>
+        <div onClick={handleToggle} style={{ cursor: "pointer" }}>
+          {active ? (
+            <BsPersonFill size={25} color="rgba(4, 121, 2, 1)" />
+          ) : (
+            <BsPerson size={25} color="rgba(4, 121, 2, 1)" />
+          )}
+        </div>
+  
+        {open && (
+          <div style={{
+            position: "absolute",
+            top: "30px",
+            right: 0,
+            backgroundColor: "white",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            padding: "5px 0",
+            minWidth: "120px",
+            zIndex: 100,
+          }}>
+            <div style={{ padding: "8px", cursor: "pointer" }}
+              onClick={(e) => {
+                e.preventDefault();     
+                e.stopPropagation();
+                navigate("/organisasi/profile");
+                setOpen(false);
+              }}>
+              Profil Saya
+            </div>
+            <div style={{ padding: "8px", cursor: "pointer" }} 
+                 onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowModalLogout(true);
+                  setOpen(false);
+                }}>
+              Keluar
+            </div>
+            
+          </div>
+        )}
+        {showModalLogout && <ModalLogoutUser show={showModalLogout} onClose={() => setShowModalLogout(false)} />}
+      </div>
+    );
+  }
+
   
 
   
@@ -343,12 +421,20 @@ const MainLayout = ({ children }) => {
         }
       ];
     } 
-    // else if (userType === "organisasi") {
-
-    //   return [
-
-    //   ];
-    // }
+    else if (userType === "organisasi") {
+      return [
+        { path: "/", name: "BERANDA" },
+        { path: "/donasi", name: "DONASI" },
+        { path: "/kategori", name: "KATEGORI" },
+        { path: "/register", name: "BUAT AKUN" },
+        {
+          path: "/organisasi/profile",
+          name: (
+            <ProfileDropdownOrganisasi active={location.pathname === "/organisasi/profile"} />
+          )
+        }
+      ];
+    }
     else {
       return [
         { path: "/", name: "BERANDA" },

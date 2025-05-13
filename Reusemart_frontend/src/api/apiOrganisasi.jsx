@@ -1,3 +1,4 @@
+import useAxios from ".";
 import axios from ".";
 
 export const GetAllOrganisasi = async () => {
@@ -54,15 +55,18 @@ export const GetOrganisasiByid = async (id) => {
 
 export const getProfileData = async () => {
   try{
+    console.log('asa');
     const response = await useAxios.get(`/organisasi/organisasiPage`, {
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
+    console.log(response)
     return response.data.organisasi;
   } catch (error){
-    throw error.response.data;
+     throw {
+      message: error?.response?.data?.message || error?.message || "Gagal memuat profile",
+    };
   }
 };
 
