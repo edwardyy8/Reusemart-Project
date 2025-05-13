@@ -71,7 +71,7 @@ Route::middleware('auth:pegawai')->group(function () {
             ->middleware(EnsureApiTokenIsValid::class);
 
         Route::get('/getAllOrganisasi', [OrganisasiController::class, 'getAllOrganisasi']);
-        Route::delete('/deleteOrganisasi/{id}', [OrganisasiController::class, 'deleteOrganisasi']);
+        Route::post('/deleteOrganisasi/{id}', [OrganisasiController::class, 'deleteOrganisasi']);
         Route::post('/editOrganisasi/{id}', [OrganisasiController::class, 'editOrganisasi']);
         Route::get('/getOrganisasi/{id}', [OrganisasiController::class, 'getOrganisasi']);
 

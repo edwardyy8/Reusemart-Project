@@ -26,7 +26,8 @@ class Organisasi extends Authenticatable
         'password',
         'alamat_organisasi',
         'foto_profile',
-        'createdAt'
+        'createdAt',
+        'is_aktif'
     ];
 
     public static function generateId()
