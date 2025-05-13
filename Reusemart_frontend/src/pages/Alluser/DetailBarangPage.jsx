@@ -152,7 +152,7 @@ const DetailBarangPage = () => {
       try {
         const barangData = await GetBarangById(id);
         setBarang(barangData);
-        setKeranjangInput({ ...keranjangInput, harga_barang: barangData.harga_barang });
+        setKeranjangInput({ ...keranjangInput, harga_barang: barangData.barang.harga_barang });
 
         const penitipData = await GetPenitipById(barangData.barang.id_penitip); // <--- perhatikan di sini
         setPenitip({ ...penitipData, jumlahTerjual: barangData.jumlah_barang_terjual }); // ← Tambahkan properti ini
@@ -193,8 +193,8 @@ const DetailBarangPage = () => {
           <Card>
             <Card.Img
               variant="top"
-              src={`/images/${fotoUtama}`}
-              alt={barang.nama_barang}
+              src={`http://127.0.0.1:8000/storage/foto_barang/${barang.barang.foto_barang}`}
+              alt={barang.barang.nama_barang}
               style={{ maxHeight: "400px", objectFit: "contain" }}
             />
           </Card>
@@ -253,7 +253,7 @@ const DetailBarangPage = () => {
       </Row>
 
       {/* Diskusi Produk */}
-      <hr className="my-4" />
+      <hr />
       <h4 className="text-success text-decoration-underline">Diskusi Produk</h4>
       
       <div className="border rounded p-4">
@@ -286,7 +286,7 @@ const DetailBarangPage = () => {
                       <p className="mb-0">{diskusi.komentar}</p>
                     </div>
                     <div>
-                      <p className="text-muted mb-0">{formatDateAja(diskusi.tanggal_diskusi)}</p>
+                      <p className="text-muted mb-0">{formatDate(diskusi.tanggal_diskusi)}</p>
                     </div>
                   </div>
                 </div>
