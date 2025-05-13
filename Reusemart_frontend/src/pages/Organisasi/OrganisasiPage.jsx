@@ -10,6 +10,7 @@ const OrganisasiPage = () => {
   const [profileData, setProfileData] = useState(null);
   const [requestData, setRequestData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeKey, setActiveKey] = useState('profil');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
@@ -39,6 +40,14 @@ const OrganisasiPage = () => {
       console.error("Gagal ambil data request:", err);
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) {
+      setActiveKey(tabParam);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     fetchProfile();
@@ -83,7 +92,7 @@ const OrganisasiPage = () => {
             <h5>{profileData?.createdAt}</h5>
         </Container>
         
-        <Tabs defaultActiveKey="profile" className="mb-4 justify-content-center custom-tabs" fill>
+        <Tabs activeKey={activeKey} onSelect={(k) => setActiveKey(k)} className="mb-4 justify-content-center custom-tabs" fill>
           <Tab eventKey="donasi" title="Donasi Saya">
           <Row className="mb-4 d-flex align-items-end">
             <Col>

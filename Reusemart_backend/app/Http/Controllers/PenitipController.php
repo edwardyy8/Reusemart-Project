@@ -76,7 +76,7 @@ class PenitipController extends Controller
 
     public function destroy($id)
     {
-        $penitip = Penitip::find($id); // BUKAN findOrFail($id)
+        $penitip = Penitip::find($id);
 
         if (!$penitip) {
             return response()->json([
@@ -84,7 +84,8 @@ class PenitipController extends Controller
             ], 404);
         }
 
-        $penitip->delete();
+        $penitip->is_aktif = 'Tidak';
+        $penitip->save();
 
         return response()->json([
             'message' => 'Penitip berhasil dihapus.'

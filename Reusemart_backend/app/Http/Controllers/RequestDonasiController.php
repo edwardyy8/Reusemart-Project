@@ -44,7 +44,9 @@ class RequestDonasiController extends Controller
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
 
-            $requestDonasi = Request_Donasi::with('donasi')->where('id_organisasi', $organisasi->id_organisasi)->get();
+            $requestDonasi = Request_Donasi::with('donasi')
+                ->where('id_organisasi', $organisasi->id_organisasi)
+                ->get();
 
             return response()->json([
                 'message' => 'Request donasi retrieved',
@@ -65,25 +67,32 @@ class RequestDonasiController extends Controller
         $requestDonasi = Request_Donasi::with('donasi.barang')
             ->findOrFail($id);
 
-        return view('request_donasi.show', compact('requestDonasi'));
+        return response()->json([
+            'message' => 'Berhasil mengambil data request donasi',
+            'data' => $requestDonasi
+        ], 200);
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'isi_request' => 'required|string',
-            'tanggal_request' => 'required|date',
         ]);
 
-        $newRequest = Request_Donasi::create([
+        $newRequest = Request_Donasi::with('organisasi')
+        ->create([
             'id_request' => Request_Donasi::generateId(),
-            'id_organisasi' => auth()->user()->organisasi->id_organisasi,
+            'id_organisasi' => $request->user()->id_organisasi,
             'isi_request' => $request->isi_request,
-            'tanggal_request' => $request->tanggal_request,
+            'tanggal_request' => Carbon::now('Asia/jakarta'),
             'tanggal_approve' => null,
         ]);
 
-        return redirect()->route('request-donasi.index')->with('success', 'Request Donasi berhasil dibuat');
+        return response()->json([
+            'message' => 'Request berhasil dibuat',
+            'status' => 'success',
+            'data' => $newRequest,
+        ]);
     }
 
     public function update(Request $request, $id)
