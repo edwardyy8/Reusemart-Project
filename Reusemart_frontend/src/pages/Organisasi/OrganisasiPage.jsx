@@ -21,16 +21,11 @@ const OrganisasiPage = () => {
       setLoading(true);
       const profile = await getProfileData();
       setProfileData(profile);
-      if (!profile) {
-        return (
-          <Container className="mt-5 text-center">
-            <Alert variant="warning">Data tidak ditemukan</Alert>
-          </Container>
-        );
-      }
+      console.log(profile);
+      
     } catch (err) {
       console.log(err);
-      setError(err?.response?.data?.message || err.message || "Gagal memuat data");
+      setError(err?.response?.data?.message || err?.message || "Gagal memuat data");
     } finally {
       setLoading(false);
     }
