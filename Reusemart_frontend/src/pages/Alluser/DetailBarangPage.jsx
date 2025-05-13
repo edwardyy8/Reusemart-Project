@@ -327,6 +327,7 @@ const DetailBarangPage = () => {
                   name="komentar"
                   onChange={handleChange}
                   required
+                  value={diskusiInput.komentar}
                 />
                 <Button variant="outline-success" type="submit" disabled={isDisabled} >Kirim</Button>
               </Form>
