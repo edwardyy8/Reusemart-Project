@@ -141,6 +141,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoutes allowedRoles={["organisasi"]}><Outlet /></ProtectedRoutes>,
         children: [
           { path: "", element: <OrganisasiPage /> },
+          { path: "profile", element: <OrganisasiPage /> },
           { path: "organisasiPage", element: <OrganisasiPage /> },
           { path: "organisasiPage/tambahRequest", element: <CreateRequestPage /> },
           { path: "organisasiPage/editRequest/:id", element: <EditRequestPage /> },
