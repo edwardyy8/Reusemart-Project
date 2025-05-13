@@ -58,16 +58,120 @@ class KeranjangController extends Controller
             $id_pembeli = $request->user()->id_pembeli; 
             $keranjang = Keranjang::with('barang')
                 ->where('id_pembeli', $id_pembeli)
+                ->whereHas('barang', function($query) {
+                    $query->where('stok_barang', '!=', 0);
+                })
                 ->get();
+            
+            $keranjang_checked = Keranjang::with('barang')
+                ->where('id_pembeli', $id_pembeli)
+                ->where('is_selected', 1)
+                ->whereHas('barang', function($query) {
+                    $query->where('stok_barang', '!=', 0);
+                })
+                ->get();
+
+            $stok_habis = Keranjang::with('barang')
+                ->where('id_pembeli', $id_pembeli)
+                ->whereHas('barang', function($query) {
+                    $query->where('stok_barang', 0);
+                })
+                ->get();
+
+            $total_harga_barang = $keranjang_checked->sum('harga_barang');
     
             return response()->json([
                 'message' => 'Keranjang Berhasil didapatkan',
                 'status' => 'success',
                 'data' => $keranjang,
+                'keranjang_checked' => $keranjang_checked,
+                'total_harga_barang' => $total_harga_barang,
+                'stok_habis' => $stok_habis,        
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal mendapatkan keranjang', 
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function handleSelectKeranjang($id)
+    {
+        try {
+           $keranjang = Keranjang::find($id);
+            if (!$keranjang) {
+                return response()->json([
+                    'message' => 'Keranjang tidak ditemukan', 
+                    'status' => 'error'
+                ], 404);
+            }
+
+            $keranjang->is_selected = !$keranjang->is_selected;
+            $keranjang->save();
+
+            return response()->json([
+                'message' => 'Status keranjang berhasil diperbarui', 
+                'status' => 'success',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal memperbarui keranjang', 
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteKeranjang($id)
+    {
+        try {
+            $keranjang = Keranjang::find($id);
+            if (!$keranjang) {
+                return response()->json([
+                    'message' => 'Keranjang tidak ditemukan', 
+                    'status' => 'error'
+                ], 404);
+            }
+
+            $keranjang->delete();
+
+            return response()->json([
+                'message' => 'Keranjang berhasil dihapus', 
+                'status' => 'success',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menghapus keranjang', 
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteKeranjangHabis()
+    {
+        try {
+            $id_pembeli = request()->user()->id_pembeli; 
+            $stok_habis = Keranjang::with('barang')
+                ->where('id_pembeli', $id_pembeli)
+                ->whereHas('barang', function($query) {
+                    $query->where('stok_barang', 0);
+                })
+                ->get();
+
+            foreach ($stok_habis as $item) {
+                $item->delete();
+            }
+
+            return response()->json([
+                'message' => 'Keranjang dengan stok habis berhasil dihapus', 
+                'status' => 'success',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menghapus keranjang dengan stok habis', 
                 'status' => 'error',
                 'error' => $e->getMessage()
             ], 500);

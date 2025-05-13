@@ -152,6 +152,9 @@ Route::middleware('auth:pembeli')->group(function () {
 
     Route::get('/getKeranjangByIdPembeli', [KeranjangController::class, 'getKeranjangByIdPembeli']);
     Route::post('/tambahKeranjang', [KeranjangController::class, 'tambahKeranjang']);
+    Route::post('/handleSelectKeranjang/{id}', [KeranjangController::class, 'handleSelectKeranjang']);
+    Route::delete('/deleteKeranjang/{id}', [KeranjangController::class, 'deleteKeranjang']);
+    Route::delete('/deleteKeranjangHabis', [KeranjangController::class, 'deleteKeranjangHabis']);
 });
 
 

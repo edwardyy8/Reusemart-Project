@@ -27,3 +27,42 @@ export const TambahKeranjang = async (data) => {
         throw error.response.data;
     }
 };
+
+export const HandleSelectKeranjang = async (id) => {
+    try {
+        const response = await useAxios.post(`/handleSelectKeranjang/${id}`, {}, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+export const DeleteKeranjang = async (id) => {
+    try {
+        const response = await useAxios.delete(`/deleteKeranjang/${id}`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+export const DeleteKeranjangHabis = async (id) => {
+    try {
+        const response = await useAxios.delete(`/deleteKeranjangHabis`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
