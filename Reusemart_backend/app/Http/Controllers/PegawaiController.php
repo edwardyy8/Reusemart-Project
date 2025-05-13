@@ -15,7 +15,7 @@ class PegawaiController extends Controller
 {
     try {
         $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'id_jabatan', 'tanggal_lahir', 'foto_profile')
-            ->where('is_aktif', 1) // cuma ambil yang aktif
+            ->where('is_aktif', 'Ya') // cuma ambil yang aktif
             ->get();
 
         return response()->json($pegawai, 200);
