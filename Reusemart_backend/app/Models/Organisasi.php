@@ -16,7 +16,7 @@ class Organisasi extends Authenticatable
     public $timestamps = false;
     public $table = 'organisasi';
     protected $primaryKey = 'id_organisasi';
-    protected $keyType = 'string'; 
+    protected $keyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
@@ -32,12 +32,12 @@ class Organisasi extends Authenticatable
     public static function generateId()
     {
         $latestOrg = Organisasi::orderBy('id_organisasi', 'desc')->first();
-        
+
         if (!$latestOrg) {
             return 'ORG1';
         }
 
-        $lastNumber = (int) str_replace('ORG', '', $latestOrg->id_organisasi); 
+        $lastNumber = (int) str_replace('ORG', '', $latestOrg->id_organisasi);
 
         do {
             $lastNumber++;

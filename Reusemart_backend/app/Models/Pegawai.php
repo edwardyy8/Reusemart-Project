@@ -28,6 +28,7 @@ class Pegawai extends Authenticatable
         'password',
         'foto_profile',
         'tanggal_lahir',
+        'is_aktif',
         'createdAt'
     ];
 

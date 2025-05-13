@@ -18,7 +18,8 @@ class Rincian_Penitipan extends Model
         'id_barang',
         'tanggal_akhir',
         'perpanjangan',
-        'batas_akhir'
+        'batas_akhir',
+        'status_penitipan'
     ];
 
     public function penitipan()
