@@ -26,7 +26,6 @@ class Barang extends Model
         'deskripsi',
         'tanggal_masuk',
         'berat_barang',
-        'tanggal_donasi',
         'foto_barang',
     ];
 

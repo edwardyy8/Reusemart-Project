@@ -12,15 +12,18 @@ use Illuminate\Support\Facades\Hash;
 class PegawaiController extends Controller
 {
     public function index()
-    {
-        // Ambil data minimal, tanpa relasi
-        try {
-            $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'id_jabatan', 'tanggal_lahir', 'foto_profile')->get();
-            return response()->json($pegawai, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Server Error', 'message' => $e->getMessage()], 500);
-        }
+{
+    try {
+        $pegawai = Pegawai::select('id_pegawai', 'nama', 'email', 'id_jabatan', 'tanggal_lahir', 'foto_profile')
+            ->where('is_aktif', 1) // cuma ambil yang aktif
+            ->get();
+
+        return response()->json($pegawai, 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Server Error', 'message' => $e->getMessage()], 500);
     }
+}
+
 
     public function generatePegawaiId()
 {
@@ -170,32 +173,25 @@ public function tambahPegawai(Request $request)
     }
 
     public function deletePegawai($id)
-    {
-        $pegawai = Pegawai::find($id);
+{
+    $pegawai = Pegawai::find($id);
 
-        if (!$pegawai) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Pegawai tidak ditemukan',
-            ], 404);
-        }
-
-        // Jika ada foto profil, hapus juga dari penyimpanan
-        if ($pegawai->foto_profile) {
-            $fotoPath = storage_path('app/public/foto_profile/' . $pegawai->foto_profile);
-            if (file_exists($fotoPath)) {
-                unlink($fotoPath);
-            }
-        }
-
-        $pegawai->delete();
-
+    if (!$pegawai) {
         return response()->json([
-            'status' => true,
-            'message' => 'Pegawai berhasil dihapus',
-        ]);
+            'status' => false,
+            'message' => 'Pegawai tidak ditemukan',
+        ], 404);
     }
 
+    // Soft delete: Ubah is_aktif jadi 0
+    $pegawai->is_aktif = 0;
+    $pegawai->save();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Pegawai berhasil dinonaktifkan',
+    ]);
+}
 
     public function updatePegawai(Request $request, $id)
 {
