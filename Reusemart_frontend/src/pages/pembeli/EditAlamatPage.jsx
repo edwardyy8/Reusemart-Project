@@ -60,6 +60,11 @@ const EditAlamatPage = () => {
 
     const update = async (e) => {
         e.preventDefault();
+
+        if(!window.confirm("Apakah Anda yakin ingin memperbarui alamat ini?")) {
+          return;
+        }
+
         try {
           const response = await EditAlamat(id, alamatData);
           console.log("API Response:", response);
