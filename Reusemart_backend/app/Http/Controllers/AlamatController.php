@@ -67,6 +67,17 @@ class AlamatController extends Controller
         try {
             $alamat = Alamat::find($id);
 
+            $alamatAll = Alamat::where('id_pembeli', $alamat->id_pembeli)
+                ->orderBy('id_alamat', 'asc')
+                ->get();
+
+            if ($alamatAll->count() <= 1) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak boleh menghapus alamat, alamat harus ada minimal 1',
+                ], 404); 
+            }
+
             if (!$alamat) {
                 return response()->json([
                     'status' => false,
