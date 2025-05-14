@@ -109,7 +109,7 @@ const OrganisasiPage = () => {
           </Row>
             {requestData.length > 0 ? (
               <div>
-                {requestData.filter((req) => req.id_request.toString().includes(searchTerm)).map((req) => {
+                {requestData.filter((req) => req.id_request.toString().includes(searchTerm) || req.isi_request.toString().includes(searchTerm)).map((req) => {
                   const isApproved = req.tanggal_approve !== null;
                   return (
                     <Card key={req.id_request} className="mb-3 shadow-sm">

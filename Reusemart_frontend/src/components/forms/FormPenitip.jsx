@@ -104,13 +104,13 @@ const FormPenitip = () => {
               required
             />
 
-            {/* <InputFloatingForm
+            <InputFloatingForm
               type="file"
               label="Foto Profile"
               name="foto_profile"
               onChange={handleChange}
               required
-            /> */}
+            />
               <Button
                 type="submit"
                 className="mt-3 w-100 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
