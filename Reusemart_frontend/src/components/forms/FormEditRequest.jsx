@@ -49,6 +49,9 @@ const FormEditRequest = () => {
 
   const Update = async (e) => {
     e.preventDefault();
+
+    if(!window.confirm('Apakah kamu yakin ingin mengubah data?')) return;
+
     try {
       const formData = new FormData();
       formData.append("_method", "PUT");

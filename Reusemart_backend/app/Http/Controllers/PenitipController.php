@@ -41,16 +41,16 @@ class PenitipController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:100',
-            'no_ktp' => 'required|string|max:20|unique:penitip,no_ktp',
+            'no_ktp' => 'required|string|min:16|max:16|unique:penitip,no_ktp',
             'email' => 'required|email|unique:penitip,email|unique:pegawai,email|unique:pembeli,email|unique:organisasi,email',
             'password' => 'required|min:8|same:confirm_password',
             'confirm_password' => 'required|min:8',
             'foto_ktp' => 'required|image|max:2048',
-            // 'foto_profile' => 'required|image|max:2048',
+            'foto_profile' => 'required|image|max:2048',
         ]);
 
         $ktpPath = $request->file('foto_ktp')->store('foto_ktp', 'public');
-        // $profilePath = $request->file('foto_profile')->store('foto_profile', 'public');
+        $profilePath = $request->file('foto_profile')->store('foto_profile', 'public');
 
         $penitip = Penitip::create([
             'id_penitip' => Penitip::generateId(),
@@ -63,7 +63,7 @@ class PenitipController extends Controller
             'password' => bcrypt($request->password),
             'is_top' => 'Tidak',
             'foto_ktp' => $ktpPath,
-            // 'foto_profile' => $profilePath,
+            'foto_profile' => $profilePath,
             'createdAt' => now('Asia/Jakarta'),
         ]);
 

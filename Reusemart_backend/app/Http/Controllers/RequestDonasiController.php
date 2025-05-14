@@ -105,7 +105,7 @@ class RequestDonasiController extends Controller
         if ($request->has('isi_request')) {
             $req->isi_request = $request->isi_request;
         }
-
+        $req->tanggal_request = Carbon::now('Asia/Jakarta');
         $req->save();
 
         return response()->json([
