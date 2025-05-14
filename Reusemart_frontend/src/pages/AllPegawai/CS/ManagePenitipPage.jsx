@@ -241,6 +241,8 @@ const ManagePenitipPage = () => {
           <Button variant="secondary" onClick={() => setShowDelete(false)}>Batal</Button>
         </Modal.Footer>
       </Modal>
+
+      
       <Outlet />
     </Container>
   );

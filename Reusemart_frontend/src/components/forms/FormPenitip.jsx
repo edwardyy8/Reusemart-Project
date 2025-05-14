@@ -33,7 +33,6 @@ const FormPenitip = () => {
   const Tambah = (event) => {
     event.preventDefault();
     console.log(data);
-
     createPenitip(data)
       .then((res) => {
         toast.success(res.message || "Berhasil Menambahkan Penitip");
@@ -113,7 +112,6 @@ const FormPenitip = () => {
               required
             /> */}
               <Button
-                
                 type="submit"
                 className="mt-3 w-100 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
                 style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}

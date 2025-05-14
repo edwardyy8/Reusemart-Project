@@ -92,7 +92,12 @@ export const createPenitip = async (data) => {
     Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value);
     });
-    const response = await useAxios.post("/penitip", formData);
+    const response = await useAxios.post("/penitip", formData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
 
     return response.data;
   } catch (error) {
