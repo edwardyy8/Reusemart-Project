@@ -28,7 +28,7 @@ class PenitipanController extends Controller
                 $batasAkhir = Carbon::parse($titipan->batas_akhir);
                 $hariIni = Carbon::now('Asia/Jakarta');
 
-                if ($batasAkhir->lt($hariIni) && $titipan->barang->status_barang === 'Diambil Kembali') {
+                if ($batasAkhir->lt($hariIni) && ($titipan->barang->status_barang === 'Diambil Kembali' || $titipan->barang->status_barang === 'Tersedia')) {
                     $titipan->barang->update([
                         'status_barang' => 'Barang untuk Donasi',
                     ]);

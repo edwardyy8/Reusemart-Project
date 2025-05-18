@@ -56,6 +56,8 @@ import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
 import KeranjangPage from "../pages/pembeli/KeranjangPage";
 
+import BalasDiskusiPage from "../pages/AllPegawai/CS/BalasDiskusiPage";
+
 
 const router = createBrowserRouter([
   { path: "*", element: <NoPage /> },
@@ -98,6 +100,7 @@ const router = createBrowserRouter([
           { path: "claimMerchandise", element: <ClaimMerchandisePage /> },
           { path: "managePenitip/tambahPenitip", element: <TambahPenitipPage /> },
           { path: "managePenitip/editPenitip/:id", element: <EditPenitipPage /> },
+          { path: "balasDiskusi", element: <BalasDiskusiPage /> },
         ],
       },
       {

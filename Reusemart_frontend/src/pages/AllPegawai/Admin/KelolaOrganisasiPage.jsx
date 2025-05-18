@@ -60,7 +60,10 @@ const KelolaOrganisasiPage = () => {
         setCurrentPage(1);
 
         const filtered = organisasis.filter((org) =>
-            org.nama.toLowerCase().includes(keyword.toLowerCase())
+            org.nama.toLowerCase().includes(keyword.toLowerCase()) ||
+            org.id_organisasi.toLowerCase().includes(keyword.toLowerCase()) ||
+            org.is_aktif.toLowerCase().includes(keyword.toLowerCase())
+
         );
 
         setFilteredOrganisasis(filtered);
