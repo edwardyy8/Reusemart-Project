@@ -3,6 +3,7 @@ import { Alert, Button, Col, Container, Form, Pagination, Row, Spinner, Table } 
 import { FaSearch } from 'react-icons/fa';
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
+import { GetAllPegawai } from "../../../api/apiPegawai";
 
 import ModalDeletePegawai from "../../../components/modals/pegawai/ModalDeletePegawai";
 import ModalShowPegawai from "../../../components/modals/pegawai/ModalShowPegawai";
@@ -34,17 +35,16 @@ const KelolaPegawaiPage = () => {
 
 
   const fetchData = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/pegawai');
-      if (!response.ok) throw new Error('Gagal fetch data');
-      const data = await response.json();
-      setDataPegawai(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  try {
+    const data = await GetAllPegawai();
+    setDataPegawai(data);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchData();
@@ -69,13 +69,13 @@ const KelolaPegawaiPage = () => {
 
   return (
     <Container className="p-0">
-      <Row className="d-flex justify-content-between align-items-center mb-4">
+      <Row className="d-flex mb-4">
         <Col
           xs={12}
           sm={6}
           md={3}
           lg={1}
-          className="boxHijau p-3 rounded-3 text-center mb-4"
+          className="boxHijau p-3 rounded-3 text-center ms-3 me-3"
           style={{ minHeight: '100px', minWidth: '150px' }} // Menetapkan lebar minimal
         >
           <Row>
@@ -85,12 +85,31 @@ const KelolaPegawaiPage = () => {
             </Col>
           </Row>
         </Col>
+
         <Col
           xs={12}
           sm={6}
           md={3}
           lg={1}
-          className="p-3 rounded-3 text-center mb-4"
+          className="p-3 rounded-3 text-center ms-3 me-3"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#FF5959', color: 'white' }}
+        >
+          <Row>
+            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Pegawai NonAktif</p></Col>
+            <Col className="d-flex justify-content-center align-items-center">
+              <h3>{countNonAktif()}</h3>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+
+      <Row className="d-flex mb-4">
+        <Col
+          xs={12}
+          sm={6}
+          md={3}
+          lg={1}
+          className="p-3 rounded-3 text-center m-3"
           style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
         >
           <Row>
@@ -105,8 +124,8 @@ const KelolaPegawaiPage = () => {
           sm={6}
           md={3}
           lg={1}
-          className=" p-3 rounded-3 text-center mb-4"
-          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#FF5959', color: 'white' }}
+          className=" p-3 rounded-3 text-center m-3"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
         >
           <Row>
             <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Admin</p></Col>
@@ -120,8 +139,8 @@ const KelolaPegawaiPage = () => {
           sm={6}
           md={3}
           lg={1}
-          className="boxHijau p-3 rounded-3 text-center mb-4"
-          style={{ minHeight: '100px', minWidth: '150px' }}
+          className="p-3 rounded-3 text-center m-3"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
         >
           <Row>
             <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Customer Service</p></Col>
@@ -135,7 +154,7 @@ const KelolaPegawaiPage = () => {
           sm={6}
           md={3}
           lg={1}
-          className="p-3 rounded-3 text-center mb-4"
+          className="p-3 rounded-3 text-center m-3"
           style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
         >
           <Row>
@@ -150,8 +169,8 @@ const KelolaPegawaiPage = () => {
           sm={6}
           md={3}
           lg={1}
-          className="p-3 rounded-3 text-center mb-4"
-          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#FF5959', color: 'white' }}
+          className="p-3 rounded-3 text-center m-3"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
         >
           <Row>
             <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Gudang</p></Col>
@@ -165,8 +184,8 @@ const KelolaPegawaiPage = () => {
           sm={6}
           md={3}
           lg={1}
-          className="boxHijau p-3 rounded-3 text-center mb-4"
-          style={{ minHeight: '100px', minWidth: '150px' }}
+          className="p-3 rounded-3 text-center m-3"
+          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
         >
           <Row>
             <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Jumlah Quality Control</p></Col>
@@ -180,7 +199,7 @@ const KelolaPegawaiPage = () => {
           sm={6}
           md={3}
           lg={1}
-          className="p-3 rounded-3 text-center mb-4"
+          className="p-3 rounded-3 text-center m-3"
           style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#2B74F8', color: 'white' }}
         >
           <Row>
@@ -190,25 +209,7 @@ const KelolaPegawaiPage = () => {
             </Col>
           </Row>
         </Col>
-
-        <Col
-          xs={12}
-          sm={6}
-          md={3}
-          lg={1}
-          className="p-3 rounded-3 text-center mb-4"
-          style={{ minHeight: '100px', minWidth: '150px', backgroundColor: '#FF5959', color: 'white' }}
-        >
-          <Row>
-            <Col><p className="mb-0" style={{ fontSize: '1rem' }}>Pegawai NonAktif</p></Col>
-            <Col className="d-flex justify-content-center align-items-center">
-              <h3>{countNonAktif()}</h3>
-            </Col>
-          </Row>
-        </Col>
       </Row>
-
-
 
       <Container className="mb-5 ms-0 me-0">
         <div className="mb-3 d-flex justify-content-between align-items-center">

@@ -84,16 +84,16 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::get('/pegawai/{id}', [PegawaiController::class, 'show']);
         Route::get('/resetPasswordPegawai', [PegawaiController::class, 'resetPassword']);
 
-        Route::get('/getJabatan/{id}', [JabatanController::class, 'getJabatan']);
-        Route::get('/getAllJabatan', [JabatanController::class, 'getAllJabatan']);
-        Route::delete('/deleteJabatan/{id}', [JabatanController::class, 'deleteJabatan']);
-        Route::post('/editJabatan/{id}', [JabatanController::class, 'editJabatan']);
-
         Route::get('/organisasi/organisasiPage', [OrganisasiController::class, 'getOrganisasiProfile']);
         Route::get('/organisasi/request-donasi', [RequestDonasiController::class, 'indexByOrganisasi']);
         Route::get('/organisasi/request-donasi/{id}', [RequestDonasiController::class, 'show']);
         Route::put('/request_donasi/{id}', [RequestDonasiController::class, 'update']);
         Route::get('/organisasi', [OrganisasiController::class, 'index']);
+
+            Route::get('/getJabatan/{id}', [JabatanController::class, 'getJabatan']);
+            Route::get('/getAllJabatan', [JabatanController::class, 'getAllJabatan']);
+            Route::delete('/deleteJabatan/{id}', [JabatanController::class, 'deleteJabatan']);
+            Route::post('/editJabatan/{id}', [JabatanController::class, 'editJabatan']);
 
         // Route::get('/donasi',[DonasiController::class,'index']);
         // Route::post('/donasi', [DonasiController::class, 'store'])->name('donasi.store');
@@ -116,6 +116,15 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::delete('/deleteRequestOwner/{id}', [RequestDonasiController::class, 'deleteRequestOwner']);
         Route::post('/confirmRequest/{id_request}', [RequestDonasiController::class, 'confirmRequest']);
         Route::get('/get-request-donasi', [RequestDonasiController::class, 'getRequestDonasi']);
+    });
+
+    Route::middleware(CekJabatan::class.':Gudang')->group(function () {
+        Route::post('/tambahPenitipanBarang', [RincianPenitipanController::class, 'tambahPenitipanBarang']);
+        Route::post('/editPenitipanBarang/{id}', [RincianPenitipanController::class, 'editPenitipanBarang']);
+        Route::get('/getAllPenitipanBarang', [RincianPenitipanController::class, 'getAllPenitipanBarang']);
+        Route::get('/getAllRequiredTambahBarang', [RincianPenitipanController::class, 'getAllRequiredTambahBarang']);
+        Route::get('/getPenitipanBarangById/{id_barang}', [RincianPenitipanController::class, 'getPenitipanBarangById']);
+
     });
 });
 

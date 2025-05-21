@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { Card, Col, Container, Row, Spinner, Alert, Form, Button } from "react-bootstrap";
-import { FaRegCommentDots } from 'react-icons/fa';
+import { Alert, Button, Card, Col, Container, Form, Row, Spinner } from "react-bootstrap";
 import { BsPatchCheckFill } from "react-icons/bs";
-import { useParams, useNavigate } from "react-router-dom";
-import { GetBarangById } from "../../api/apiBarang";
-import { GetPenitipById } from "../../api/apiPenitip";
-import { GetDiskusiByIdBarang, TambahDiskusi } from "../../api/apiDiskusi";
-import { getRole } from "../../api/apiAuth";
+import { FaRegCommentDots } from 'react-icons/fa';
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { getRole } from "../../api/apiAuth";
+import { GetBarangById } from "../../api/apiBarang";
+import { GetDiskusiByIdBarang, TambahDiskusi } from "../../api/apiDiskusi";
+import { GetPenitipById } from "../../api/apiPenitip";
 
 import { TambahKeranjang } from "../../api/apiKeranjang";
 import { useKeranjang } from "../../context/KeranjangContext";
@@ -29,7 +29,7 @@ const DetailBarangPage = () => {
   const [isDisabled, setIsDisabled] = useState(false);
 
   const { fetchKeranjang } = useKeranjang();
-  
+
   const navigate = useNavigate();
 
   const [diskusiInput, setDiskusiInput] = useState({
@@ -53,14 +53,14 @@ const DetailBarangPage = () => {
       navigate("/login");
       toast.error("Silahkan login terlebih dahulu!");
       return;
-    }else{
+    } else {
       fetchRole();
     }
 
     TambahDiskusi(diskusiInput)
-      .then((res) => {    
-        toast.success(res.message); 
-        fetchDiskusi(); 
+      .then((res) => {
+        toast.success(res.message);
+        fetchDiskusi();
         setDiskusiInput({ komentar: "", id_barang: id, id_pegawai: "", id_pembeli: "" });
         setIsDisabled(false);
       })
@@ -70,7 +70,7 @@ const DetailBarangPage = () => {
         setIsDisabled(false);
       });
   };
-  
+
   const fetchDiskusi = async () => {
     try {
       setLoadingDiskusi(true);
@@ -90,12 +90,12 @@ const DetailBarangPage = () => {
     try {
       const res = await getRole();
       setUserType(res.user_type);
-    } catch (err) { 
+    } catch (err) {
       console.log(err);
       toast.error("Terjadi Kesalahan! Silahkan login ulang.");
       sessionStorage.removeItem("token");
       navigate("/login");
-    }finally {
+    } finally {
       setIsPending(false);
     }
   };
@@ -117,22 +117,22 @@ const DetailBarangPage = () => {
       toast.error("Silahkan login terlebih dahulu!");
       navigate("/login");
       return;
-    }else{
+    } else {
       fetchRole();
     }
 
     TambahKeranjang(keranjangInput)
-      .then((res) => {    
-        toast.success(res.message); 
+      .then((res) => {
+        toast.success(res.message);
         fetchKeranjang();
         setIsPendingKeranjang(false);
         setIsDisabled(false);
       })
       .catch((err) => {
         console.log(err);
-        if(err.message == "Unauthenticated."){
+        if (err.message == "Unauthenticated.") {
           toast.error("Hanya pembeli yang bisa menambah keranjang!");
-        }else {
+        } else {
           toast.error(err.message ?? "Hanya pembeli yang bisa menambah keranjang!");
         }
         setIsPendingKeranjang(false);
@@ -186,7 +186,7 @@ const DetailBarangPage = () => {
   }
 
   return (
-     <Container className="my-5">
+    <Container className="my-5">
       <Row className="g-4">
         {/* Foto Utama */}
         <Col md={4}>
@@ -206,17 +206,22 @@ const DetailBarangPage = () => {
             <Col md={8}>
               <h2>{barang.barang.nama_barang}</h2>
               <p className="text-success">
-                {barang.barang.status_barang} - {barang.barang.garansi === "Ya" ? "Garansi" : "Tidak Bergaransi"} - {barang.barang.berat_barang} Kg
-              </p>
+                {barang.barang.status_barang} - {
+                  barang.barang.tanggal_garansi
+                    ? new Date(barang.barang.tanggal_garansi) > new Date()
+                      ? "Bergaransi"
+                      : "Tidak Bergaransi"
+                    : "Tidak Bergaransi"
+                } - {barang.barang.berat_barang} Kg              </p>
               <h3>Rp {Number(barang.barang.harga_barang).toLocaleString("id-ID")}</h3>
             </Col>
             <Col md={4}>
               <div className="p-3 border rounded">
                 <Row>
                   <Col md={4}>
-                    <img src={`http://127.0.0.1:8000/storage/foto_profile/${penitip?.foto_profile}`} 
-                      alt="Penitip" 
-                      className="img-fluid rounded" 
+                    <img src={`http://127.0.0.1:8000/storage/foto_profile/${penitip?.foto_profile}`}
+                      alt="Penitip"
+                      className="img-fluid rounded"
                     />
                   </Col>
                   <Col md={8}>
@@ -255,7 +260,7 @@ const DetailBarangPage = () => {
       {/* Diskusi Produk */}
       <hr />
       <h4 className="text-success text-decoration-underline">Diskusi Produk</h4>
-      
+
       <div className="border rounded p-4">
         {/* Input Diskusi */}
         {!loadingDiskusi || !isPending ? (
@@ -264,8 +269,8 @@ const DetailBarangPage = () => {
               diskusiList.map((diskusi, index) => (
                 <div key={index} className="border bg-light rounded p-2 mb-3 d-flex align-items-center px-3">
                   <img
-                    src={diskusi.id_pegawai ? ( logo
-                      ) : (
+                    src={diskusi.id_pegawai ? (logo
+                    ) : (
                       `http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`
                     )}
                     alt="icon user"
@@ -276,13 +281,13 @@ const DetailBarangPage = () => {
                   <div className="w-100 d-flex justify-content-between align-items-center">
                     <div>
                       <strong>
-                        {diskusi.nama_pembeli || diskusi.nama_pegawai}  
-                        {diskusi.id_pegawai && 
+                        {diskusi.nama_pembeli || diskusi.nama_pegawai}
+                        {diskusi.id_pegawai &&
                           <>
                             <span className="ms-1 hijau">(Customer Service)</span> <BsPatchCheckFill className="hijau ms-1" />
                           </>
                         }
-                      </strong> 
+                      </strong>
                       <p className="mb-0">{diskusi.komentar}</p>
                     </div>
                     <div>
@@ -294,7 +299,7 @@ const DetailBarangPage = () => {
             ) : (
               <Alert variant="light" className="text-center mb-0">
                 <p className="text-center mb-0">Tidak ada diskusi untuk produk ini.</p>
-              </Alert>       
+              </Alert>
             )}
 
             <Form className="d-flex align-items-center w-100 mt-5" onSubmit={submitDiskusi}>
@@ -320,7 +325,7 @@ const DetailBarangPage = () => {
       </div>
 
     </Container>
-    
+
   );
 };
 

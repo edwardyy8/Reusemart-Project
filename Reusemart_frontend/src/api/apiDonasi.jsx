@@ -21,6 +21,7 @@ export const GetAllBarangTerdonasikan = async () => {
     const response = await useAxios.get("/getAllBarangTerdonasikan", {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
     return response.data.data;
@@ -127,7 +128,7 @@ export const GetBarangTerdonasikan = async () => {
     const response = await useAxios.get("/barang/didonasi", {
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
     return response.data.data;

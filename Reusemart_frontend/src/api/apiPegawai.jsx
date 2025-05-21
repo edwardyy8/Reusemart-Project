@@ -1,6 +1,7 @@
 import axios from "axios";
+import useAxios from ".";
 
-axios.defaults.baseURL = "http://localhost:8000/api";
+// axios.defaults.baseURL = "http://localhost:8000/api";
 
 // Ambil semua pegawai
 export const GetAllPegawai = async () => {
@@ -32,32 +33,19 @@ export const DeletePegawai = async (id_pegawai) => {
 
 
 // Tambah pegawai
-export const tambahPegawai = async (data) => {
+export const tambahPegawai = async (formData) => {
     try {
-        const token = sessionStorage.getItem("token");
-        const formData = new FormData();
-        Object.entries(data).forEach(([key, value]) => {
-            formData.append(key, value);
-        });
-
-        // Cek jika foto_pegawai ada, append ke FormData
-        if (data.foto_pegawai) {
-            formData.append('foto_pegawai', data.foto_pegawai);
-        }
-
-        const response = await axios.post("/tambahPegawai", formData, {
+        const response = await useAxios.post("/tambahPegawai", formData, {
             headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data", // Tentukan tipe konten sebagai multipart/form-data
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
-
         return response.data;
     } catch (error) {
-        throw error.response?.data || { message: "Gagal menambah data pegawai." };
+        throw error.response.data;
     }
 };
-
 
 // Edit pegawai
 export const editPegawai = async (id, data) => {

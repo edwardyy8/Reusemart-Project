@@ -356,12 +356,12 @@ const MainLayout = ({ children }) => {
           { path: "/pegawai/Admin/kelolaMerchandise", name: "Kelola Merchandise" },
         ];
       }
-    //  else if (jabatan === "Gudang") {
-
-    //     return [
-          
-    //     ];
-    //   } 
+     else if (jabatan === "Gudang") {
+        return [
+          { path: "/pegawai/Gudang/KelolaPenitipanBarang", name: "Kelola Penitipan Barang" },
+        ];
+      } 
+      
       else if (jabatan === "Owner") {
         return [
           { path: "/pegawai/Owner/kelolaRequestDonasi", name: "Kelola Request Donasi" },

@@ -42,6 +42,10 @@ import VerifikasiPage from "../pages/AllPegawai/CS/VerifikasiPage";
 import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
 import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
 
+import KelolaPenitipanBarangPage from "../pages/AllPegawai/Gudang/KelolaPenitipanBarangPage";
+import EditPenitipanBarangPage from "../pages/AllPegawai/Gudang/EditPenitipanBarangPage";
+import TambahPenitipanBarangPage from "../pages/AllPegawai/Gudang/TambahPenitipanBarangPage";
+
 import ProfilePembeliPage from "../pages/pembeli/ProfilePembeliPage";
 import EditAlamatPage from "../pages/pembeli/EditAlamatPage";
 import TambahAlamatPage from "../pages/pembeli/TambahAlamatPage";
@@ -101,6 +105,16 @@ const router = createBrowserRouter([
           { path: "managePenitip/tambahPenitip", element: <TambahPenitipPage /> },
           { path: "managePenitip/editPenitip/:id", element: <EditPenitipPage /> },
           { path: "balasDiskusi", element: <BalasDiskusiPage /> },
+        ],
+      },
+      {
+        path: "/pegawai/Gudang",
+        element: <ProtectedRoutes allowedRoles={["pegawai"]} allowedJabatan={["Gudang"]}><Outlet /></ProtectedRoutes>,
+        children: [
+          { path: "", element: <KelolaPenitipanBarangPage /> },
+          { path: "kelolaPenitipanBarang", element: <KelolaPenitipanBarangPage /> },
+          { path: "kelolaPenitipanBarang/:id_barang", element: <EditPenitipanBarangPage /> },
+          { path: "kelolaPenitipanBarang/tambahPenitipanBarang", element: <TambahPenitipanBarangPage /> },
         ],
       },
       {

@@ -17,13 +17,13 @@ class Request_Donasi extends Model
         'id_organisasi',
         'isi_request',
         'tanggal_request',
-        'tanggal_approve',
+        'tanggal_approve'
     ];
 
     public static function generateId()
     {
         $latestRequest = Request_Donasi::orderBy('id_request', 'desc')->first();
-        
+
         if (!$latestRequest) {
             return '1';
         }
@@ -31,7 +31,7 @@ class Request_Donasi extends Model
         do{
             $newId++;
         }while (Request_Donasi::where('id_request', $newId)->exists());
-    
+
         return (string)$newId;
     }
 
