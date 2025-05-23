@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, Col, Container, Row, Spinner, Button, Table, Form, Pagination } from "react-bootstrap";
-import { GetAllClaimMerchandise } from "../../../api/apiMerchandise";
-import { FaSearch, FaCheck } from "react-icons/fa";
-import ModalKonfirmClaim from "../../../components/modals/claimMerchandise/ModalKonfirmMerchandise";
+import { GetAllMerchandiseCS } from "../../../api/apiMerchandise";
+import { FaSearch } from "react-icons/fa";
+import { FaRegPenToSquare } from "react-icons/fa6";
 
-const KelolaClaimMerchandisePage = () => {
-    const [claims, setClaims] = useState([]);
+import ModalShowMerchandise from "../../../components/modals/merchandise/ModalShowMerchandise";
+import ModalDeleteMerchandise from "../../../components/modals/merchandise/ModalDeleteMerchandise";
+
+const KelolaMerchandisePage = () => {
+    const [merchandises, setMerchandises] = useState([]);
     const [jumlah, setJumlah] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState("");
-    const [filteredClaims, setFilteredClaims] = useState([]);
+    const [filteredMerchandises, setFilteredMerchandises] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [showModal, setShowModal] = useState(false);
-    const [selectedClaimId, setSelectedClaimId] = useState(null);
     const itemsPerPage = 10;
 
-    const dataToDisplay = searchKeyword ? filteredClaims : claims;
+    const dataToDisplay = searchKeyword ? filteredMerchandises : merchandises;
     const totalPages = Math.ceil(dataToDisplay.length / itemsPerPage);
     const currentItems = dataToDisplay.slice(
         (currentPage - 1) * itemsPerPage,
@@ -27,12 +28,12 @@ const KelolaClaimMerchandisePage = () => {
         setCurrentPage(page);
     };
 
-    const fetchAllClaims = () => {
+    const fetchAllMerchandise = () => {
         setIsLoading(true);
-        GetAllClaimMerchandise()
+        GetAllMerchandiseCS()
             .then((data) => {
-                setClaims(data);
-                setJumlah(data.length);
+                setMerchandises(data.data);
+                setJumlah(data.jumlah);
                 setIsLoading(false);
             })
             .catch((err) => {
@@ -42,7 +43,7 @@ const KelolaClaimMerchandisePage = () => {
     };
 
     useEffect(() => {
-        fetchAllClaims();
+        fetchAllMerchandise();
     }, []);
 
     const handleSearchChange = (e) => {
@@ -50,24 +51,10 @@ const KelolaClaimMerchandisePage = () => {
         setCurrentPage(1);
         const keyword = e.target.value;
         setSearchKeyword(keyword);
-        const filtered = claims.filter((claim) =>
-            claim.merchandise.nama_merchandise.toLowerCase().includes(keyword.toLowerCase())
+        const filtered = merchandises.filter((merchandise) =>
+            merchandise.nama_merchandise.toLowerCase().includes(keyword.toLowerCase())
         );
-        setFilteredClaims(filtered);
-    };
-
-    const handleConfirmSuccess = (claimId, updatedClaim) => {
-        setClaims(claims.map(claim =>
-            claim.id_claim === claimId ? updatedClaim : claim
-        ));
-        setFilteredClaims(filteredClaims.map(claim =>
-            claim.id_claim === claimId ? updatedClaim : claim
-        ));
-    };
-
-    const handleShowModal = (claimId) => {
-        setSelectedClaimId(claimId);
-        setShowModal(true);
+        setFilteredMerchandises(filtered);
     };
 
     const navigate = useNavigate();
@@ -78,7 +65,7 @@ const KelolaClaimMerchandisePage = () => {
                 <Row>
                     <Col>
                         <p>Jumlah</p>
-                        <p>Claim</p>
+                        <p>Merchandise</p>
                     </Col>
                     <Col className="text-center d-flex justify-content-center align-items-center">
                         <h3>{jumlah}</h3>
@@ -88,7 +75,7 @@ const KelolaClaimMerchandisePage = () => {
 
             <Container className="mb-5 ms-0 me-0">
                 <div className="mb-3 d-flex justify-content-between align-items-center">
-                    <p style={{ fontSize: "2vw" }}>KELOLA CLAIM MERCHANDISE</p>
+                    <p style={{ fontSize: "2vw" }}>KELOLA MERCHANDISE</p>
                     <Form className="d-flex mx-lg-3 my-2 my-lg-0 position-relative" style={{ minWidth: "300px" }} onSubmit={handleSearchChange}>
                         <Button
                             type="submit"
@@ -110,9 +97,9 @@ const KelolaClaimMerchandisePage = () => {
                     </Form>
                 </div>
 
-                {claims.length === 0 && !isLoading ? (
+                {merchandises.length === 0 && !isLoading ? (
                     <Alert variant="warning" className="text-center">
-                        <h5>Belum ada claim merchandise yang terdaftar</h5>
+                        <h5>Belum ada merchandise yang terdaftar</h5>
                     </Alert>
                 ) : isLoading ? (
                     <div className="text-center">
@@ -131,34 +118,36 @@ const KelolaClaimMerchandisePage = () => {
                         <Table bordered hover>
                             <thead className="custom-table">
                                 <tr>
-                                    <th>ID Claim</th>
+                                    <th>ID</th>
+                                    <th>Foto Merchandise</th>
                                     <th>Nama Merchandise</th>
-                                    <th>Pembeli</th>
-                                    <th>Tanggal Claim</th>
-                                    <th>Pegawai</th>
-                                    <th>Action</th>
+                                    <th>Stok</th>
+                                    <th>Poin</th>
+                                    <th className="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {currentItems.map((claim) => (
-                                    <tr key={claim.id_claim}>
-                                        <td>{claim.id_claim}</td>
-                                        <td>{claim.merchandise?.nama_merchandise}</td>
-                                        <td>{claim.pembeli?.nama}</td>
-                                        <td>{claim.tanggal_claim || "Belum ada data"}</td>
-                                        <td>{claim.pegawai?.nama || "Belum ada data"}</td>
-                                        <td>
-                                            {claim.pegawai?.nama ? (
-                                                "Sudah dikonfirmasi"
+                                {currentItems.map((merchandise) => (
+                                    <tr key={merchandise.id_merchandise}>
+                                        <td>{merchandise.id_merchandise}</td>
+                                        <td>{merchandise.foto_merchandise ? (
+                                                <img
+                                                    src={`http://127.0.0.1:8000/storage/foto_barang/${merchandise.foto_merchandise}`}
+                                                    alt={merchandise.nama_merchandise}
+                                                    style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                                                />
                                             ) : (
-                                                <Button
-                                                    variant="success"
-                                                    size="sm"
-                                                    onClick={() => handleShowModal(claim.id_claim)}
-                                                >
-                                                    <FaCheck />
-                                                </Button>
-                                            )}
+                                                "Tidak ada foto"
+                                            )}</td>
+                                        <td>{merchandise.nama_merchandise}</td>
+                                        <td>{merchandise.stok_merchandise}</td>
+                                        <td>{merchandise.poin_merchandise}</td>
+                                        <td className="d-flex justify-content-center">
+                                            <ModalShowMerchandise merchandise={merchandise} />
+                                            <Button onClick={() => navigate(`/pegawai/Admin/kelolaMerchandise/${merchandise.id_merchandise}`)} className="me-2">
+                                                <FaRegPenToSquare size={20} />
+                                            </Button>
+                                            <ModalDeleteMerchandise merchandise={merchandise} onClose={fetchAllMerchandise} />
                                         </td>
                                     </tr>
                                 ))}
@@ -191,29 +180,16 @@ const KelolaClaimMerchandisePage = () => {
                                             </Pagination.Item>
                                         );
                                     })}
-                                    <Pagination.Next
-                                        onClick={() => handlePageChange(currentPage + 1)}
-                                        disabled={currentPage === totalPages}
-                                    />
-                                    <Pagination.Last
-                                        onClick={() => handlePageChange(totalPages)}
-                                        disabled={currentPage === totalPages}
-                                    />
+                                    <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+                                    <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
                                 </Pagination>
                             </div>
                         )}
                     </>
                 )}
             </Container>
-
-            <ModalKonfirmClaim
-                show={showModal}
-                claimId={selectedClaimId}
-                onClose={() => setShowModal(false)}
-                onConfirmSuccess={handleConfirmSuccess}
-            />
         </Container>
     );
 };
 
-export default KelolaClaimMerchandisePage;
+export default KelolaMerchandisePage;

@@ -71,7 +71,6 @@ export const TambahPenitipanBarang = async (formData) => {
     try {
         const response = await useAxios.post("/tambahPenitipanBarang", formData, {
             headers: {
-                "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
         });
@@ -81,7 +80,6 @@ export const TambahPenitipanBarang = async (formData) => {
     }
 };
 
-// ✅ PARAMETER SESUAI
 export const EditPenitipanBarang = async (id, formData) => {
   try {
     const response = await useAxios.post(`/editPenitipanBarang/${id}`, formData, {
@@ -123,3 +121,20 @@ export const GetAllPenitipanBarang = async () => {
         throw error.response.data;
     }
 };
+
+
+export const GetPenitipanDetails = async (id) => {
+  try {
+    const response = await useAxios.get(`/penitipan-barang/details/${id}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+    return response.data.data; // Matches the response structure from the controller
+  } catch (error) {
+    throw error.response?.data || error; // Consistent error handling
+  }
+};
+
+

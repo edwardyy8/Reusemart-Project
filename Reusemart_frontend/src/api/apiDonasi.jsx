@@ -89,7 +89,6 @@ export const ConfirmRequest = async (id_request) => {
           "Content-Type": "application/json",
         },
         validateStatus: function (status) {
-          // Anggap semua response < 500 sebagai berhasil
           return status < 500;
         },
       }
