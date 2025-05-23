@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Container, Spinner, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { EditMerchandise, GetMerchandiseById } from "../../../api/apiMerchandise";
+import { CreateMerchandise } from "../../../api/apiMerchandise";
 
-const EditMerchandisePage = () => {
-    const { id } = useParams();
+const TambahMerchandisePage = () => {
     const navigate = useNavigate();
 
     const [merchandiseData, setMerchandiseData] = useState({
@@ -15,65 +14,67 @@ const EditMerchandisePage = () => {
         foto_merchandise: null
     });
 
-    const [originalData, setOriginalData] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [isChanged, setIsChanged] = useState(false);
-
-    useEffect(() => {
-        const fetchMerchandise = async () => {
-            try {
-                const data = await GetMerchandiseById(id);
-                setMerchandiseData({
-                    nama_merchandise: data.data.nama_merchandise,
-                    stok_merchandise: data.data.stok_merchandise,
-                    poin_merchandise: data.data.poin_merchandise,
-                    foto_merchandise: null
-                });
-                setOriginalData(data.data);
-            } catch (error) {
-                toast.error("Gagal mengambil data: " + error.message);
-                navigate(-1);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchMerchandise();
-    }, [id, navigate]);
-
-    useEffect(() => {
-        setIsChanged(JSON.stringify({...merchandiseData, foto_merchandise: merchandiseData.foto_merchandise?.name}) !== JSON.stringify(originalData));
-    }, [merchandiseData, originalData]);
+    const [previewImage, setPreviewImage] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-        if (name === "foto_merchandise") {
+        if (name === "foto_merchandise" && files[0]) {
             setMerchandiseData((prev) => ({ ...prev, [name]: files[0] }));
+            setPreviewImage(URL.createObjectURL(files[0]));
         } else {
             setMerchandiseData((prev) => ({ ...prev, [name]: value }));
         }
     };
 
-    const update = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+
+        // Validasi frontend
+        if (!merchandiseData.nama_merchandise || merchandiseData.nama_merchandise.trim() === "") {
+            toast.error("Nama merchandise harus diisi");
+            setLoading(false);
+            return;
+        }
+        if (merchandiseData.stok_merchandise === "" || isNaN(merchandiseData.stok_merchandise) || parseInt(merchandiseData.stok_merchandise) < 0) {
+            toast.error("Stok merchandise harus berupa angka positif");
+            setLoading(false);
+            return;
+        }
+        if (merchandiseData.poin_merchandise === "" || isNaN(merchandiseData.poin_merchandise) || parseInt(merchandiseData.poin_merchandise) < 0) {
+            toast.error("Poin merchandise harus berupa angka positif");
+            setLoading(false);
+            return;
+        }
+
         try {
             const formData = new FormData();
             formData.append('nama_merchandise', merchandiseData.nama_merchandise);
-            formData.append('stok_merchandise', merchandiseData.stok_merchandise);
-            formData.append('poin_merchandise', merchandiseData.poin_merchandise);
+            formData.append('stok_merchandise', parseInt(merchandiseData.stok_merchandise)); // Konversi ke integer
+            formData.append('poin_merchandise', parseInt(merchandiseData.poin_merchandise)); // Konversi ke integer
             if (merchandiseData.foto_merchandise) {
                 formData.append('foto_merchandise', merchandiseData.foto_merchandise);
             }
 
-            const response = await EditMerchandise(id, formData);
+            const response = await CreateMerchandise(formData);
             if (response.status === "success") {
-                toast.success("Data merchandise berhasil diperbarui");
+                toast.success("Merchandise berhasil ditambahkan");
                 navigate("/pegawai/Admin/kelolaMerchandise");
             } else {
-                throw new Error(response.message || "Gagal update");
+                throw new Error(response.message || "Gagal menambah merchandise");
             }
         } catch (err) {
-            toast.error("Gagal update: " + (err.response?.data?.message || "Terjadi kesalahan"));
+            // Tangani error validasi (422) atau error lain
+            if (err.response?.status === 422 && err.response?.data?.errors) {
+                const errors = err.response.data.errors;
+                const errorMessages = Object.values(errors).flat().join(", ");
+                toast.error(`Validasi gagal: ${errorMessages}`);
+            } else {
+                toast.error("Gagal menambah merchandise: " + (err.response?.data?.message || err.message || "Terjadi kesalahan"));
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -95,12 +96,12 @@ const EditMerchandisePage = () => {
     return (
         <Container className="mt-5 mb-5">
             <div className="text-center mb-3 d-flex flex-column justify-content-center align-items-center">
-                <h1 className="mt-1 pb-1 hijau">E D I T</h1>
+                <h1 className="mt-1 pb-1 hijau">T A M B A H</h1>
                 <h1 className="mt-1 pb-1 hijau">M E R C H A N D I S E</h1>
             </div>
 
             <Container className="mt-4 mb-5 py-4 rounded-3 w-50" style={{ border: '1px solid rgba(83, 83, 83, 1)', backgroundColor: 'rgba(241, 237, 233, 1)' }}>
-                <Form style={{ maxWidth: "550px", margin: "auto" }} onSubmit={update}>
+                <Form style={{ maxWidth: "550px", margin: "auto" }} onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                         <Form.Label>Nama Merchandise</Form.Label>
                         <Form.Control
@@ -120,6 +121,7 @@ const EditMerchandisePage = () => {
                             value={merchandiseData.stok_merchandise}
                             onChange={handleChange}
                             required
+                            min="0"
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
@@ -131,6 +133,7 @@ const EditMerchandisePage = () => {
                             value={merchandiseData.poin_merchandise}
                             onChange={handleChange}
                             required
+                            min="0"
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
@@ -139,15 +142,22 @@ const EditMerchandisePage = () => {
                             className="text-muted"
                             type="file"
                             name="foto_merchandise"
-                            accept="image/jpeg,image/png,image/jpg,image/gif"
+                            accept="image/*"
                             onChange={handleChange}
                         />
+                        {previewImage && (
+                            <img
+                                src={previewImage}
+                                alt="Preview"
+                                style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+                            />
+                        )}
                     </Form.Group>
 
                     <div className="d-flex gap-3">
                         <Button
                             type="submit"
-                            disabled={!isChanged}
+                            disabled={loading}
                             className="mt-3 w-100 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
                             style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
                         >
@@ -157,6 +167,7 @@ const EditMerchandisePage = () => {
                             variant="secondary"
                             className="mt-3 w-100 border-0 btn-lg rounded-5 shadow-sm"
                             onClick={() => navigate(-1)}
+                            disabled={loading}
                         >
                             Kembali
                         </Button>
@@ -167,4 +178,4 @@ const EditMerchandisePage = () => {
     );
 };
 
-export default EditMerchandisePage;
+export default TambahMerchandisePage;

@@ -30,6 +30,7 @@ import TambahPegawaiPage from "../pages/AllPegawai/Admin/TambahPegawaiPage";
 
 import KelolaJabatanPage from "../pages/AllPegawai/Admin/KelolaJabatanPage";
 import EditJabatanPage from "../pages/AllPegawai/Admin/EditJabatanPage";
+import TambahMerchandisePage from "../pages/AllPegawai/Admin/TambahMerchandisePage";
 
 import KelolaMerchandisePage from "../pages/AllPegawai/Admin/KelolaMerchandisePage";
 import EditMerchandisePage from "../pages/AllPegawai/Admin/EditMerchandisePage";
@@ -145,6 +146,7 @@ const router = createBrowserRouter([
           { path: "kelolaOrganisasi/:id", element: <EditOrganisasiPage /> },
           { path: "kelolaMerchandise", element: <KelolaMerchandisePage /> },
           { path: "kelolaMerchandise/:id", element: <EditMerchandisePage /> },
+          { path: "kelolaMerchandise/tambahMerchandise", element: <TambahMerchandisePage /> },
         ],
       },
       {

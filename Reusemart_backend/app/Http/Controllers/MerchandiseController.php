@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Merchandise;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class MerchandiseController extends Controller
 {
@@ -40,49 +43,96 @@ class MerchandiseController extends Controller
     }
 
     public function createMerchandise(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'nama_merchandise' => 'required|string|max:255',
-                'stok_merchandise' => 'required|integer|min:0',
-                'poin_merchandise' => 'required|integer|min:0',
-                'foto_merchandise' => 'nullable|string',
-            ]);
+{
+    $validator = Validator::make($request->all(), [
+        'nama_merchandise' => 'required|string|max:255',
+        'stok_merchandise' => 'required|integer|min:0',
+        'poin_merchandise' => 'required|integer|min:0',
+        'foto_merchandise' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-            $merchandise = Merchandise::create($validated);
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Merchandise berhasil ditambahkan',
-                'data' => $merchandise,
-            ], 201);
-        } catch (\Exception $e) {
-            Log::error('CreateMerchandise Error: ' . $e->getMessage());
-            return response()->json(['message' => 'Gagal menambah merchandise', 'error' => $e->getMessage()], 500);
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Validation failed',
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    try {
+        $merchandise = new Merchandise();
+        $merchandise->nama_merchandise = $request->input('nama_merchandise');
+        $merchandise->stok_merchandise = $request->input('stok_merchandise');
+        $merchandise->poin_merchandise = $request->input('poin_merchandise');
+
+        if ($request->hasFile('foto_merchandise')) {
+            $file = $request->file('foto_merchandise');
+            $image_uploaded_path = $file->store('foto_barang', 'public');
+            $merchandise->foto_merchandise = basename($image_uploaded_path);
+        } else {
+            $merchandise->foto_merchandise = null;
+        }
+
+        $merchandise->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Merchandise created successfully'
+        ], 201);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
 
     public function updateMerchandise(Request $request, $id)
-    {
-        try {
-            $merchandise = Merchandise::findOrFail($id);
-            $validated = $request->validate([
-                'nama_merchandise' => 'required|string|max:255',
-                'stok_merchandise' => 'required|integer|min:0',
-                'poin_merchandise' => 'required|integer|min:0',
-                'foto_merchandise' => 'nullable|string',
-            ]);
+{
+    try {
+        $merchandise = Merchandise::findOrFail($id);
+        $validator = Validator::make($request->all(), [
+            'nama_merchandise' => 'required|string|max:255',
+            'stok_merchandise' => 'required|integer|min:0',
+            'poin_merchandise' => 'required|integer|min:0',
+            'foto_merchandise' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-            $merchandise->update($validated);
+        if ($validator->fails()) {
             return response()->json([
-                'status' => 'success',
-                'message' => 'Merchandise berhasil diperbarui',
-                'data' => $merchandise,
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('UpdateMerchandise Error: ' . $e->getMessage());
-            return response()->json(['message' => 'Gagal memperbarui merchandise', 'error' => $e->getMessage()], 500);
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
+
+        $merchandise->nama_merchandise = $request->input('nama_merchandise');
+        $merchandise->stok_merchandise = $request->input('stok_merchandise');
+        $merchandise->poin_merchandise = $request->input('poin_merchandise');
+
+        if ($request->hasFile('foto_merchandise')) {
+            $file = $request->file('foto_merchandise');
+            $image_uploaded_path = $file->store('foto_profile', 'public');
+            $merchandise->foto_merchandise = basename($image_uploaded_path);
+        }
+
+        $merchandise->updated_at = now();
+        $merchandise->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Merchandise berhasil diperbarui',
+            'data' => $merchandise,
+        ], 200);
+    } catch (\Exception $e) {
+        Log::error('UpdateMerchandise Error: ' . $e->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Gagal memperbarui merchandise',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
     public function deleteMerchandise($id)
     {

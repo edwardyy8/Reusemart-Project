@@ -69,7 +69,7 @@ public function tambahPegawai(Request $request)
     // Simpan foto jika ada
     if ($request->hasFile('foto_pegawai')) {
         $file = $request->file('foto_pegawai');
-        $image_uploaded_path = $file->store('foto_profile', 'public');
+        $image_uploaded_path = $file->store(path: 'foto_profile', 'public');
     } else {
         $path = null;
     }

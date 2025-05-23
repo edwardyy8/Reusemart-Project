@@ -86,7 +86,7 @@ export const CreateMerchandise = async (data) => {
   try {
     const response = await useAxios.post("/createMerchandise", data, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
 
       },

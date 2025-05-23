@@ -95,6 +95,13 @@ const KelolaMerchandisePage = () => {
                             style={{ paddingLeft: '2.5rem', borderColor: 'rgba(83, 83, 83, 1)' }}
                         />
                     </Form>
+                    <Button
+            className="me-2"
+            style={{ backgroundColor: "rgba(4, 121, 2, 1)", border: "none" }}
+            onClick={() => navigate("/pegawai/Admin/kelolaMerchandise/tambahMerchandise")}
+        >
+            Tambah Merchandise
+        </Button>
                 </div>
 
                 {merchandises.length === 0 && !isLoading ? (
