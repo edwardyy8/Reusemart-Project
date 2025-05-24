@@ -42,6 +42,12 @@ import VerifikasiPage from "../pages/AllPegawai/CS/VerifikasiPage";
 import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
 import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
 
+import KelolaPengirimanPage from "../pages/AllPegawai/Gudang/KelolaPengirimanPage";
+import KelolaPickupPage from "../pages/AllPegawai/Gudang/KelolaPickupPage";
+import SeluruhPemesananPage from "../pages/AllPegawai/Gudang/seluruhPemesananPage";
+import CetakNotaPage from "../pages/AllPegawai/Gudang/cetakNotaPage";
+import CatatPengambilanBarangPage from "../pages/AllPegawai/Gudang/CatatPengambilanBarangPage";
+
 import ProfilePembeliPage from "../pages/pembeli/ProfilePembeliPage";
 import EditAlamatPage from "../pages/pembeli/EditAlamatPage";
 import TambahAlamatPage from "../pages/pembeli/TambahAlamatPage";
@@ -55,6 +61,7 @@ import CreateRequestPage from "../pages/Organisasi/CreateRequestPage";
 import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
 import KeranjangPage from "../pages/pembeli/KeranjangPage";
+
 
 
 const router = createBrowserRouter([
@@ -123,6 +130,18 @@ const router = createBrowserRouter([
           { path: "kelolaJabatan/:id", element: <EditJabatanPage /> },
           { path: "kelolaOrganisasi", element: <KelolaOrganisasiPage /> },
           { path: "kelolaOrganisasi/:id", element: <EditOrganisasiPage /> },
+        ],
+      },
+      {
+        path: "/pegawai/Gudang",
+        element: <ProtectedRoutes allowedRoles={["pegawai"]} allowedJabatan={["Gudang"]}><Outlet /></ProtectedRoutes>,
+        children: [
+          { path: "", element: <SeluruhPemesananPage/> },
+          { path: "catatPengambilan", element:<CatatPengambilanBarangPage/> },
+          { path: "kelolaPengiriman", element: <KelolaPengirimanPage /> },
+          { path: "kelolaPickup", element: <KelolaPickupPage /> },
+          { path: "SeluruhPemesanan", element: <SeluruhPemesananPage /> },
+          { path: "CetakNota", element: <CetakNotaPage /> },
         ],
       },
       {

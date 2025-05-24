@@ -50,3 +50,33 @@ export const donasiByPenitip = async (id_barang) => {
     throw error.response?.data || error;
   }
 };
+
+export const AmbilBarang = async (id_barang) =>{
+  try{
+    const response = await useAxios.post(`/ambilBarang/${id_barang}`, {},
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const GetAllBarangDiambil = async () =>{
+  try{
+    const response = await useAxios.get("/getAllBarangDiambil",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};

@@ -117,6 +117,22 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::post('/confirmRequest/{id_request}', [RequestDonasiController::class, 'confirmRequest']);
         Route::get('/get-request-donasi', [RequestDonasiController::class, 'getRequestDonasi']);
     });
+
+    Route::middleware(cekJabatan::class.':Gudang')->group(function () {
+        Route::get('/getAllPemesanan', [PemesananController::class, 'getAllPemesanan']);
+        Route::get('/getAllPemesananUntukNota', [PemesananController::class, 'getAllPemesananUntukNota']);
+        Route::get('/getAllPickup', [PemesananController::class, 'getAllPickup']);
+        Route::get('/getAllDelivery', [PemesananController::class, 'getAllDelivery']);
+        Route::get('/getAllBarangDiambil', [BarangController::class, 'getAllBarangDiambil']);
+        Route::post('/ambilPemesanan/{id_pemesanan}', [PemesananController::class, 'ambilPemesanan']);
+        Route::get('/getAllKurir', [PegawaiController::class, 'getAllKurir']);
+        Route::post('/assignKurir/{id_pemesanan}', [PemesananController::class, 'assignKurir']);
+        Route::post('/updateTanggalPengiriman/{id}', [PemesananController::class, 'updateTanggalPengiriman']);
+        Route::post('/updateTanggalPengambilan/{id}', [PemesananController::class, 'updateTanggalPengambilan']);
+        Route::get('/showNota/{id_pemesanan}', [PemesananController::class, 'showNota']);
+        Route::post('/ambilBarang/{id_rincianpenitipan}', [BarangController::class, 'ambilBarang']);
+        Route::post('/hitungHasil/{id_pemesanan}', [PemesananController::class, 'hitungHasil']);
+    });
 });
 
 Route::middleware('auth:penitip')->group(function () {

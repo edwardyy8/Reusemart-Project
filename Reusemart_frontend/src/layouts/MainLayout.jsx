@@ -356,12 +356,7 @@ const MainLayout = ({ children }) => {
           { path: "/pegawai/Admin/kelolaMerchandise", name: "Kelola Merchandise" },
         ];
       }
-    //  else if (jabatan === "Gudang") {
-
-    //     return [
-          
-    //     ];
-    //   } 
+   
       else if (jabatan === "Owner") {
         return [
           { path: "/pegawai/Owner/kelolaRequestDonasi", name: "Kelola Request Donasi" },
@@ -377,6 +372,17 @@ const MainLayout = ({ children }) => {
           { path: "/pegawai/Customer%20Service/managePenitip", name: "Kelola Penitip" },
           { path: "/pegawai/Customer%20Service/claimMerchandise", name: "Kelola Klaim Merchandise" },
           { path: "/pegawai/Customer%20Service/balasDiskusi", name: "Balas Diskusi" },
+        ];
+      }
+
+      else if (jabatan === "Gudang") {
+        return [
+          { path: "/pegawai/Gudang/kelolaBarang", name: "Kelola Barang" },
+          { path: "/pegawai/Gudang/catatPengambilan", name: "Catat Pengambilan Barang" },
+          { path: "/pegawai/Gudang/seluruhPemesanan", name: "Seluruh Pemesanan" },
+          { path: "/pegawai/Gudang/kelolaPickup", name: "Kelola Pickup" },
+          { path: "/pegawai/Gudang/kelolaPengiriman", name: "Kelola Pengiriman" },
+          { path: "/pegawai/Gudang/cetakNota", name: "Cetak Nota" },
         ];
       }
     }
