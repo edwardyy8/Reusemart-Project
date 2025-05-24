@@ -11,7 +11,7 @@ use App\Models\Penitip;
 use App\Models\Pembeli;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Keranjang;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\NotificationController;
@@ -150,7 +150,7 @@ class PemesananController extends Controller
         }
        
     }
- 
+
     public function getAllPickup()
     {
         try{
@@ -192,7 +192,7 @@ class PemesananController extends Controller
         }
        
     }
- 
+
     public function getAllDelivery()
     {
         try{
@@ -215,7 +215,7 @@ class PemesananController extends Controller
             ], 500);
         }
     }
- 
+
     public function getAllPemesananUntukNota()
     {
         try{
@@ -241,7 +241,7 @@ class PemesananController extends Controller
         }
        
     }
- 
+
     public function ambilPemesanan($id_pemesanan)
     {
         try {
@@ -271,7 +271,7 @@ class PemesananController extends Controller
             ], 500);
         }
     }
- 
+
     public function assignKurir(Request $request, $id)
     {
         try {
@@ -295,7 +295,7 @@ class PemesananController extends Controller
             ], 500);
         }
     }
- 
+
     public function updateTanggalPengiriman(Request $request, $id)
     {
         try {
@@ -368,7 +368,7 @@ class PemesananController extends Controller
             ], 500);
         }  
     }
- 
+
     public function updateTanggalPengambilan(Request $request, $id)
     {
         try {
@@ -431,7 +431,7 @@ class PemesananController extends Controller
             ], 500);
         }      
     }
- 
+
     public function showNota($id_pemesanan)
     {
         $pemesanan = Pemesanan::with([
@@ -445,7 +445,7 @@ class PemesananController extends Controller
  
         return response()->json($pemesanan);
     }
- 
+
  
     public function hitungHasil($id_pemesanan)
     {
