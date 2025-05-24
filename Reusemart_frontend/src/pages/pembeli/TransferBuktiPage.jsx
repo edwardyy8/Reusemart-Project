@@ -66,7 +66,7 @@ const TransferBuktiPage = () => {
             const data = pembelian.data;
             setPembelianData(data);
             console.log("API Response:", data);
-            setBatasWaktu(new Date(new Date(pembelian.data.tanggal_pemesanan).getTime() + 5 * 60 * 1000));
+            setBatasWaktu(new Date(new Date(pembelian.data.tanggal_pemesanan).getTime() + 1 * 60 * 1000));
         } catch (err) {
             console.log(err);
             setError(err?.response?.data?.message || err.message || "Gagal memuat data");

@@ -62,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('tambahDiskusi', [DiskusiController::class, 'tambahDiskusi']);
     Route::post('/fetchMenungguPembayaran', [PemesananController::class, 'fetchMenungguPembayaran']);
     Route::post('/update-fcm-token', [AuthController::class, 'updateFcmToken']);
+    Route::post('/remove-fcm-token', [AuthController::class, 'removeToken']);
 
 });
 

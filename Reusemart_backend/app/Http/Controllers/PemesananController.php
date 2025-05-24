@@ -330,7 +330,7 @@ class PemesananController extends Controller
                 $request = new Request([
                     'fcm_token' => $pembeli->fcm_token,
                     'title' => 'Jadwal Pengiriman Barang',
-                    'body' => 'Jadwal pengiriman barang Anda untuk pemesanan '. $pemesanan->id_pemesanan .'telah dijadwalkan pada tanggal ' . $pemesanan->tanggal_pengiriman,
+                    'body' => 'Jadwal pengiriman barang Anda untuk pemesanan '. $pemesanan->id_pemesanan .' telah dijadwalkan pada tanggal ' . $pemesanan->tanggal_pengiriman,
                     'data' => [
                         'pemesanan_id' => (string) $pemesanan->id_pemesanan,
                     ]
@@ -343,8 +343,8 @@ class PemesananController extends Controller
             if ($pemesanan->kurir && $pemesanan->kurir->fcm_token) {
                 $request = new Request([
                     'fcm_token' => $pemesanan->kurir->fcm_token,
-                    'title' => 'Pemesanan Baru',
-                    'body' => 'Anda memiliki pemesanan baru dengan ID: ' . $pemesanan->id_pemesanan . 'Dijadwalkan pada tanggal ' . $pemesanan->tanggal_pengiriman,
+                    'title' => 'Tugas Pengiriman Baru',
+                    'body' => 'Anda memiliki pengriman baru dengan ID: ' . $pemesanan->id_pemesanan . ' Dijadwalkan pada tanggal ' . $pemesanan->tanggal_pengiriman,
                     'data' => [
                         'pemesanan_id' => (string) $pemesanan->id_pemesanan,
                     ]

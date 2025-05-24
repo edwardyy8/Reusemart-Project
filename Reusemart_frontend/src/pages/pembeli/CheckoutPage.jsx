@@ -24,13 +24,14 @@ const CheckoutPage = () => {
     const [alamatData, setAlamatData] = useState({});
     const [pembeliData, setPembeliData] = useState({});
     const selectedAlamat = location.state?.alamat || null;
-    const [metode, setMetode] = useState('Kurir');
+    const [metode, setMetode] = useState('kurir');
     const [pakaiPoin, setPakaiPoin] = useState(0);
     const [maxPoin, setMaxPoin] = useState(0);
     const [diskonPoin, setDiskonPoin] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const [idPemesanan, setIdPemesanan] = useState(null);
     const [showModalKonfirmasi, setShowModalKonfirmasi] = useState(false);
+    const [isCheckout, setIsCheckout] = useState(false);
 
     const { 
         fetchKeranjang, totalHargaBarang, 
@@ -38,7 +39,7 @@ const CheckoutPage = () => {
     } = useKeranjang();
 
     const [data, setData] = useState({
-        metode_pengiriman: "Kurir",
+        metode_pengiriman: "kurir",
         id_pembeli: null,
         id_alamat: location.state?.alamat.id_alamat || null,
         poin_digunakan: 0,
@@ -101,11 +102,11 @@ const CheckoutPage = () => {
     }, []);
 
     const handleCheckMetode = (option) => {
-        setMetode(option === metode ? option : option);
+        setMetode(option == metode ? option : option);
         setData({
             ...data,
             metode_pengiriman: option,
-            ongkos: option === 'Kurir' ? totalHargaBarang >= 1500000 ? 0 : 100000 : 0,
+            ongkos: option == 'kurir' ? totalHargaBarang >= 1500000 ? 0 : 100000 : 0,
         });
     };
 
@@ -176,6 +177,7 @@ const CheckoutPage = () => {
         try {
             const response = await TambahPemesanan(data);
             setIdPemesanan(response.data.id_pemesanan);
+            setIsCheckout(true);
             fetchKeranjang();
             setShowModal(true);
         } catch (error) {
@@ -195,7 +197,7 @@ const CheckoutPage = () => {
         setShowModalKonfirmasi(true);
     }
 
-    if (!isLoading && itemKeranjangChecked.length === 0) {
+    if (!isLoading && itemKeranjangChecked.length === 0 && !isCheckout) {
         navigate('/pembeli/keranjang');
         toast.error("Tidak ada barang yang dipilih!"); 
         return;
@@ -282,8 +284,8 @@ const CheckoutPage = () => {
                                                 <div className="d-flex align-items-center">
                                                     <input type="checkbox" className="checkHijau me-3" 
                                                         id="kurirCheckbox"
-                                                        checked={metode === 'Kurir'}
-                                                        onChange={() => handleCheckMetode('Kurir')}
+                                                        checked={metode == 'kurir'}
+                                                        onChange={() => handleCheckMetode('kurir')}
                                                     />   
                                                     <label htmlFor="kurirCheckbox" className="mb-0 cursor-pointer">
                                                         Kurir Reusemart
@@ -295,8 +297,8 @@ const CheckoutPage = () => {
                                                 <div className="d-flex align-items-center">
                                                     <input type="checkbox" className="checkHijau me-3" 
                                                         id="pickupCheckbox"
-                                                        checked={metode === 'Pickup'}
-                                                        onChange={() => handleCheckMetode('Pickup')}
+                                                        checked={metode == 'pickup'}
+                                                        onChange={() => handleCheckMetode('pickup')}
                                                     />   
                                                     <label htmlFor="pickupCheckbox" className="mb-0 cursor-pointer">
                                                         Ambil Sendiri

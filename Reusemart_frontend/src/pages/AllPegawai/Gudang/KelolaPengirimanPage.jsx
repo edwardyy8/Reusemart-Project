@@ -101,7 +101,7 @@ const KelolaPengirimanPage = () => {
   };
 
   const getMinDateForKurir = (tanggalPelunasan) => {
-      const tgl = new Date(tanggalPelunasan);
+      const tgl = new Date();
       const jam = tgl.getHours();
       
       if (jam >= 16) {
