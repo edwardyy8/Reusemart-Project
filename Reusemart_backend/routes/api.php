@@ -60,6 +60,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/getrole', [AuthController::class, 'getRole']);
     Route::post('tambahDiskusi', [DiskusiController::class, 'tambahDiskusi']);
+    Route::post('/fetchMenungguPembayaran', [PemesananController::class, 'fetchMenungguPembayaran']);
+    Route::post('/update-fcm-token', [AuthController::class, 'updateFcmToken']);
+
 });
 
 Route::middleware('auth:pegawai')->group(function () {
@@ -106,6 +109,11 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::get('/penitip/{id}', [PenitipController::class, 'show']);
         Route::put('/penitip/{id}', [PenitipController::class, 'update']);
         Route::post('/deletePenitip/{id}', [PenitipController::class, 'destroy']);
+
+        Route::get('/getPemesananUntukVerifikasi', [PemesananController::class, 'getPemesananUntukVerifikasi']);
+        Route::post('/verifikasiBuktiPembayaran/{id}', [PemesananController::class, 'verifikasiBuktiPembayaran']);
+        Route::get('/getFotoBukti/{filename}', [PemesananController::class, 'getFotoBukti']);
+
     });
 
     Route::middleware(CekJabatan::class.':Owner')->group(function () {
@@ -189,7 +197,14 @@ Route::middleware('auth:pembeli')->group(function () {
     Route::post('/handleSelectKeranjang/{id}', [KeranjangController::class, 'handleSelectKeranjang']);
     Route::delete('/deleteKeranjang/{id}', [KeranjangController::class, 'deleteKeranjang']);
     Route::delete('/deleteKeranjangHabis', [KeranjangController::class, 'deleteKeranjangHabis']);
+    Route::post('/handleCheckoutDariBarang/{id}', [KeranjangController::class, 'handleCheckoutDariBarang']);
+
+    Route::get('/getDefaultAlamat', [AlamatController::class, 'getDefaultAlamat']);
+    Route::post('/tambahPemesanan', [PemesananController::class, 'tambahPemesanan']);
+    Route::post('/waktuHabis/{id}', [PemesananController::class, 'waktuHabis']);
+    Route::post('/kirimBuktiPembayaran/{id}', [PemesananController::class, 'kirimBuktiPembayaran']);
 });
 
 
 Route::get('/getDiskusiByIdBarang/{id}', [DiskusiController::class, 'getDiskusiByIdBarang']);
+

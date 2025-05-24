@@ -41,7 +41,7 @@ const TambahAlamatPage = () => {
     
           if (response.status) {
             toast.success("Data Alamat berhasil ditambahkan");
-            navigate("/pembeli/profile?tab=alamat")
+            navigate(-1);
           } else {
             throw new Error(response.message || "Gagal update");
           }
@@ -107,7 +107,7 @@ const TambahAlamatPage = () => {
                     </label>
 
                     <div className="d-flex gap-3">
-                        <Button variant="secondary" className="mt-3 w-100 border-0 btn-lg rounded-5 shadow-sm" onClick={() => navigate("/pembeli/profile?tab=alamat")}>
+                        <Button variant="secondary" className="mt-3 w-100 border-0 btn-lg rounded-5 shadow-sm" onClick={() => navigate(-1)}>
                             Kembali
                         </Button>
                         <Button type="submit" className="mt-3 w-100 border-0 buttonSubmit btn-lg rounded-5 shadow-sm" style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}>

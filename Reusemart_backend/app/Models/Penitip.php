@@ -32,7 +32,8 @@ class Penitip extends Authenticatable
         'foto_ktp',
         'createdAt',
         'foto_profile',
-        'is_aktif'
+        'is_aktif',
+        'fcm_token',
     ];
 
 

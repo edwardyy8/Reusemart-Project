@@ -63,4 +63,17 @@ export const TambahAlamat = async (data) => {
     } catch (error) {
         throw error.response.data;
     }
-}
+};
+
+export const GetDefaultAlamat = async () => {
+    try {
+        const response = await useAxios.get("/getDefaultAlamat", {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};

@@ -60,13 +60,18 @@ const EditAlamatPage = () => {
 
     const update = async (e) => {
         e.preventDefault();
+
+        if(!window.confirm("Apakah Anda yakin ingin memperbarui alamat ini?")) {
+          return;
+        }
+
         try {
           const response = await EditAlamat(id, alamatData);
           console.log("API Response:", response);
     
           if (response.status) {
             toast.success("Data Alamat berhasil diperbarui");
-            navigate("/pembeli/profile?tab=alamat")
+            navigate(-1);
           } else {
             throw new Error(response.message || "Gagal update");
           }
@@ -129,7 +134,10 @@ const EditAlamatPage = () => {
             </label>
 
             <div className="d-flex gap-3">
-                <Button variant="secondary" className="mt-3 w-100 border-0 btn-lg rounded-5 shadow-sm" onClick={() => navigate("/pembeli/profile?tab=alamat")}>
+                {/* <Button variant="secondary" className="mt-3 w-100 border-0 btn-lg rounded-5 shadow-sm" onClick={() => navigate("/pembeli/profile?tab=alamat")}>
+                    Kembali
+                </Button> */}
+                <Button variant="secondary" className="mt-3 w-100 border-0 btn-lg rounded-5 shadow-sm" onClick={() => navigate(-1)}>
                     Kembali
                 </Button>
                 <Button type="submit" disabled={!isChanged} className="mt-3 w-100 border-0 buttonSubmit btn-lg rounded-5 shadow-sm" style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}>

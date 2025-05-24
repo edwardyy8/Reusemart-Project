@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Alamat;
+use Carbon\Traits\ToStringFormat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -130,14 +131,15 @@ class AuthController extends Controller
                 }
 
                 if (Hash::check($request->password, $user->password)) {
-                $token = $user->createToken('Authentication Token')->plainTextToken;
+                    $token = $user->createToken('Authentication Token')->plainTextToken;
 
-                return response([
-                    'message' => 'Selamat datang, ' . ($user->nama),
-                    'token' => $token,
-                    'user_type' => $type,
-                    'jabatan' => $user->jabatan->nama_jabatan ?? null,
-                ]);
+                    return response([
+                        'message' => 'Selamat datang, ' . ($user->nama),
+                        'token' => $token,
+                        'user_type' => $type,
+                        'jabatan' => $user->jabatan->nama_jabatan ?? null,
+                        'id' => $user->id_pegawai ?? $user->id_pembeli ?? $user->id_penitip ?? '',
+                    ], 200);
 
                 }
             }    
@@ -220,6 +222,50 @@ class AuthController extends Controller
                 'error' => $e->getMessage(),
                 'sukses' => false,
             ], 401);
+        }
+    }
+
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|string',
+            'user_type' => 'required|in:penitip,pembeli,pegawai',
+            'fcm_token' => 'required|string',
+        ]);
+
+        $userType = $request->user_type;
+        $userId = $request->user_id;
+        $fcmToken = $request->fcm_token;
+
+        if ($request->user()->id_pembeli != $userId &&
+            $request->user()->id_pegawai != $userId &&
+            $request->user()->id_penitip != $userId
+            ) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Simpan FCM token berdasarkan user_type
+        try {
+            if ($userType === 'penitip') {
+                $user = Penitip::find($userId);
+            } elseif ($userType === 'pembeli') {
+                $user = Pembeli::find($userId);
+            } elseif ($userType === 'pegawai') {
+                $user = Pegawai::find($userId);
+            } else {
+                return response()->json(['message' => 'Invalid user_type'], 400);
+            }
+
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            $user->fcm_token = $fcmToken;
+            $user->save();
+
+            return response()->json(['message' => 'FCM token updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error updating FCM token: ' . $e->getMessage()], 500);
         }
     }
 

@@ -16,6 +16,8 @@ import ModalLogoutUser from "../components/modals/ModalLogoutUser";
 
 import { useKeranjang } from "../context/KeranjangContext";
 
+import { FetchMenungguPembayaran } from "../api/apiPemesanan";
+
 const MainLayout = ({ children }) => {
   const location = useLocation();
   const [token,  setToken] = useState("");
@@ -26,6 +28,7 @@ const MainLayout = ({ children }) => {
   const [fotoPegawai, setFotoPegawai] = useState("");
   const [pathFotoPegawai, setPathFotoPegawai] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
  
   const { itemKeranjang } = useKeranjang();
 
@@ -40,10 +43,10 @@ const MainLayout = ({ children }) => {
         const res = await getRole();
 
         setUserType(res.user_type);
-
+        
         if(res.user_type === "pegawai"){
           const jabatanData = await getJabatan();
-
+          
           setJabatan(jabatanData.jabatan);
           setNamaPegawai(jabatanData.nama_pegawai);
           setFotoPegawai(jabatanData.foto_profile);
@@ -64,7 +67,18 @@ const MainLayout = ({ children }) => {
       }
     };
 
+    const fetchMenungguPembayaran = async () => {
+      setIsLoading2(true);
+      try {
+        const response = await FetchMenungguPembayaran();
+        setIsLoading2(false);
+      }catch (error) {
+        setIsLoading2(false);
+      }
+    }
+      
     fetchRoleDanFoto();
+    fetchMenungguPembayaran();
 
     return () => {
       if (pathFotoPegawai) {
@@ -73,7 +87,7 @@ const MainLayout = ({ children }) => {
     };
   }, [token]);
 
-  if (isLoading) { 
+  if (isLoading || isLoading2) { 
     return(
       <Container style={{  
         minHeight: "100vh", 

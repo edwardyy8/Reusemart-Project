@@ -67,7 +67,7 @@ export const GetAllPemesananUntukNota = async () => {
     } catch (error) {
         throw error.response.data;
     }
-} 
+}
 
 export const GetAllPickup = async () => {
     try {
@@ -188,9 +188,106 @@ export const HitungHasil = async (id_pemesanan) => {
   }
 }
 
+export const TambahPemesanan = async (data) => {
+    try {
+        const response = await useAxios.post("/tambahPemesanan", data, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}
 
+export const VerifikasiBuktiPembayaran = async (id, konfirm) => {
+    try {
+        const response = await useAxios.post(`/verifikasiBuktiPembayaran/${id}`, konfirm, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}
 
+export const WaktuHabis = async (id) => {
+    try {
+        const response = await useAxios.post(`/waktuHabis/${id}`, {}, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}
 
+export const FetchMenungguPembayaran = async () => {
+    try {
+        const response = await useAxios.post("/fetchMenungguPembayaran", {}, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}
 
+export const KirimBuktiPembayaran = async (data, id) => {
+    try {
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
 
+        const response = await useAxios.post(`/kirimBuktiPembayaran/${id}`, formData, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}
 
+export const GetPemesananUntukVerifikasi = async () => {
+    try {
+        const response = await useAxios.get("/getPemesananUntukVerifikasi", {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}
+
+export const GetFotoBukti = async (foto) => {
+    try {
+        const response = await useAxios.get(`/getFotoBukti/${foto}`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+            responseType: "blob",
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}

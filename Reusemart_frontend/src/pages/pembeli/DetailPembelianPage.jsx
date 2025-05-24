@@ -1,4 +1,4 @@
-import { Container, Card, Spinner, Alert, Row, Col, Button } from "react-bootstrap";
+import { Container, Card, Spinner, Alert, Row, Col, Button, Badge } from "react-bootstrap";
 import { BsCaretRightFill } from "react-icons/bs";
 import { GetPemesananByIdPemesanan } from "../../api/apiPemesanan";
 import { useEffect, useState } from "react";
@@ -64,6 +64,8 @@ const DetailPembelianPage = () => {
     }, []);
 
     const formatTanpaDetik = (tanggal) => {
+        if (!tanggal) return "";
+
         const date = new Date(tanggal);
         const tahun = date.getFullYear();
         const bulan = String(date.getMonth() + 1).padStart(2, '0');
@@ -125,11 +127,16 @@ const DetailPembelianPage = () => {
                 <Container className="mt-3">
                     <Card>
                         <Card.Body>
-                            <Card.Title className="mb-3">
-                                ID Order : {pembelianData.id_pemesanan}
-                                <br />
-                                <p className="text-muted h6">Metode Pengiriman : {pembelianData.metode_pengiriman}</p>
-                            </Card.Title>
+                            <div className="d-flex justify-content-between">
+                                <Card.Title className="mb-3">
+                                    ID Order : {pembelianData.id_pemesanan}
+                                    <br />
+                                    <span className="text-muted h6">Metode Pengiriman : {pembelianData.metode_pengiriman}</span>
+                                </Card.Title>
+                                <Badge bg={pembelianData.status_pembayaran === "Menunggu Verifikasi" || pembelianData.status_pembayaran === "Menunggu Pembayaran" ? "warning" : pembelianData.status_pembayaran == "Lunas" ? "success" : "danger"} className="h-50">
+                                    <span className="h6">{pembelianData.status_pembayaran}</span>
+                                </Badge>
+                            </div>
                             
                             {pembelianData.metode_pengiriman === "kurir" ? (
                                 <div className="d-flex flex-column">
@@ -156,7 +163,7 @@ const DetailPembelianPage = () => {
                                     <div className="border-bottom border-dark mb-3"></div>
                                     <div className="d-flex justify-content-between">
                                         <Card.Title>Batas Pengambilan</Card.Title>
-                                        <Card.Title className="text-muted">{formatTanpaDetik(pembelianData.jadwal_pengambilan)}</Card.Title>
+                                        <Card.Title className="text-muted">{formatTanpaDetik(pembelianData.batas_pengambilan)}</Card.Title>
                                    </div>
                                 </div>
                             )}
@@ -175,7 +182,7 @@ const DetailPembelianPage = () => {
                     <Card>
                         <Card.Body>
                             {pembelianData.rincian_pemesanan.map((rincian, idx) => (
-                                <Card.Text className="mb-3 d-flex gap-3">
+                                <div key={rincian.id_rincianpemesanan} className="mb-3 d-flex gap-3">
                                     <img src={`http://127.0.0.1:8000/storage/foto_barang/${rincian.barang?.foto_barang}`} 
                                         alt="Foto Barang" 
                                         height={100}
@@ -184,7 +191,7 @@ const DetailPembelianPage = () => {
                                         <h2>{rincian.barang.nama_barang}</h2>
                                         <h5 className="text-muted">Rp {rincian.barang.harga_barang.toLocaleString('id-ID')}</h5>
                                     </div>
-                                </Card.Text>
+                                </div>
                             ))}
                             
                             <div className="border-bottom border-dark mb-3"></div>

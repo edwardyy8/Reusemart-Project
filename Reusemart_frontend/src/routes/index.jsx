@@ -62,6 +62,11 @@ import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 
 import KeranjangPage from "../pages/pembeli/KeranjangPage";
 
+import BalasDiskusiPage from "../pages/AllPegawai/CS/BalasDiskusiPage";
+import CheckoutPage from "../pages/pembeli/CheckoutPage";
+import UbahAlamatPage from "../pages/pembeli/UbahAlamatPage";
+import TransferBuktiPage from "../pages/pembeli/TransferBuktiPage";
+
 
 
 const router = createBrowserRouter([
@@ -105,6 +110,7 @@ const router = createBrowserRouter([
           { path: "claimMerchandise", element: <ClaimMerchandisePage /> },
           { path: "managePenitip/tambahPenitip", element: <TambahPenitipPage /> },
           { path: "managePenitip/editPenitip/:id", element: <EditPenitipPage /> },
+          { path: "balasDiskusi", element: <BalasDiskusiPage /> },
         ],
       },
       {
@@ -153,6 +159,18 @@ const router = createBrowserRouter([
           { path: "tambahAlamat", element: <TambahAlamatPage /> },
           { path: "detailPembelian/:id", element: <DetailPembelianPage /> },
           { path: "keranjang", element: <KeranjangPage /> }, 
+          {
+            path: "checkout",
+            element: <CheckoutPage />,
+          },
+          {
+            path: "ubahAlamat",
+            element: <UbahAlamatPage />,
+          },
+          {
+            path: "transferBukti/:id",
+            element: <TransferBuktiPage />,
+          }
         ],
       },
       {

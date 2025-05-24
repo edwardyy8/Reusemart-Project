@@ -12,11 +12,22 @@ use App\Models\Pembeli;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Keranjang;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\NotificationController;
 
 
 class PemesananController extends Controller
 {
     //
+
+    protected $notificationController;
+
+    public function __construct(NotificationController $notificationController)
+    {
+        $this->notificationController = $notificationController;
+    }
+
 
     public function getPemesananByIdPembeli($id)
     {
@@ -35,7 +46,7 @@ class PemesananController extends Controller
             foreach ($pemesanan as $p){
                 $batasPengambilan = Carbon::parse($p->batas_pengambilan);
                 $hariIni = Carbon::now('Asia/Jakarta');
-
+              
                 if ($batasPengambilan->lt($hariIni) && ($p->metode_pengiriman === 'pickup')
                     && ($p->status_pengiriman != 'Selesai') && ($pemesanan->jadwal_pengambilan != null)) {
                         $p->barang->update([
@@ -125,7 +136,7 @@ class PemesananController extends Controller
                 ->whereNull('tanggal_pengiriman')
                 ->with(['rincianPemesanan.barang'])
                 ->get();
-
+          
             return response()->json([
                 'message' => 'All pemesanan retrieved successfully',
                 'status' => 'success',
@@ -137,7 +148,7 @@ class PemesananController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
             ], 500);
         }
-        
+
     }
 
     public function getAllPickup()
@@ -179,7 +190,6 @@ class PemesananController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
             ], 500);
         }
-        
     }
 
     public function getAllDelivery()
@@ -191,7 +201,6 @@ class PemesananController extends Controller
                 ->with(['rincianPemesanan.barang'])
                 ->get();
 
-            
             return response()->json([
                 'message' => 'All delivery retrieved successfully',
                 'status' => 'success',
@@ -228,7 +237,6 @@ class PemesananController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
             ], 500);
         }
-        
     }
 
     public function ambilPemesanan($id_pemesanan)
@@ -246,10 +254,11 @@ class PemesananController extends Controller
                 }
             }
 
+
             $pemesanan = Pemesanan::where('id_pemesanan', $id_pemesanan)->firstOrFail();
             $pemesanan->status_pengiriman = 'Transaksi Selesai';
             $pemesanan->save();
-    
+
             return response()->json([
                 'message' => 'Berhasil Konfirmasi Pengambilan',
             ], 200);
@@ -292,11 +301,58 @@ class PemesananController extends Controller
                 'tanggal_pengiriman' => 'required|date_format:Y-m-d H:i:s',
             ]);
             $status_pengiriman = "Menunggu Kurir";
-
             $pemesanan = Pemesanan::findOrFail($id);
             $pemesanan->tanggal_pengiriman = $request->input('tanggal_pengiriman');
             $pemesanan->status_pengiriman = $status_pengiriman;
             $pemesanan->save();
+
+            foreach ($pemesanan->rincianPemesanan as $item) {
+                $penitip = $item->barang->penitip;
+
+                if ($penitip && $penitip->fcm_token) {
+                    // kirim notif ke penitip
+                    $request = new Request([
+                        'fcm_token' => $penitip->fcm_token,
+                        'title' => 'Barang Anda Telah Dijadwalkan Untuk Pengiriman',
+                        'body' => 'Barang Anda dengan ID ' . $item->id_barang . ' telah dijadwalkan untuk pengiriman pada tanggal ' . $pemesanan->tanggal_pengiriman,
+                        'data' => [
+                            'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                        ]
+                    ]);
+    
+                    $this->notificationController->sendFcmNotification($request);
+                }
+            }
+
+            // kirim notif ke pembeli
+            $pembeli = Pembeli::findOrFail($pemesanan->id_pembeli);
+            if ($pembeli && $pembeli->fcm_token) {
+                $request = new Request([
+                    'fcm_token' => $pembeli->fcm_token,
+                    'title' => 'Jadwal Pengiriman Barang',
+                    'body' => 'Jadwal pengiriman barang Anda untuk pemesanan '. $pemesanan->id_pemesanan .'telah dijadwalkan pada tanggal ' . $pemesanan->tanggal_pengiriman,
+                    'data' => [
+                        'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                    ]
+                ]);
+    
+                $this->notificationController->sendFcmNotification($request);
+            }
+ 
+             // Kirim notifikasi ke kurir
+            if ($pemesanan->kurir && $pemesanan->kurir->fcm_token) {
+                $request = new Request([
+                    'fcm_token' => $pemesanan->kurir->fcm_token,
+                    'title' => 'Pemesanan Baru',
+                    'body' => 'Anda memiliki pemesanan baru dengan ID: ' . $pemesanan->id_pemesanan . 'Dijadwalkan pada tanggal ' . $pemesanan->tanggal_pengiriman,
+                    'data' => [
+                        'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                    ]
+                ]);
+
+                $this->notificationController->sendFcmNotification($request);
+            }
+ 
 
             return response()->json([
                 'status' => true,
@@ -327,6 +383,40 @@ class PemesananController extends Controller
             $pemesanan->status_pengiriman = $status_pengiriman;
             $pemesanan->save();
 
+            foreach ($pemesanan->rincianPemesanan as $item) {
+                $penitip = $item->barang->penitip;
+
+                if ($penitip && $penitip->fcm_token) {
+                    // kirim notif
+                    $request = new Request([
+                        'fcm_token' => $penitip->fcm_token,
+                        'title' => 'Barang Anda Telah Dijadwalkan Untuk Pengambilan',
+                        'body' => 'Barang Anda dengan ID ' . $item->id_barang . ' telah dijadwalkan untuk pengambilan pada tanggal ' . $pemesanan->jadwal_pengambilan,
+                        'data' => [
+                            'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                        ]
+                    ]);
+    
+                    $this->notificationController->sendFcmNotification($request);
+                }
+            }
+
+            $pembeli = Pembeli::findOrFail($pemesanan->id_pembeli);
+
+            if ($pembeli && $pembeli->fcm_token) {
+                // kirim notif ke pembeli
+                $request = new Request([
+                    'fcm_token' => $pembeli->fcm_token,
+                    'title' => 'Jadwal Pengambilan Barang',
+                    'body' => 'Jadwal pengambilan barang Anda untuk pemesanan '. $pemesanan->id_pemesanan .'telah dijadwalkan pada tanggal ' . $pemesanan->jadwal_pengambilan,
+                    'data' => [
+                        'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                    ]
+                ]);
+    
+                $this->notificationController->sendFcmNotification($request);
+            }
+ 
             return response()->json([
                 'status' => true,
                 'message' => 'Jadwal pengambilan berhasil diperbarui',
@@ -360,7 +450,6 @@ class PemesananController extends Controller
         ]);
     }
 
-
     public function hitungHasil($id_pemesanan)
     {
         try {
@@ -374,22 +463,22 @@ class PemesananController extends Controller
                 $query->whereIn('status_pengiriman', ['Transaksi Selesai', 'Menunggu Kurir']);
             })
             ->get();
-
+ 
             $tanggal_diterima = Carbon::now('Asia/Jakarta');
-
+ 
             $pemesanan = Pemesanan::with('pembeli')->findOrFail($id_pemesanan);
             $pemesanan->tanggal_diterima = $tanggal_diterima;
             $pemesanan->save();
-
+ 
             $total_saldo_penitip = [];
             $total_poin = 0;
-
+ 
             foreach ($rincianList as $rincian) {
                 $barang = $rincian->barang;
                 $penitip = $barang->penitip;
-
+ 
                 $rincian_penitipan = $barang->rincian_penitipan;
-
+ 
                 $penitipan = $rincian_penitipan->penitipan;
 
                 $harga_barang = $barang->harga_barang;
@@ -460,4 +549,358 @@ class PemesananController extends Controller
         }
     }
 
+    public function tambahPemesanan(Request $request)
+    {
+        try {
+            $pemesanan = Pemesanan::create([
+                'id_pemesanan' => Pemesanan::generateIdPemesanan(),
+                'id_pembeli' => $request->id_pembeli,
+
+                'status_pembayaran' => $request->status_pembayaran,
+                'total_harga' => $request->total_harga,
+                'metode_pengiriman' => $request->metode_pengiriman,
+                'tanggal_pemesanan' => Carbon::now('Asia/Jakarta'),
+
+                'poin_digunakan' => $request->poin_digunakan,
+                'poin_didapatkan' => $request->poin_didapatkan,
+                'ongkos' => $request->ongkos,
+                'id_alamat' => $request->id_alamat,
+            ]);
+
+            if (!$pemesanan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pemesanan gagal ditambahkan',
+                ], 500);
+            }
+
+            $pembeli = Pembeli::find($request->id_pembeli);
+            if (!$pembeli) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pembeli tidak ditemukan',
+                ], 404);
+            }
+
+            $pembeli->update([
+                'poin_pembeli' => $pembeli->poin_pembeli - $request->poin_digunakan,
+            ]);
+
+            // buat rincian pemesanan dari keranjang
+            foreach ($request->keranjang as $item) {
+                $barang = Barang::with('rincian_penitipan.penitipan')
+                    ->find($item['id_barang']);
+
+                if (!$barang) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Barang tidak ditemukan',
+                    ], 404);
+                }
+
+                Rincian_Pemesanan::create([
+                    'id_pemesanan' => $pemesanan->id_pemesanan,
+                    'id_barang' => $item['id_barang'],
+                    'harga_barang' => $item['harga_barang'],
+                    'komisi_hunter' => 0,
+                    'komisi_reusemart' => 0,
+                    'bonus_penitip' => 0,
+                ]);
+                
+                // Update status barang
+                $barang->update([
+                    'status_barang' => 'Terjual',
+                    'stok_barang' => 0,
+                ]);
+
+                // hapus keranjag checked
+                $keranjang = Keranjang::find($item['id_keranjang']);
+                if ($keranjang) {
+                    $keranjang->delete();
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Pemesanan berhasil ditambahkan',
+                'data' => $pemesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function verifikasiBuktiPembayaran(Request $request, $id)
+    {
+        try {
+            $pemesanan = Pemesanan::find($id);
+
+            if (!$pemesanan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pemesanan tidak ditemukan',
+                ], 404);
+            }
+
+            if ($request->input('status')){
+                $pemesanan->update([
+                    'status_pembayaran' => 'Lunas',
+                    'tanggal_pelunasan' => Carbon::now('Asia/Jakarta'),
+                    'status_pengiriman' => 'Disiapkan',
+                ]);
+
+                foreach ($pemesanan->rincianPemesanan as $item) {
+                    $penitip = $item->barang->penitip;
+
+                    if ($penitip && $penitip->fcm_token) {
+                        // kirim notif
+                        $request = new Request([
+                            'fcm_token' => $penitip->fcm_token,
+                            'title' => 'Barang Anda Terjual',
+                            'body' => 'Barang Anda dengan ID ' . $item->id_barang . ' telah terjual. Di pemesanan ID ' . $pemesanan->id_pemesanan,
+                            'data' => [
+                                'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                            ]
+                        ]);
+
+                        $this->notificationController->sendFcmNotification($request);
+                    }
+                }
+
+            }else {
+                $pemesanan->update([
+                    'status_pembayaran' => 'Batal',
+                ]);
+
+                $pemesanan->pembeli->update([
+                    'poin_pembeli' => $pemesanan->pembeli->poin_pembeli + $pemesanan->poin_digunakan,
+                ]);
+
+                foreach ($pemesanan->rincianPemesanan as $item) {
+                    $barang = Barang::find($item->id_barang);
+                    if ($barang) {
+                        $barang->update([
+                            'status_barang' => 'Tersedia',
+                            'stok_barang' => $barang->stok_barang + 1,
+                        ]);
+                    }else {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Barang tidak ditemukan',
+                        ], 404);
+                    }
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Bukti pembayaran berhasil diverifikasi',
+                'data' => $pemesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function waktuHabis(Request $request ,$id)
+    {
+        try {
+            $pemesanan = Pemesanan::find($id);
+
+            if (!$pemesanan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pemesanan tidak ditemukan',
+                ], 404);
+            }
+
+            if($pemesanan->status_pembayaran == 'Batal'){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pemesanan sudah dibatalkan',
+                ], 404);
+            }
+
+            $pembeli = Pembeli::find($pemesanan->id_pembeli);
+            if (!$pembeli) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pembeli tidak ditemukan',
+                ], 404);
+            }
+
+            $pemesanan->update([
+                'status_pembayaran' => 'Batal',
+            ]);
+
+            $pembeli->update([
+                'poin_pembeli' => $pembeli->poin_pembeli + $pemesanan->poin_digunakan,
+            ]);
+
+            foreach ($pemesanan->rincianPemesanan as $item) {
+                $barang = Barang::find($item->id_barang);
+                if ($barang) {
+                    $barang->update([
+                        'status_barang' => 'Tersedia',
+                        'stok_barang' => $barang->stok_barang + 1,
+                    ]);
+                }else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Barang tidak ditemukan',
+                    ], 404);
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Pemesanan berhasil dibatalkan',
+                'data' => $pemesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function fetchMenungguPembayaran()
+    {
+        try {
+            $pemesanan = Pemesanan::where('status_pembayaran', 'Menunggu Pembayaran')
+                ->with(['pembeli'])
+                ->where('tanggal_pemesanan', '<=', Carbon::now('Asia/Jakarta')->subMinutes(1))
+                ->orderBy('tanggal_pemesanan', 'asc')
+                ->get();
+
+            if (!$pemesanan) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Pemesanan tidak ada',
+                ]);
+            }
+
+            foreach ($pemesanan as $item) {
+                $item->update([
+                    'status_pembayaran' => 'Batal',
+                ]);
+
+                $item->pembeli->update([
+                    'poin_pembeli' => $item->pembeli->poin_pembeli + $item->poin_digunakan,
+                ]);
+
+                foreach ($item->rincianPemesanan as $rincian) {
+                    $barang = Barang::find($rincian->id_barang);
+                    if ($barang) {
+                        $barang->update([
+                            'status_barang' => 'Tersedia',
+                            'stok_barang' => $barang->stok_barang + 1,
+                        ]);
+                    }
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Pemesanan',
+                'data' => $pemesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function kirimBuktiPembayaran(Request $request, $id)
+    {
+        try {
+            $pemesanan = Pemesanan::find($id);
+
+            if (!$pemesanan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pemesanan tidak ditemukan',
+                ], 404);
+            }
+
+            if ($request->hasFile('foto_bukti')) {
+                $uploadFolder = 'foto_bukti';
+                $image = $request->file('foto_bukti');
+                $image_uploaded_path = $image->store($uploadFolder, 'private');
+                $request->foto_bukti = basename($image_uploaded_path);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Bukti pembayaran tidak ditemukan',
+                ], 404);
+            }
+
+            $pemesanan->update([
+                'status_pembayaran' => 'Menunggu Verifikasi',
+                'foto_bukti' => $request->foto_bukti,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Bukti pembayaran berhasil dikirim',
+                'data' => $pemesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getPemesananUntukVerifikasi()
+    {
+        try {
+            $pemesanan = Pemesanan::where('status_pembayaran', 'Menunggu Verifikasi')
+                ->with(['pembeli', 'rincianPemesanan.barang'])
+                ->orderBy('tanggal_pemesanan', 'asc')
+                ->get();
+
+            if (!$pemesanan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pemesanan tidak ditemukan',
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Pemesanan',
+                'data' => $pemesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getFotoBukti($filename)
+    {
+        $fullPath = storage_path('app/private/foto_bukti/' . $filename);
+
+        if (!file_exists($fullPath)) {
+            return response()->json(['message' => 'Foto bukti tidak ketemu'], 404);
+        }
+
+        return response()->file($fullPath);
+    }
+    
 }
+
+

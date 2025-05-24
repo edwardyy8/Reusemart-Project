@@ -115,23 +115,23 @@ const DetailPenjualanPage = () => {
                 <Container className="mt-3">
                     <Card>
                         <Card.Body>
-                            <Card.Text className="mb-3 d-flex gap-3">
+                            <div className="mb-3 d-flex gap-3">
                                 <img src={`http://127.0.0.1:8000/storage/foto_barang/${rincianData.barang.foto_barang}`} 
                                       alt="Foto Barang" 
                                       height={100}
                                       className="rounded-2"/>
                                 <div className="flex-column">
-                                    <h2>{rincianData.barang.nama_barang}</h2>
-                                    <h5 className="text-muted">Rp {rincianData.barang.harga_barang.toLocaleString('id-ID')}</h5>
+                                    <p className="h2">{rincianData.barang.nama_barang}</p>
+                                    <p className="text-muted h5">Rp {rincianData.barang.harga_barang.toLocaleString('id-ID')}</p>
                                 </div>
-                            </Card.Text>
+                            </div>
                             <div className="border-bottom border-dark mb-3"></div>
-                            <Card.Title className="mb-3">
+                            <Card.Title>
                                 ID Rincian Order : {rincianData.id_rincianpemesanan}
-                                <br />
-                                <p className="text-muted h6 mb-0">ID Order : {rincianData.id_pemesanan}</p>
-                                <p className="text-muted h6">Metode Pengiriman : {penjualanData.metode_pengiriman}</p>
                             </Card.Title>
+                            <Card.Text className="text-muted h6 mb-0">ID Order : {rincianData.id_pemesanan}</Card.Text>
+                            <Card.Text className="text-muted h6">Metode Pengiriman : {penjualanData.metode_pengiriman}</Card.Text>
+                            
                             <Card.Title className="mb-0">
                                 Alamat Pengiriman
                             </Card.Title>
