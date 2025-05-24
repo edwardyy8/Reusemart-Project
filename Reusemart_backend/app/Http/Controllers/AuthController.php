@@ -229,7 +229,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'user_id' => 'required|string',
-            'user_type' => 'required|in:penitip,pembeli,pegawai',
+            'user_type' => 'required|in:penitip,pembeli,Kurir,Hunter,pegawai',
             'fcm_token' => 'required|string',
         ]);
 
@@ -250,7 +250,7 @@ class AuthController extends Controller
                 $user = Penitip::find($userId);
             } elseif ($userType === 'pembeli') {
                 $user = Pembeli::find($userId);
-            } elseif ($userType === 'pegawai') {
+            } elseif ($userType === 'Kurir' || $userType === 'Hunter') {
                 $user = Pegawai::find($userId);
             } else {
                 return response()->json(['message' => 'Invalid user_type'], 400);
@@ -263,10 +263,22 @@ class AuthController extends Controller
             $user->fcm_token = $fcmToken;
             $user->save();
 
-            return response()->json(['message' => 'FCM token updated successfully']);
+            return response()->json(['message' => 'FCM token updated successfully'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error updating FCM token: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function removeToken(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        
+        $user->update(['fcm_token' => null]);
+        
+        return response()->json(['message' => 'FCM token removed'], 200);
     }
 
 }
