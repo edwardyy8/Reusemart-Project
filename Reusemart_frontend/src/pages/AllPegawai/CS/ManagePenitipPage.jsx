@@ -126,15 +126,24 @@ const ManagePenitipPage = () => {
                 <td style={{ border: 'none' }}>{penitip.id_penitip}</td>
                 <td style={{ border: 'none' }}>{penitip.nama}</td>
                 <td style={{ border: 'none' }} className="d-flex justify-content-center gap-3 align-items-center">
-                  <Button variant="success" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDetail(true); }}>
+                  {penitip.is_aktif === "Ya" ? (
+                    <>
+                    <Button variant="success" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDetail(true); }}>
                     <FaEye />
-                  </Button>
-                  <Button variant="primary" size="sm" onClick={() => navigate(`/pegawai/Customer Service/managePenitip/editPenitip/${penitip.id_penitip}`)}>
-                    <FaRegPenToSquare />
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDelete(true); }}>
-                    <FaRegTrashCan />
-                  </Button>
+                    </Button>
+                    <Button variant="primary" size="sm" onClick={() => navigate(`/pegawai/Customer Service/managePenitip/editPenitip/${penitip.id_penitip}`)}>
+                      <FaRegPenToSquare />
+                    </Button>
+                    <Button variant="danger" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDelete(true); }}>
+                      <FaRegTrashCan />
+                    </Button>
+                    </>
+                  ) : (
+                    <Button variant="success" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDetail(true); }}>
+                    <FaEye />
+                    </Button>
+                  )}
+                  
                 </td>
               </tr>
             ))}

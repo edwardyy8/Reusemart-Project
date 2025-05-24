@@ -46,13 +46,13 @@ class PemesananController extends Controller
             foreach ($pemesanan as $p){
                 $batasPengambilan = Carbon::parse($p->batas_pengambilan);
                 $hariIni = Carbon::now('Asia/Jakarta');
- 
+              
                 if ($batasPengambilan->lt($hariIni) && ($p->metode_pengiriman === 'pickup')
                     && ($p->status_pengiriman != 'Selesai') && ($pemesanan->jadwal_pengambilan != null)) {
                         $p->barang->update([
                             'status_barang' => 'Barang untuk Donasi',
                         ]);
- 
+
                         $p->update([
                             'status_pembayaran' => 'Hangus',
                         ]);
@@ -136,7 +136,7 @@ class PemesananController extends Controller
                 ->whereNull('tanggal_pengiriman')
                 ->with(['rincianPemesanan.barang'])
                 ->get();
- 
+          
             return response()->json([
                 'message' => 'All pemesanan retrieved successfully',
                 'status' => 'success',
@@ -148,7 +148,7 @@ class PemesananController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
             ], 500);
         }
-       
+
     }
 
     public function getAllPickup()
@@ -159,11 +159,11 @@ class PemesananController extends Controller
                 ->where('status_pengiriman', '!=', 'Transaksi Selesai')
                 ->with(['rincianPemesanan.barang'])
                 ->get();
- 
+
             foreach ($pickupList as $pemesanan){
                 $batasPengambilan = Carbon::parse($pemesanan->batas_pengambilan);
                 $hariIni = Carbon::now('Asia/Jakarta');
- 
+
                 if ($batasPengambilan->lt($hariIni) && ($pemesanan->jadwal_pengambilan != null)) {
                     foreach ($pemesanan->rincianPemesanan as $rincian) {
                         if ($rincian->barang) {
@@ -172,13 +172,13 @@ class PemesananController extends Controller
                             ]);
                         }
                     }
- 
+
                     $pemesanan->update([
                         'status_pembayaran' => 'Hangus',
                     ]);
                 }
             }
- 
+
             return response()->json([
                 'message' => 'All pickup retrieved successfully',
                 'status' => 'success',
@@ -190,7 +190,6 @@ class PemesananController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
             ], 500);
         }
-       
     }
 
     public function getAllDelivery()
@@ -201,8 +200,7 @@ class PemesananController extends Controller
                 ->where('status_pengiriman', '!=', 'Selesai')
                 ->with(['rincianPemesanan.barang'])
                 ->get();
- 
-           
+
             return response()->json([
                 'message' => 'All delivery retrieved successfully',
                 'status' => 'success',
@@ -227,7 +225,7 @@ class PemesananController extends Controller
                 ->whereIn('status_pengiriman', ['Transaksi Selesai', 'Menunggu Kurir'])
                 ->with(['rincianPemesanan.barang'])
                 ->get();
- 
+
             return response()->json([
                 'message' => 'All pemesanan retrieved successfully',
                 'status' => 'success',
@@ -239,7 +237,6 @@ class PemesananController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
             ], 500);
         }
-       
     }
 
     public function ambilPemesanan($id_pemesanan)
@@ -248,7 +245,7 @@ class PemesananController extends Controller
             $rincian = Rincian_Pemesanan::with('barang')
             ->where('id_pemesanan', $id_pemesanan)
             ->get();
- 
+
             foreach ($rincian as $item) {
                 $barang = $item->barang;
                 if ($barang) {
@@ -256,11 +253,12 @@ class PemesananController extends Controller
                     $barang->save();
                 }
             }
- 
+
+
             $pemesanan = Pemesanan::where('id_pemesanan', $id_pemesanan)->firstOrFail();
             $pemesanan->status_pengiriman = 'Transaksi Selesai';
             $pemesanan->save();
-   
+
             return response()->json([
                 'message' => 'Berhasil Konfirmasi Pengambilan',
             ], 200);
@@ -278,11 +276,11 @@ class PemesananController extends Controller
             $request->validate([
                 'id_kurir' => 'required|exists:pegawai,id_pegawai'
             ]);
- 
+
             $pemesanan = Pemesanan::findOrFail($id);
             $pemesanan->id_kurir = $request->input('id_kurir');
             $pemesanan->save();
- 
+
             return response()->json([
                 'status' => true,
                 'message' => 'Kurir berhasil ditugaskan',
@@ -303,7 +301,6 @@ class PemesananController extends Controller
                 'tanggal_pengiriman' => 'required|date_format:Y-m-d H:i:s',
             ]);
             $status_pengiriman = "Menunggu Kurir";
- 
             $pemesanan = Pemesanan::findOrFail($id);
             $pemesanan->tanggal_pengiriman = $request->input('tanggal_pengiriman');
             $pemesanan->status_pengiriman = $status_pengiriman;
@@ -356,6 +353,7 @@ class PemesananController extends Controller
                 $this->notificationController->sendFcmNotification($request);
             }
  
+
             return response()->json([
                 'status' => true,
                 'message' => 'Tanggal pengiriman berhasil diperbarui',
@@ -366,7 +364,7 @@ class PemesananController extends Controller
                 'message' => 'Terjadi kesalahan saat update.',
                 'error' => $e->getMessage()
             ], 500);
-        }  
+        }   
     }
 
     public function updateTanggalPengambilan(Request $request, $id)
@@ -378,9 +376,9 @@ class PemesananController extends Controller
             $jadwal_pengambilan = Carbon::parse($request->jadwal_pengambilan);
             $batas_pengambilan = $jadwal_pengambilan->copy()->addDays(2);
             $status_pengiriman = "Menunggu Pickup";
- 
+
             $pemesanan = Pemesanan::findOrFail($id);
-            $pemesanan->jadwal_pengambilan = $jadwal_pengambilan;
+            $pemesanan->jadwal_pengambilan = $jadwal_pengambilan; 
             $pemesanan->batas_pengambilan = $batas_pengambilan;
             $pemesanan->status_pengiriman = $status_pengiriman;
             $pemesanan->save();
@@ -437,16 +435,21 @@ class PemesananController extends Controller
         $pemesanan = Pemesanan::with([
             'rincianPemesanan.barang.rincian_penitipan.penitipan.qc',
             'rincianPemesanan.barang',
-            'pembeli.alamat' => function ($query) {
-                $query->where('is_default', 1);
-            },
+            'pembeli',
+            'alamat',
             'kurir'
         ])->where('id_pemesanan', $id_pemesanan)->firstOrFail();
- 
-        return response()->json($pemesanan);
+
+        $alamatDef = Alamat::where('is_default', 1)
+            ->where('id_pembeli', $pemesanan->id_pembeli)
+            ->first();
+
+        return response()->json([
+            'data' => $pemesanan,
+            'alamatDef' => $alamatDef,
+        ]);
     }
 
- 
     public function hitungHasil($id_pemesanan)
     {
         try {
@@ -477,17 +480,17 @@ class PemesananController extends Controller
                 $rincian_penitipan = $barang->rincian_penitipan;
  
                 $penitipan = $rincian_penitipan->penitipan;
- 
+
                 $harga_barang = $barang->harga_barang;
                 $tanggal_masuk = Carbon::parse($barang->tanggal_masuk);
                 $tanggal_pesan = Carbon::parse($pemesanan->tanggal_pemesanan);
                 $lama_laku = $tanggal_pesan->diffInDays($tanggal_masuk);
- 
+
                 $id_hunter = $penitipan->id_hunter;
                 $perpanjangan = $rincian_penitipan->perpanjangan ?? 'Tidak';
- 
+
                 $komisi_hunter = $id_hunter ? 0.05 * $harga_barang : 0;
- 
+
                 if ($id_hunter && $perpanjangan === 'Tidak') {
                     $komisi_reusemart = 0.15 * $harga_barang;
                 } elseif (!$id_hunter && $perpanjangan === 'Tidak') {
@@ -497,34 +500,34 @@ class PemesananController extends Controller
                 } else {
                     $komisi_reusemart = 0.30 * $harga_barang;
                 }
- 
+
                 // Bonus Penitip
                 $bonus_penitip = $lama_laku < 7 ? 0.10 * $komisi_reusemart : 0;
- 
+
                 // Hitung saldo penitip
                 $saldo_penitip = $harga_barang + $bonus_penitip - $komisi_hunter - $komisi_reusemart;
- 
+
                 // Simpan ke rincian pemesanan
                 $rincian->komisi_hunter = $komisi_hunter;
                 $rincian->komisi_reusemart = $komisi_reusemart;
                 $rincian->bonus_penitip = $bonus_penitip;
                 $rincian->save();
- 
+
                 // Akumulasi saldo penitip
                 if (!isset($total_saldo_penitip[$penitip->id_penitip])) {
                     $total_saldo_penitip[$penitip->id_penitip] = 0;
                 }
                 $total_saldo_penitip[$penitip->id_penitip] += $saldo_penitip;
- 
+
                 // Akumulasi poin pembeli
                 $total_poin += $pemesanan->poin_didapatkan;
             }
- 
+
             // Tambahkan poin ke pembeli
             $pembeli = $pemesanan->pembeli;
             $pembeli->poin_pembeli += $total_poin;
             $pembeli->save();
- 
+
             // Update saldo semua penitip
             foreach ($total_saldo_penitip as $id_penitip => $saldo) {
                 $penitip = Penitip::findOrFail($id_penitip);
@@ -533,7 +536,7 @@ class PemesananController extends Controller
                     $penitip->save();
                 }
             }
- 
+
             return response()->json([
                 'message' => 'Berhasil Cetak Nota',
                 'tanggal_diterima' => $pemesanan->tanggal_diterima->toDateTimeString(),
@@ -899,3 +902,5 @@ class PemesananController extends Controller
     }
     
 }
+
+

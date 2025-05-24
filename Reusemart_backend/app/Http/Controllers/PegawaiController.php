@@ -319,4 +319,15 @@ public function resetPassword($id)
 
         return response()->file($fullPath);
     }
+
+    public function getAllKurir()
+    {
+        $kurirList = Pegawai::where('id_jabatan', '7')->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'List Kurir',
+            'data' => $kurirList,
+        ]);
+    }
 }

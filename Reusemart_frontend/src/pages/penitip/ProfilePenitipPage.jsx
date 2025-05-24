@@ -55,6 +55,7 @@ const ProfilePenitipPage = () => {
           </Container>
         );
       }
+      console.log("list titipan: ", titipan);
       setTitipanData(titipan);
 
     } catch (err) {
@@ -140,7 +141,7 @@ const ProfilePenitipPage = () => {
     const sudahLewat = hariIni > tanggalAkhir;
     const wajibDonasi = hariIni > batasAkhir;
     const tersedia = titipan.barang.status_barang === "Tersedia";
-    const terproses = ["Terjual", "Didonasikan", "Barang untuk Donasi"].includes(titipan.barang.status_barang);
+    const terproses = ["Terjual", "Didonasikan", "Barang untuk Donasi", "Diambil Kembali"].includes(titipan.barang.status_barang);
     const sudahPerpanjang = titipan.perpanjangan === "Ya";
     const diambil = titipan.status_penitipan === "Diambil Kembali";
     const hampirHabis = sisaHari <=3;
@@ -357,7 +358,6 @@ const ProfilePenitipPage = () => {
               <div>
                 {titipanData.filter((titipan) => searchTerm==="" || titipan.barang.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()))
                   .map((titipan, idx) => {
-                    const terproses = ["Terjual", "Didonasikan"].includes(titipan.barang.status_barang);
                     return (
                       <Row className="g-3" key={idx}>
                         <Col md={12} sm={12} xs={12} lg={12} className="mb-3 px-5 d-flex justify-content-center">

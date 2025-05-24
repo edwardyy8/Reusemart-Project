@@ -1,4 +1,5 @@
 import axios from "axios";
+import useAxios from ".";
 
 axios.defaults.baseURL = "http://localhost:8000/api";
 
@@ -100,4 +101,18 @@ export const getFotoPegawai = async (filename) => {
     } catch (error) {
         throw error.response?.data || { message: "Gagal mengambil foto pegawai." };
     }
+};
+
+export const GetAllKurir = async () => {
+    try {
+        const response = await useAxios.get("/getAllKurir", {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: "Gagal mendapatkan list kurir." };
+    }
+ 
 };
