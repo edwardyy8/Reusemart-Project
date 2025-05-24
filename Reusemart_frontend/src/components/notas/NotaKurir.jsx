@@ -2,9 +2,9 @@ import React, { forwardRef } from 'react';
 
 const NotaKurir = forwardRef(({ pemesanan }, ref) => {
   if (!pemesanan) return <div>Data tidak tersedia</div>;
-  const rincian = pemesanan?.rincian_pemesanan ?? [];
-  const pembeli = pemesanan?.pembeli ?? null;
-  const alamat = pemesanan?.alamat?? null;
+  const rincian = pemesanan?.data.rincian_pemesanan ?? [];
+  const pembeli = pemesanan?.data.pembeli ?? null;
+  const alamat = pemesanan?.data.alamat?? null;
   const qcs = [];
 
   rincian.forEach(item => {
@@ -18,12 +18,12 @@ const NotaKurir = forwardRef(({ pemesanan }, ref) => {
     new Map(qcs.map(q => [q.id_pegawai, q])).values()
   );
 
-  const kurir = pemesanan?.kurir ?? null;
+  const kurir = pemesanan?.data.kurir ?? null;
 
-  const poinDigunakan = pemesanan?.poin_digunakan ?? 0;
-  const totalHarga = pemesanan?.total_harga ?? 0;
-  const ongkos = pemesanan?.ongkos ?? 0;
-  const poinDidapatkan = pemesanan?.poin_didapatkan ?? 0;
+  const poinDigunakan = pemesanan?.data.poin_digunakan ?? 0;
+  const totalHarga = pemesanan?.data.total_harga ?? 0;
+  const ongkos = pemesanan?.data.ongkos ?? 0;
+  const poinDidapatkan = pemesanan?.data.poin_didapatkan ?? 0;
   const poinPembeli = pembeli?.poin_pembeli ?? 0;
 
   const potonganPoin = poinDigunakan * 100;
@@ -38,10 +38,10 @@ const NotaKurir = forwardRef(({ pemesanan }, ref) => {
       <div style={{ marginTop: 10 }}>
         <table>
           <tbody>
-            <tr><td>No Nota</td><td>: {pemesanan?.id_pemesanan ?? '-'}</td></tr>
-            <tr><td>Tanggal pesan</td><td>: {pemesanan?.tanggal_pemesanan ?? '-'}</td></tr>
-            <tr><td>Lunas pada</td><td>: {pemesanan?.tanggal_pelunasan ?? '-'}</td></tr>
-            <tr><td>Tanggal kirim</td><td>: {pemesanan?.tanggal_pengiriman ?? '-'}</td></tr>
+            <tr><td>No Nota</td><td>: {pemesanan?.data.id_pemesanan ?? '-'}</td></tr>
+            <tr><td>Tanggal pesan</td><td>: {pemesanan?.data.tanggal_pemesanan ?? '-'}</td></tr>
+            <tr><td>Lunas pada</td><td>: {pemesanan?.data.tanggal_pelunasan ?? '-'}</td></tr>
+            <tr><td>Tanggal kirim</td><td>: {pemesanan?.data.tanggal_pengiriman ?? '-'}</td></tr>
           </tbody>
         </table>
       </div>
