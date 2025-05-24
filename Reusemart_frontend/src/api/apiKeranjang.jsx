@@ -66,3 +66,17 @@ export const DeleteKeranjangHabis = async (id) => {
         throw error.response.data;
     }
 };
+
+export const HandleCheckoutDariBarang = async (id) => {
+    try {
+        const response = await useAxios.post(`/handleCheckoutDariBarang/${id}`, {}, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};

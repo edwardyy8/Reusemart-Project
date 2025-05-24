@@ -16,6 +16,8 @@ import ModalLogoutUser from "../components/modals/ModalLogoutUser";
 
 import { useKeranjang } from "../context/KeranjangContext";
 
+import { FetchMenungguPembayaran } from "../api/apiPemesanan";
+
 const MainLayout = ({ children }) => {
   const location = useLocation();
   const [token,  setToken] = useState("");
@@ -26,6 +28,7 @@ const MainLayout = ({ children }) => {
   const [fotoPegawai, setFotoPegawai] = useState("");
   const [pathFotoPegawai, setPathFotoPegawai] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
  
   const { itemKeranjang } = useKeranjang();
 
@@ -40,10 +43,10 @@ const MainLayout = ({ children }) => {
         const res = await getRole();
 
         setUserType(res.user_type);
-
+        
         if(res.user_type === "pegawai"){
           const jabatanData = await getJabatan();
-
+          
           setJabatan(jabatanData.jabatan);
           setNamaPegawai(jabatanData.nama_pegawai);
           setFotoPegawai(jabatanData.foto_profile);
@@ -64,7 +67,18 @@ const MainLayout = ({ children }) => {
       }
     };
 
+    const fetchMenungguPembayaran = async () => {
+      setIsLoading2(true);
+      try {
+        const response = await FetchMenungguPembayaran();
+        setIsLoading2(false);
+      }catch (error) {
+        setIsLoading2(false);
+      }
+    }
+      
     fetchRoleDanFoto();
+    fetchMenungguPembayaran();
 
     return () => {
       if (pathFotoPegawai) {
@@ -73,7 +87,7 @@ const MainLayout = ({ children }) => {
     };
   }, [token]);
 
-  if (isLoading) { 
+  if (isLoading || isLoading2) { 
     return(
       <Container style={{  
         minHeight: "100vh", 
@@ -356,12 +370,7 @@ const MainLayout = ({ children }) => {
           { path: "/pegawai/Admin/kelolaMerchandise", name: "Kelola Merchandise" },
         ];
       }
-    //  else if (jabatan === "Gudang") {
 
-    //     return [
-          
-    //     ];
-    //   } 
       else if (jabatan === "Owner") {
         return [
           { path: "/pegawai/Owner/kelolaRequestDonasi", name: "Kelola Request Donasi" },
@@ -377,6 +386,17 @@ const MainLayout = ({ children }) => {
           { path: "/pegawai/Customer%20Service/managePenitip", name: "Kelola Penitip" },
           { path: "/pegawai/Customer%20Service/claimMerchandise", name: "Kelola Klaim Merchandise" },
           { path: "/pegawai/Customer%20Service/balasDiskusi", name: "Balas Diskusi" },
+        ];
+      }
+
+      else if (jabatan === "Gudang") {
+        return [
+          { path: "/pegawai/Gudang/kelolaBarang", name: "Kelola Barang" },
+          { path: "/pegawai/Gudang/catatPengambilan", name: "Catat Pengambilan Barang" },
+          { path: "/pegawai/Gudang/seluruhPemesanan", name: "Seluruh Pemesanan" },
+          { path: "/pegawai/Gudang/kelolaPickup", name: "Kelola Pickup" },
+          { path: "/pegawai/Gudang/kelolaPengiriman", name: "Kelola Pengiriman" },
+          { path: "/pegawai/Gudang/cetakNota", name: "Cetak Nota" },
         ];
       }
     }

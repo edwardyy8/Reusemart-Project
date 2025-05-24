@@ -128,11 +128,20 @@ class AlamatController extends Controller
                 ], 404);
             }
 
-            if ($request->has('is_default') && $request->is_default) {
-                Alamat::where('id_pembeli', $request->id_pembeli)
-                    ->where('is_default', true)
-                    ->update(['is_default' => false]);
+            $alamatDefault = Alamat::where('id_pembeli', $alamat->id_pembeli)
+                ->where('is_default', true)
+                ->first();
+
+            if ($alamatDefault && $alamatDefault->id_alamat == $id) {
+
+            }else {
+                if ($request->has('is_default') && $request->is_default) {
+                    Alamat::where('id_pembeli', $request->id_pembeli)
+                        ->where('is_default', true)
+                        ->update(['is_default' => false]);
+                }
             }
+            
 
             $alamat->update($request->all());
 
@@ -181,6 +190,33 @@ class AlamatController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Alamat berhasil ditambahkan',
+                'data' => $alamat,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getDefaultAlamat(Request $request)
+    {
+        try {
+            $alamat = Alamat::where('id_pembeli', $request->user()->id_pembeli)
+                ->where('is_default', true)
+                ->first();
+
+            if (!$alamat) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Alamat tidak ditemukan',
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Alamat',
                 'data' => $alamat,
             ]);
         } catch (\Exception $e) {

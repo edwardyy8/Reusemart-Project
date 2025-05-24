@@ -10,9 +10,11 @@ export const KeranjangProvider = ({ children }) => {
   const [totalHargaBarang, setTotalHargaBarang] = useState(0);
   const [itemKeranjangChecked, setItemKeranjangChecked] = useState([]);
   const [itemHabis, setItemHabis] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchKeranjang = async () => {
     try {
+      setIsLoading(true);
       const response = await GetKeranjangByIdPembeli();
       setItemKeranjang(response.data);
       setItemKeranjangChecked(response.keranjang_checked);
@@ -20,6 +22,8 @@ export const KeranjangProvider = ({ children }) => {
       setItemHabis(response.stok_habis);
     } catch (error) {
       console.error("Error fetching keranjang:", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
