@@ -69,7 +69,7 @@ public function tambahPegawai(Request $request)
     // Simpan foto jika ada
     if ($request->hasFile('foto_pegawai')) {
         $file = $request->file('foto_pegawai');
-        $path = $file->store('public/foto_pegawai'); // Simpan di direktori public/foto_pegawai
+        $image_uploaded_path = $file->store(path: 'foto_profile', 'public');
     } else {
         $path = null;
     }
@@ -85,7 +85,7 @@ public function tambahPegawai(Request $request)
         $pegawai->email = $request->input('email');
         $pegawai->password = bcrypt($request->input('password')); // Enkripsi password
         $pegawai->id_jabatan = $request->input('id_jabatan');
-        $pegawai->foto_profile = $path;
+        $pegawai->foto_profile = basename($image_uploaded_path);
         $pegawai->tanggal_lahir = $request->input('tanggal_lahir'); // Simpan tanggal lahir
         $pegawai->createdAt = now(); // Menambahkan waktu pembuatan
         $pegawai->save();
@@ -190,19 +190,18 @@ public function tambahPegawai(Request $request)
     ]);
 }
 
-    public function updatePegawai(Request $request, $id)
+public function updatePegawai(Request $request, $id)
 {
-    // Validasi input data dengan pengecualian pada email untuk pegawai yang sedang diupdate
+    // Validasi input data
     $validated = $request->validate([
         'id_jabatan' => 'nullable|string',
         'nama' => 'nullable|string|max:255',
-        // Pengecualian pada validasi email, agar email yang sama dengan pegawai yang sedang diupdate diizinkan
-        'email' => 'nullable|email|unique:pegawai,email,' . $id . ',id_pegawai',  // Memperbaiki pengecualian untuk email
-        'foto_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi foto profile
+        'email' => 'nullable|email|unique:pegawai,email,' . $id . ',id_pegawai',
+        'foto_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
-    // Cek apakah pegawai ada dengan id_pegawai
-    $pegawai = DB::table('pegawai')->where('id_pegawai', $id)->first();
+    // Ambil data pegawai dari model
+    $pegawai = Pegawai::where('id_pegawai', $id)->first();
 
     if (!$pegawai) {
         return response()->json([
@@ -211,7 +210,7 @@ public function tambahPegawai(Request $request)
         ], 404);
     }
 
-    // Update foto profile jika ada
+    // Cek dan update foto profile jika ada
     if ($request->hasFile('foto_profile')) {
         // Hapus foto lama jika ada
         if ($pegawai->foto_profile) {
@@ -225,33 +224,31 @@ public function tambahPegawai(Request $request)
         $uploadFolder = 'foto_profile';
         $image = $request->file('foto_profile');
         $image_uploaded_path = $image->store($uploadFolder, 'public');
-        $fotoProfile = basename($image_uploaded_path);
-    } else {
-        // Jika tidak ada foto baru, gunakan foto lama
-        $fotoProfile = $pegawai->foto_profile;
+        $pegawai->foto_profile = basename($image_uploaded_path);
     }
 
-    // Melakukan update data pegawai menggunakan query DB::table()
-    DB::table('pegawai')
-        ->where('id_pegawai', $id) // Menggunakan id_pegawai
-        ->update([
-            'id_jabatan' => $request->id_jabatan,
-            'nama' => $request->nama,
-            'email' => $request->email, // Update email
-            'foto_profile' => $fotoProfile, // Update foto profile jika ada
-        ]);
+    // Update field lain (jika ada perubahan)
+    if ($request->filled('id_jabatan')) {
+        $pegawai->id_jabatan = $request->id_jabatan;
+    }
 
-    // Ambil data pegawai yang sudah diperbarui
-    $updatedPegawai = DB::table('pegawai')->where('id_pegawai', $id)->first();
+    if ($request->filled('nama')) {
+        $pegawai->nama = $request->nama;
+    }
+
+    if ($request->filled('email')) {
+        $pegawai->email = $request->email;
+    }
+
+    // Simpan perubahan ke database
+    $pegawai->save();
 
     return response()->json([
         'status' => 'success',
         'message' => 'Pegawai berhasil diperbarui',
-        'data' => $updatedPegawai
+        'data' => $pegawai,
     ]);
 }
-
-
 
 public function register(Request $request)
 {

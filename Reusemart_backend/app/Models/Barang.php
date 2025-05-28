@@ -22,6 +22,7 @@ class Barang extends Model
         'stok_barang',
         'harga_barang',
         'garansi',
+        'tanggal_garansi',
         'status_barang',
         'deskripsi',
         'tanggal_masuk',

@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { Container, Form, Button, Alert, Spinner } from "react-bootstrap";
+import { Container, Form, Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
+import { tambahPegawai } from "../../../api/apiPegawai";
 
 const TambahPegawaiPage = () => {
   const navigate = useNavigate();
 
-  // State untuk menyimpan data pegawai
   const [pegawaiData, setPegawaiData] = useState({
     nama_pegawai: "",
     email: "",
@@ -19,9 +18,7 @@ const TambahPegawaiPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Handle perubahan input pada form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPegawaiData((prevData) => ({
@@ -30,7 +27,6 @@ const TambahPegawaiPage = () => {
     }));
   };
 
-  // Handle perubahan input untuk file foto
   const handleFileChange = (e) => {
     setPegawaiData((prevData) => ({
       ...prevData,
@@ -38,49 +34,47 @@ const TambahPegawaiPage = () => {
     }));
   };
 
-  // Kirim data pegawai ke backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-  
+
     const formData = new FormData();
     formData.append("nama", pegawaiData.nama_pegawai);
     formData.append("email", pegawaiData.email);
     formData.append("password", pegawaiData.password);
-    formData.append("tanggal_lahir", pegawaiData.tanggal_lahir);  // Menambahkan tanggal lahir
+    formData.append("tanggal_lahir", pegawaiData.tanggal_lahir);
     formData.append("confirm_password", pegawaiData.confirm_password);
-    formData.append("id_jabatan", pegawaiData.id_jabatan);  // Periksa apakah id_jabatan ada di FormData
+    formData.append("id_jabatan", pegawaiData.id_jabatan);
     if (pegawaiData.foto_profile) {
       formData.append("foto_pegawai", pegawaiData.foto_profile);
     }
-  
-    const token = sessionStorage.getItem("token");  // Mengambil token otentikasi
-  
-    try {
-      const response = await axios.post("http://localhost:8000/api/tambahPegawai", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Response:", response.data);
-      console.log('ID Jabatan yang dikirim:', pegawaiData.id_jabatan);
 
-      if (response.status === 201) {
-        toast.success("Pegawai berhasil ditambah");
-        navigate("/pegawai/Admin/kelolaPegawai");
-      } else {
-        throw new Error("Gagal menambah pegawai");
-      }
+    try {
+      await tambahPegawai(formData);
+      toast.success("Pegawai berhasil ditambah");
+      navigate("/pegawai/Admin/kelolaPegawai");
     } catch (err) {
-      console.error("Error response:", err.response?.data); // Menampilkan detail error
-      setError(err.response?.data?.message || "Terjadi kesalahan");
-      toast.error(err.response?.data?.message || "Terjadi kesalahan");
+      console.error("Error response:", err.response?.data);
     } finally {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="text-center">
+        <Spinner
+          as="span"
+          animation="border"
+          variant="success"
+          size="lg"
+          role="status"
+          aria-hidden="true"
+        />
+        <p className="mb-0">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <Container className="mt-5 mb-5">
@@ -89,14 +83,12 @@ const TambahPegawaiPage = () => {
         <h1 className="mt-1 pb-1 hijau">P E G A W A I</h1>
       </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
-
       <Container className="mt-4 mb-5 py-4 rounded-3 w-50" style={{ border: '1px solid rgba(83, 83, 83, 1)', backgroundColor: 'rgba(241, 237, 233, 1)' }}>
         <Form onSubmit={handleSubmit} encType="multipart/form-data" style={{ maxWidth: "550px", margin: "auto" }}>
-          
           <Form.Group className="mb-3">
             <Form.Label>Nama Pegawai</Form.Label>
             <Form.Control
+              className="text-muted"
               type="text"
               name="nama_pegawai"
               value={pegawaiData.nama_pegawai}
@@ -108,6 +100,7 @@ const TambahPegawaiPage = () => {
           <Form.Group className="mb-3">
             <Form.Label>Email Pegawai</Form.Label>
             <Form.Control
+              className="text-muted"
               type="email"
               name="email"
               value={pegawaiData.email}
@@ -119,6 +112,7 @@ const TambahPegawaiPage = () => {
           <Form.Group className="mb-3">
             <Form.Label>Password</Form.Label>
             <Form.Control
+              className="text-muted"
               type="password"
               name="password"
               value={pegawaiData.password}
@@ -130,6 +124,7 @@ const TambahPegawaiPage = () => {
           <Form.Group className="mb-3">
             <Form.Label>Konfirmasi Password</Form.Label>
             <Form.Control
+              className="text-muted"
               type="password"
               name="confirm_password"
               value={pegawaiData.confirm_password}
@@ -141,6 +136,7 @@ const TambahPegawaiPage = () => {
           <Form.Group className="mb-3">
             <Form.Label>Tanggal Lahir</Form.Label>
             <Form.Control
+              className="text-muted"
               type="date"
               name="tanggal_lahir"
               value={pegawaiData.tanggal_lahir}
@@ -152,6 +148,7 @@ const TambahPegawaiPage = () => {
           <Form.Group className="mb-3">
             <Form.Label>Jabatan</Form.Label>
             <Form.Control
+              className="text-muted"
               as="select"
               name="id_jabatan"
               value={pegawaiData.id_jabatan}
@@ -170,7 +167,7 @@ const TambahPegawaiPage = () => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Foto Profil</Form.Label>
+            <Form.Label>Foto Profil (upload baru jika ingin mengubah)</Form.Label>
             <Form.Control
               type="file"
               name="foto_profile"
@@ -179,9 +176,23 @@ const TambahPegawaiPage = () => {
             />
           </Form.Group>
 
-          <Button type="submit" disabled={loading} variant="primary" className="w-100">
-            {loading ? <Spinner animation="border" size="sm" /> : "Tambah Pegawai"}
-          </Button>
+          <div className="d-flex gap-3">
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="mt-3 w-100 border-0 buttonSubmit btn-lg rounded-5 shadow-sm" 
+              style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
+            >
+              {loading ? <Spinner animation="border" size="sm" /> : "Simpan"}
+            </Button>
+            <Button 
+              variant="secondary" 
+              className="mt-3 w-100 border-0 btn-lg rounded-5 shadow-sm" 
+              onClick={() => navigate(-1)}
+            >
+              Kembali
+            </Button>
+          </div>
         </Form>
       </Container>
     </Container>
