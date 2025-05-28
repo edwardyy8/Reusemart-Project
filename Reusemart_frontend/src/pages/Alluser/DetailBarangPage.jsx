@@ -9,7 +9,7 @@ import { GetBarangById } from "../../api/apiBarang";
 import { GetDiskusiByIdBarang, TambahDiskusi } from "../../api/apiDiskusi";
 import { GetPenitipById } from "../../api/apiPenitip";
 
-import { TambahKeranjang } from "../../api/apiKeranjang";
+import { TambahKeranjang, HandleCheckoutDariBarang } from "../../api/apiKeranjang";
 import { useKeranjang } from "../../context/KeranjangContext";
 
 import logo from "../../assets/images/logoreuse.png";
@@ -130,8 +130,12 @@ const DetailBarangPage = () => {
       })
       .catch((err) => {
         console.log(err);
-        if (err.message == "Unauthenticated.") {
+        fetchKeranjang();
+        if(err.message == "Unauthenticated."){
           toast.error("Hanya pembeli yang bisa menambah keranjang!");
+        } else if (err.message == "Maaf, Barang sudah habis") {
+          toast.error(err.message); 
+          navigate("/kategori");
         } else {
           toast.error(err.message ?? "Hanya pembeli yang bisa menambah keranjang!");
         }
@@ -139,6 +143,46 @@ const DetailBarangPage = () => {
         setIsDisabled(false);
       });
   };
+
+  // buat checkout
+  const handleCheckout = () => {
+    setIsDisabled(true);
+    setIsPendingKeranjang(true);
+
+    const tokenDariSS = sessionStorage.getItem("token");
+
+    if (!tokenDariSS) {
+      navigate("/login");
+      toast.error("Silahkan login terlebih dahulu!");
+      navigate("/login");
+      return;
+    }else{
+      fetchRole();
+    }
+
+    HandleCheckoutDariBarang(id)
+      .then((res) => {    
+        fetchKeranjang();
+        navigate("/pembeli/checkout");
+        setIsPendingKeranjang(false);
+        setIsDisabled(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        fetchKeranjang();
+        if(err.message == "Unauthenticated."){
+          toast.error("Hanya pembeli yang bisa melakukan checkout!");
+        } else if (err.message == "Maaf, Barang sudah habis") {
+          toast.error(err.message); 
+          navigate("/kategori");
+        } else {
+          toast.error(err.message ?? "Hanya pembeli yang bisa melakukan checkout!");
+        }
+        setIsPendingKeranjang(false);
+        setIsDisabled(false);
+      });
+
+  }
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -252,7 +296,13 @@ const DetailBarangPage = () => {
                 <span>+ Keranjang</span>
               )}
             </button>
-            <button className="btn btn-success w-50">Checkout</button>
+            <button className="btn btn-success w-50" disabled={isDisabled} onClick={() => handleCheckout()}>
+              {isPendingKeranjang ? (
+                <Spinner animation="border" size="sm" className="me-2" />
+              ) : (
+                <span>Checkout</span>
+              )}
+            </button>
           </div>
         </Col>
       </Row>

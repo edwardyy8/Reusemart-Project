@@ -46,6 +46,11 @@ import VerifikasiPage from "../pages/AllPegawai/CS/VerifikasiPage";
 import TambahPenitipPage from "../pages/AllPegawai/CS/TambahPenitipPage";
 import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
 
+import KelolaPengirimanPage from "../pages/AllPegawai/Gudang/KelolaPengirimanPage";
+import KelolaPickupPage from "../pages/AllPegawai/Gudang/KelolaPickupPage";
+import SeluruhPemesananPage from "../pages/AllPegawai/Gudang/seluruhPemesananPage";
+import CetakNotaPage from "../pages/AllPegawai/Gudang/cetakNotaPage";
+import CatatPengambilanBarangPage from "../pages/AllPegawai/Gudang/CatatPengambilanBarangPage";
 import KelolaPenitipanBarangPage from "../pages/AllPegawai/Gudang/KelolaPenitipanBarangPage";
 import EditPenitipanBarangPage from "../pages/AllPegawai/Gudang/EditPenitipanBarangPage";
 import TambahPenitipanBarangPage from "../pages/AllPegawai/Gudang/TambahPenitipanBarangPage";
@@ -65,6 +70,10 @@ import EditRequestPage from "../pages/Organisasi/EditRequestPage";
 import KeranjangPage from "../pages/pembeli/KeranjangPage";
 
 import BalasDiskusiPage from "../pages/AllPegawai/CS/BalasDiskusiPage";
+import CheckoutPage from "../pages/pembeli/CheckoutPage";
+import UbahAlamatPage from "../pages/pembeli/UbahAlamatPage";
+import TransferBuktiPage from "../pages/pembeli/TransferBuktiPage";
+
 
 
 const router = createBrowserRouter([
@@ -150,6 +159,18 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: "/pegawai/Gudang",
+        element: <ProtectedRoutes allowedRoles={["pegawai"]} allowedJabatan={["Gudang"]}><Outlet /></ProtectedRoutes>,
+        children: [
+          { path: "", element: <SeluruhPemesananPage/> },
+          { path: "catatPengambilan", element:<CatatPengambilanBarangPage/> },
+          { path: "kelolaPengiriman", element: <KelolaPengirimanPage /> },
+          { path: "kelolaPickup", element: <KelolaPickupPage /> },
+          { path: "SeluruhPemesanan", element: <SeluruhPemesananPage /> },
+          { path: "CetakNota", element: <CetakNotaPage /> },
+        ],
+      },
+      {
         path: "/pembeli",
         element: <ProtectedRoutes allowedRoles={["pembeli"]}><Outlet /></ProtectedRoutes>,
         children: [
@@ -158,6 +179,18 @@ const router = createBrowserRouter([
           { path: "tambahAlamat", element: <TambahAlamatPage /> },
           { path: "detailPembelian/:id", element: <DetailPembelianPage /> },
           { path: "keranjang", element: <KeranjangPage /> }, 
+          {
+            path: "checkout",
+            element: <CheckoutPage />,
+          },
+          {
+            path: "ubahAlamat",
+            element: <UbahAlamatPage />,
+          },
+          {
+            path: "transferBukti/:id",
+            element: <TransferBuktiPage />,
+          }
         ],
       },
       {

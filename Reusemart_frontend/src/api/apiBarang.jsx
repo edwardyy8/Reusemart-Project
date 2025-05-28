@@ -52,6 +52,35 @@ export const donasiByPenitip = async (id_barang) => {
 };
 
 
+export const AmbilBarang = async (id_barang) =>{
+  try{
+    const response = await useAxios.post(`/ambilBarang/${id_barang}`, {},
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const GetAllBarangDiambil = async () =>{
+  try{
+    const response = await useAxios.get("/getAllBarangDiambil",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
 
 export const GetAllRequiredTambahBarang = async () => {
     try {
@@ -136,5 +165,3 @@ export const GetPenitipanDetails = async (id) => {
     throw error.response?.data || error; // Consistent error handling
   }
 };
-
-

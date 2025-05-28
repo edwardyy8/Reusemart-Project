@@ -5,14 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use App\Models\Barang;
 use App\Models\Donasi;
+use App\Models\Penitip;
 use App\Models\Request_Donasi;
+use App\Models\Rincian_Penitipan;
 use Illuminate\Http\Request;
 use function Symfony\Component\Translation\t;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\NotificationController;
 
 class DonasiController extends Controller
 {
+    protected $notificationController;
+
+    public function __construct(NotificationController $notificationController)
+    {
+        $this->notificationController = $notificationController;
+    }
     public function index()
 {
     try {
@@ -65,8 +74,27 @@ public function createDonasiOwner(Request $request)
         // Buat donasi
         $donasi = Donasi::create($validated);
 
-        // Ambil data barang
-        $barang = Barang::findOrFail($validated['id_barang']);
+          $barang = Barang::findOrFail($validated['id_barang']);
+
+    $rincian = Rincian_Penitipan::where('id_barang', $request->id_barang)
+        ->with('Penitipan')
+        ->first();
+
+    $penitip = Penitip::findOrFail($rincian->penitipan->id_penitip);
+
+    if ($penitip && $penitip->fcm_token) {
+        // kirim notif
+        $notifRequest = new Request([
+            'fcm_token' => $penitip->fcm_token,
+            'title' => 'Barang Anda Telah Didonasikan',
+            'body' => 'Barang Anda dengan ID ' . $request->id_barang . ' telah didonasikan pada tanggal ' . $validated['tanggal_donasi'],
+            'data' => [
+                'penitipan_id' => (string) $rincian->penitipan->id_penitipan,
+            ]
+        ]);
+
+        $this->notificationController->sendFcmNotification($notifRequest);
+    }
 
         // Update status barang jadi 'didonasikan'
         $barang->status_barang = 'Didonasikan';

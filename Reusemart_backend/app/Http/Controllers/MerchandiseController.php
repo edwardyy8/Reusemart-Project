@@ -101,7 +101,7 @@ class MerchandiseController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Validation failed',
+                'message' => 'Validatio   n failed',
                 'errors' => $validator->errors()
             ], 422);
         }

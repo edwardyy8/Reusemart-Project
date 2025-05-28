@@ -60,6 +60,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/getrole', [AuthController::class, 'getRole']);
     Route::post('tambahDiskusi', [DiskusiController::class, 'tambahDiskusi']);
+    Route::post('/fetchMenungguPembayaran', [PemesananController::class, 'fetchMenungguPembayaran']);
+    Route::post('/update-fcm-token', [AuthController::class, 'updateFcmToken']);
+    Route::post('/remove-fcm-token', [AuthController::class, 'removeToken']);
+
 });
 
 Route::middleware('auth:pegawai')->group(function () {
@@ -113,10 +117,15 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::put('/penitip/{id}', [PenitipController::class, 'update']);
         Route::post('/deletePenitip/{id}', [PenitipController::class, 'destroy']);
 
+
         // Klaim Merchandise
         Route::get('/getAllClaimMerchandise', [ClaimMerchandiseController::class, 'getAllClaimMerchandise']);
         Route::get('/getClaimMerchandiseById/{id}', [ClaimMerchandiseController::class, 'getClaimMerchandiseById']);
         Route::post('/confirmClaimMerchandise/{id_request}', [ClaimMerchandiseController::class, 'confirmClaimMerchandise']);
+        Route::get('/getPemesananUntukVerifikasi', [PemesananController::class, 'getPemesananUntukVerifikasi']);
+        Route::post('/verifikasiBuktiPembayaran/{id}', [PemesananController::class, 'verifikasiBuktiPembayaran']);
+        Route::get('/getFotoBukti/{filename}', [PemesananController::class, 'getFotoBukti']);
+
     });
 
     Route::middleware(CekJabatan::class . ':Owner')->group(function () {
@@ -129,7 +138,20 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::get('/get-request-donasi', [RequestDonasiController::class, 'getRequestDonasi']);
     });
 
-    Route::middleware(CekJabatan::class . ':Gudang')->group(function () {
+    Route::middleware(cekJabatan::class.':Gudang')->group(function () {
+        Route::get('/getAllPemesanan', [PemesananController::class, 'getAllPemesanan']);
+        Route::get('/getAllPemesananUntukNota', [PemesananController::class, 'getAllPemesananUntukNota']);
+        Route::get('/getAllPickup', [PemesananController::class, 'getAllPickup']);
+        Route::get('/getAllDelivery', [PemesananController::class, 'getAllDelivery']);
+        Route::get('/getAllBarangDiambil', [BarangController::class, 'getAllBarangDiambil']);
+        Route::post('/ambilPemesanan/{id_pemesanan}', [PemesananController::class, 'ambilPemesanan']);
+        Route::get('/getAllKurir', [PegawaiController::class, 'getAllKurir']);
+        Route::post('/assignKurir/{id_pemesanan}', [PemesananController::class, 'assignKurir']);
+        Route::post('/updateTanggalPengiriman/{id}', [PemesananController::class, 'updateTanggalPengiriman']);
+        Route::post('/updateTanggalPengambilan/{id}', [PemesananController::class, 'updateTanggalPengambilan']);
+        Route::get('/showNota/{id_pemesanan}', [PemesananController::class, 'showNota']);
+        Route::post('/ambilBarang/{id_rincianpenitipan}', [BarangController::class, 'ambilBarang']);
+        Route::post('/hitungHasil/{id_pemesanan}', [PemesananController::class, 'hitungHasil']);
         Route::post('/tambahPenitipanBarang', [RincianPenitipanController::class, 'tambahPenitipanBarang']);
         Route::post('/editPenitipanBarang/{id}', [RincianPenitipanController::class, 'editPenitipanBarang']);
         Route::get('/getAllPenitipanBarang', [RincianPenitipanController::class, 'getAllPenitipanBarang']);
@@ -193,7 +215,14 @@ Route::middleware('auth:pembeli')->group(function () {
     Route::post('/handleSelectKeranjang/{id}', [KeranjangController::class, 'handleSelectKeranjang']);
     Route::delete('/deleteKeranjang/{id}', [KeranjangController::class, 'deleteKeranjang']);
     Route::delete('/deleteKeranjangHabis', [KeranjangController::class, 'deleteKeranjangHabis']);
+    Route::post('/handleCheckoutDariBarang/{id}', [KeranjangController::class, 'handleCheckoutDariBarang']);
+
+    Route::get('/getDefaultAlamat', [AlamatController::class, 'getDefaultAlamat']);
+    Route::post('/tambahPemesanan', [PemesananController::class, 'tambahPemesanan']);
+    Route::post('/waktuHabis/{id}', [PemesananController::class, 'waktuHabis']);
+    Route::post('/kirimBuktiPembayaran/{id}', [PemesananController::class, 'kirimBuktiPembayaran']);
 });
 
 
 Route::get('/getDiskusiByIdBarang/{id}', [DiskusiController::class, 'getDiskusiByIdBarang']);
+
