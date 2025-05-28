@@ -442,7 +442,7 @@ class PemesananController extends Controller
                 $request = new Request([
                     'fcm_token' => $pembeli->fcm_token,
                     'title' => 'Jadwal Pengambilan Barang',
-                    'body' => 'Jadwal pengambilan barang Anda untuk pemesanan '. $pemesanan->id_pemesanan .'telah dijadwalkan pada tanggal ' . $pemesanan->jadwal_pengambilan,
+                    'body' => 'Jadwal pengambilan barang Anda untuk pemesanan '. $pemesanan->id_pemesanan .' telah dijadwalkan pada tanggal ' . $pemesanan->jadwal_pengambilan,
                     'data' => [
                         'pemesanan_id' => (string) $pemesanan->id_pemesanan,
                     ]
