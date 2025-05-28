@@ -30,7 +30,8 @@ class Pegawai extends Authenticatable
         'tanggal_lahir',
         'is_aktif',
         'createdAt',
-        'is_aktif'
+        'is_aktif',
+        'fcm_token',
     ];
 
     public function getUserType() {

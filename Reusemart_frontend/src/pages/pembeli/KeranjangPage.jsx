@@ -57,7 +57,7 @@ const KeranjangPage = () => {
     }
 
     useEffect(() => {
-        
+        fetchKeranjang();
     }, []);
 
 

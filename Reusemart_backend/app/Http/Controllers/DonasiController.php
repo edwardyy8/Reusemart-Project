@@ -93,6 +93,23 @@ public function createDonasiOwner(Request $request)
             ]
         ]);
 
+    $rincian = Rincian_Penitipan::where('id_barang', $request->id_barang)
+        ->with('Penitipan')
+        ->first();
+
+    $penitip = Penitip::findOrFail($rincian->penitipan->id_penitip);
+
+    if ($penitip && $penitip->fcm_token) {
+        // kirim notif
+        $notifRequest = new Request([
+            'fcm_token' => $penitip->fcm_token,
+            'title' => 'Barang Anda Telah Didonasikan',
+            'body' => 'Barang Anda dengan ID ' . $request->id_barang . ' telah didonasikan pada tanggal ' . $validated['tanggal_donasi'],
+            'data' => [
+                'penitipan_id' => (string) $rincian->penitipan->id_penitipan,
+            ]
+        ]);
+
         $this->notificationController->sendFcmNotification($notifRequest);
     }
 
