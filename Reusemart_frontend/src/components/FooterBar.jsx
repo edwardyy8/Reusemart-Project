@@ -11,7 +11,11 @@ const FooterBar = () => {
                 <p className="h5 mb-0"><BsInstagram /> @reusemart.yogyakarta</p>
                 <p className="h5 mb-0"><BsGeoAlt /> Jl. Babarsari no.111</p>
             </Row>
-
+            <Row>
+                <Col className="text-center" style={{ color: "rgba(83, 83, 83, 1)" }}>
+                    <p className="h5 mb-0">© 2025 Reusemart. All rights reserved.</p>
+                </Col>
+            </Row>
         </Container>
     );
 };

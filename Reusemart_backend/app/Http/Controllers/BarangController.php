@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
+use App\Models\Rincian_Penitipan;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+
 
 class BarangController extends Controller
 {
@@ -148,21 +150,82 @@ class BarangController extends Controller
     {
         try {
             $barang = Barang::with('rincian_penitipan')->findOrFail($id);
-            $batas_akhir = Carbon::now('Asia/Jakarta')->addDays(7);
-
+            $barang->rincian_penitipan->batas_akhir = Carbon::now('Asia/Jakarta')->addDays(7);
             $barang->rincian_penitipan->status_penitipan = 'Diambil Kembali';
-            $barang->rincian_penitipan->batas_akhir = $batas_akhir;
-            $barang->status_barang = 'Diambil Kembali';
-            $barang->save();
             $barang->rincian_penitipan->save();
     
             return response()->json([
                 'message' => 'Berhasil Memilih Ambil Penitipan',
-                'batas_akhir' => $batas_akhir->toDateTimeString(),
+                'batas_akhir' => $barang->rincian_penitipan->batas_akhir->toDateTimeString(),
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Terjadi kesalahan saat memperpanjang.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function ambilBarang($id_rincianpenitipan)
+    {
+        try {
+            $rincian = Rincian_Penitipan::with('barang')->findOrFail($id_rincianpenitipan);
+
+            $barang = $rincian->barang;
+            $barang->status_barang = 'Diambil Kembali';
+            $barang->save();
+
+            return response()->json([
+                'message' => 'Berhasil Konfirmasi Pengambilan',
+                
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat memperbarui status pengambilan.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getAllBarangDiambil()
+    {
+        try {
+            $barangList = Rincian_Penitipan::where('status_penitipan', 'Diambil Kembali')
+            ->with(['barang', 'barang.penitip'])
+            ->get();
+
+            if ($barangList->isEmpty()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada barang dengan status Diambil Kembali',
+                ], 404);
+            }
+
+            foreach ($barangList as $barang){
+                $batasAkhir = Carbon::parse($barang->batas_akhir);
+                $hariIni = Carbon::now('Asia/Jakarta');
+
+                if ($batasAkhir->lt($hariIni) && ($barang->barang->status_barang === 'Diambil Kembali' || $barang->barang->status_barang === 'Tersedia')) {
+                    $barang->barang->update([
+                        'status_barang' => 'Barang untuk Donasi',
+                    ]);
+
+                    $barang->update([
+                        'status_penitipan' => 'Barang untuk Donasi',
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Barang',
+                'data' => $barangList,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat mengambil data.',
                 'error' => $e->getMessage()
             ], 500);
         }

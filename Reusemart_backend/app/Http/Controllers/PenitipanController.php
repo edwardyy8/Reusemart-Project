@@ -39,17 +39,10 @@ class PenitipanController extends Controller
                 }
             }
 
-
-            $titipan = Rincian_Penitipan::whereHas('barang', function ($query) use ($id) {
-                    $query->where('id_penitip', $id);
-                })
-                ->with(['penitipan', 'barang'])
-                ->get();
-
             return response()->json([
                 'status' => true,
                 'message' => 'Data Penitipan',
-                'data' => $titipan,
+                'data' => $titipanList,
             ]);
 
         } catch (\Exception $e) {

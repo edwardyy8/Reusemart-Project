@@ -2,16 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\Barang;
 use App\Models\Donasi;
+use App\Models\Penitip;
 use App\Models\Request_Donasi;
+use App\Models\Rincian_Penitipan;
 use Illuminate\Http\Request;
 use function Symfony\Component\Translation\t;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\NotificationController;
 
 class DonasiController extends Controller
 {
+    protected $notificationController;
+
+    public function __construct(NotificationController $notificationController)
+    {
+        $this->notificationController = $notificationController;
+    }
     public function index()
 {
     try {
@@ -58,15 +68,80 @@ public function createDonasiOwner(Request $request)
 
     $validated['tanggal_donasi'] = now(); // otomatis isi tanggal sekarang
 
-    $donasi = Donasi::create($validated);
+    // Gunakan transaksi agar data konsisten
+    DB::beginTransaction();
+    try {
+        // Buat donasi
+        $donasi = Donasi::create($validated);
 
+          $barang = Barang::findOrFail($validated['id_barang']);
 
-    return response()->json([
-        'message' => 'Donasi berhasil ditambahkan',
-        'data' => $donasi
-    ], 201);
+    $rincian = Rincian_Penitipan::where('id_barang', $request->id_barang)
+        ->with('Penitipan')
+        ->first();
+
+    $penitip = Penitip::findOrFail($rincian->penitipan->id_penitip);
+
+    if ($penitip && $penitip->fcm_token) {
+        // kirim notif
+        $notifRequest = new Request([
+            'fcm_token' => $penitip->fcm_token,
+            'title' => 'Barang Anda Telah Didonasikan',
+            'body' => 'Barang Anda dengan ID ' . $request->id_barang . ' telah didonasikan pada tanggal ' . $validated['tanggal_donasi'],
+            'data' => [
+                'penitipan_id' => (string) $rincian->penitipan->id_penitipan,
+            ]
+        ]);
+
+    $rincian = Rincian_Penitipan::where('id_barang', $request->id_barang)
+        ->with('Penitipan')
+        ->first();
+
+    $penitip = Penitip::findOrFail($rincian->penitipan->id_penitip);
+
+    if ($penitip && $penitip->fcm_token) {
+        // kirim notif
+        $notifRequest = new Request([
+            'fcm_token' => $penitip->fcm_token,
+            'title' => 'Barang Anda Telah Didonasikan',
+            'body' => 'Barang Anda dengan ID ' . $request->id_barang . ' telah didonasikan pada tanggal ' . $validated['tanggal_donasi'],
+            'data' => [
+                'penitipan_id' => (string) $rincian->penitipan->id_penitipan,
+            ]
+        ]);
+
+        $this->notificationController->sendFcmNotification($notifRequest);
+    }
+
+        // Update status barang jadi 'didonasikan'
+        $barang->status_barang = 'Didonasikan';
+        $barang->save();
+
+        // Hitung poin yang didapat penitip
+        $poinTambahan = (int) ceil($barang->harga_barang / 10000);
+
+        // Update poin penitip
+        $penitip = $barang->penitip;
+        $penitip->poin_penitip += $poinTambahan;
+        $penitip->save();
+
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Donasi berhasil ditambahkan',
+            'data' => $donasi,
+            'poin_didapat' => $poinTambahan,
+            'total_poin_penitip' => $penitip->poin_penitip
+        ], 201);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'Gagal membuat donasi',
+            'error' => $e->getMessage()
+        ], 500);
+    }
 }
-
 
     public function store(Request $request)
     {
@@ -82,7 +157,7 @@ public function createDonasiOwner(Request $request)
             'id_donasi' => Donasi::generateId(), // Assuming you have a function to generate ID
             'id_request' => $request->id_request,
             'id_barang' => $request->id_barang,
-            'id_pegawai' => $request->pegawai_id, // Use logged-in employee ID
+            'id_pegawai' => "P1", // Use logged-in employee ID
             'tanggal_donasi' => now(),
             'nama_penerima' => $request->nama_penerima,
         ]);
@@ -95,7 +170,7 @@ public function createDonasiOwner(Request $request)
 
     public function getAllBarangTerdonasikan()
 {
-    $barangs = Barang::where('status_barang', 'Didonasikan')
+    $barangs = Barang::where('status_barang', 'Barang untuk Donasi')
         ->whereDoesntHave('donasi') // artinya: tidak ada record di tabel donasi dengan id_barang ini
         ->get();
 

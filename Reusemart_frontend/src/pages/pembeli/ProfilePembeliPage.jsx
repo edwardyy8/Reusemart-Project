@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import ModalDeleteAlm from "../../components/modals/alamat/ModalDeleteAlm";
 import { FaSearch } from "react-icons/fa";
 
+import  { FetchMenungguPembayaran } from "../../api/apiPemesanan";
 
 const ProfilePembeliPage = () => {
     const navigate = useNavigate();
@@ -51,6 +52,8 @@ const ProfilePembeliPage = () => {
           );
         }
         setPembelianData(pembelian.data);
+
+        const response = await FetchMenungguPembayaran();
         
       } catch (err) {
         console.log(err);
@@ -81,6 +84,16 @@ const ProfilePembeliPage = () => {
       }
     };
 
+    // const fetchMenungguPembayaran = async () => {
+    //     setLoading(true);
+    //     const response = await FetchMenungguPembayaran();
+    //     if (response.status) {
+    //       setLoading(false);
+    //     } else {
+    //       setLoading(false);
+    //     }
+    // }
+
     useEffect(() => {
       const params = new URLSearchParams(location.search);
       const tabParam = params.get('tab');
@@ -91,6 +104,7 @@ const ProfilePembeliPage = () => {
 
     useEffect(() => {
       fetchProfile();
+      
     }, []);
 
     useEffect(() => {
@@ -100,6 +114,8 @@ const ProfilePembeliPage = () => {
     }, [profileData]);
 
     const formatTanpaDetik = (tanggal) => {
+        if (!tanggal) return "Belum ada";
+
         const date = new Date(tanggal);
         const tahun = date.getFullYear();
         const bulan = String(date.getMonth() + 1).padStart(2, '0');
@@ -154,6 +170,10 @@ const ProfilePembeliPage = () => {
           </Container>
         );
     }
+    
+    const handleTabSelect = (tabKey) => {
+      navigate(`/pembeli/profile?tab=${tabKey}`);
+    };
 
     return (
         <Container className="mt-5">
@@ -169,7 +189,7 @@ const ProfilePembeliPage = () => {
             <p className="text-muted mb-1">Poin Reward</p>
           </Container>
     
-          <Tabs activeKey={activeKey} onSelect={(k) => setActiveKey(k)} className="mb-4 justify-content-center custom-tabs" fill>
+          <Tabs activeKey={activeKey} onSelect={handleTabSelect} className="mb-4 justify-content-center custom-tabs" fill>
           <Tab eventKey="pembelian" title="Pembelian Saya" >
               {pembelianData.length > 0 ? (
                 <Row className="g-3">
@@ -180,31 +200,60 @@ const ProfilePembeliPage = () => {
                           <Card.Title className="border-bottom">
                             ID Order : {item.id_pemesanan}
                             <br />
-                            <p className="text-muted h6">Tanggal Order : {formatTanpaDetik(item.tanggal_pemesanan)}</p>
+                            <span className="text-muted h6">Tanggal Order : {formatTanpaDetik(item.tanggal_pemesanan)}</span>
                           </Card.Title>
-                          <Card.Text>
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="">
-                                Jumlah Barang : {item.rincian_pemesanan.length}
-                                <br />
-                                Total Harga : Rp {item.total_harga.toLocaleString("id-ID")}
-                                <br />
-                                Status Order : {item.status_pengiriman}
-                              </div>
-                              <div>
-                                <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.rincian_pemesanan[0].barang.foto_barang}`} 
-                                      alt="Foto Barang" 
-                                      height={100}
-                                      className="rounded-2"/>
-                              </div>
-                            </div>
-                          </Card.Text>
                           
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="">
+                              Jumlah Barang : {item.rincian_pemesanan.length}
+                              <br />
+                              Total Harga : Rp {item.total_harga.toLocaleString("id-ID")}
+                              <br />
+                              Status Pembayaran : {item.status_pembayaran}
+                              <br />
+                              Metode Pengiriman : {item.metode_pengiriman}
+                              <br />
+                              {item.status_pembayaran != 'Lunas' ? 
+                                ( 
+                                  null
+                                ) : (
+                                  item.metode_pengiriman == "Pickup" ? 
+                                    (
+                                      <>
+                                        Status Pengiriman : {item.status_pengiriman}
+                                        <br />
+                                        Jadwal Pengambilan : {formatTanpaDetik(item.jadwal_pengambilan)}
+                                        <br />
+                                        Batas Pengambilan : {formatTanpaDetik(item.batas_pengambilan)}
+                                      </>
+                                    ) : (
+                                      <>
+                                        Status Pengiriman : {item.status_pengiriman}
+                                        <br />
+                                        Tanggal Pengiriman : {formatTanpaDetik(item.tanggal_pengiriman)}
+                                      </>
+                                    )
+                              )}
+                            </div>
+                            <div>
+                              <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.rincian_pemesanan[0].barang.foto_barang}`} 
+                                    alt="Foto Barang" 
+                                    height={100}
+                                    className="rounded-2"/>
+                            </div>
+                          </div>
                         </Card.Body>
                         <Card.Footer className="">
-                            <Button className="w-100" variant="outline-secondary" onClick={() => navigate(`/pembeli/detailPembelian/${item.id_pemesanan}`)}> 
+                          <div className="d-flex justify-content-between align-items-center">
+                            {item.status_pembayaran == 'Menunggu Pembayaran' && (
+                              <Button className="w-50 me-2" variant="outline-danger" onClick={() => navigate(`/pembeli/transferBukti/${item.id_pemesanan}`)}> 
+                                  Kirim Bukti Transfer
+                              </Button>
+                            )}
+                            <Button className={item.status_pembayaran == 'Menunggu Pembayaran' ? 'w-50 ms-2' : 'w-100'} variant="outline-secondary" onClick={() => navigate(`/pembeli/detailPembelian/${item.id_pemesanan}`)}> 
                                 Lihat Detail
                             </Button>
+                          </div>
                         </Card.Footer>
                       </Card>
                     </Col>

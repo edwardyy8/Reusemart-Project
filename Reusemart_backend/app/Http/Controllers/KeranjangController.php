@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barang;
 use Illuminate\Http\Request;
 use App\Models\Keranjang;
 
@@ -24,6 +25,20 @@ class KeranjangController extends Controller
                 'id_barang' => 'required',
                 'harga_barang' => 'required',
             ]);
+
+            $barang = Barang::find($validatedData['id_barang']);
+            if (!$barang) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Barang tidak ditemukan',
+                ], 404);
+            }
+            if ($barang->stok_barang == 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Maaf, Barang sudah habis',
+                ], 400);
+            }
 
             $cekBarangDiKeranjang = Keranjang::where('id_barang', $validatedData['id_barang'])
                 ->where('id_pembeli', $id_pembeli)
@@ -177,6 +192,64 @@ class KeranjangController extends Controller
             ], 500);
         }
     }
+
+    public function handleCheckoutDariBarang(Request $request, $id)
+    {
+        try {
+            $id_pembeli = $request->user()->id_pembeli; 
+
+            $barang = Barang::find($id);
+
+            if ($barang->stok_barang == 0 || !$barang) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Maaf, Barang sudah habis',
+                ], 400);
+            }
+
+            $keranjang = Keranjang::where('id_pembeli', $id_pembeli)
+                ->where('is_selected', 1)
+                ->get();
+
+
+            $barang = Barang::find($id);
+
+            if($keranjang->count() > 0) {
+                foreach ($keranjang as $item) {
+                    $item->is_selected = 0;
+                    $item->save();
+                }
+            }
+
+            $cekBarangDiKeranjang = Keranjang::where('id_barang', $id)
+                ->where('id_pembeli', $id_pembeli)
+                ->first();
+
+            if (!$cekBarangDiKeranjang) {
+                $keranjangBaru = new Keranjang();
+                $keranjangBaru->id_barang = $barang->id_barang;
+                $keranjangBaru->harga_barang = $barang->harga_barang;
+                $keranjangBaru->id_pembeli = $id_pembeli; 
+                $keranjangBaru->is_selected = 1;
+                $keranjangBaru->save();
+            }else {
+                $cekBarangDiKeranjang->is_selected = 1;
+                $cekBarangDiKeranjang->save();
+            }
+
+            return response()->json([
+                'message' => 'Status keranjang berhasil diperbarui', 
+                'status' => 'success',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal memperbarui keranjang', 
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+   
 
 
 }
