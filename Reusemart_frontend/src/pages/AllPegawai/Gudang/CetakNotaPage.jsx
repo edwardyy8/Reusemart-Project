@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination } from "react-bootstrap";
+import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Spinner } from "react-bootstrap";
 import { FaPrint } from "react-icons/fa6";
 import { useNavigate, Outlet } from "react-router-dom";
 import { useReactToPrint } from 'react-to-print';
@@ -14,6 +14,7 @@ const CetakNotaPage = ({pemesanan}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetail, setShowDetail] = useState(false);
   const [showKonfirmasi, setShowKonfirmasi] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedPemesanan, setSelectedPemesanan] = useState(null);
   const [printNota, setPrintNota] = useState(null);
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const CetakNotaPage = ({pemesanan}) => {
   const itemsPerPage = 10;
 
   const fetchPemesanan = async () => {
+    setLoading(true);
     const response = await GetAllPemesananUntukNota();
     console.log("API response:", response);
 
@@ -40,6 +42,7 @@ const CetakNotaPage = ({pemesanan}) => {
     });
     setPemesananList(sortedData);
     setAlamatDef(response.alamatDef);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -56,6 +59,16 @@ const CetakNotaPage = ({pemesanan}) => {
     
     return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
   };
+
+  if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="success" />
+        <p className="mt-3">Memuat data...</p>
+      </Container>
+    );
+  }
+
 
   const totalPesanan = pemesananList.filter((p) => p.rincian_pemesanan[0]?.komisi_reusemart == 0).length;
   const totalDelivery = pemesananList.filter((p) => p.rincian_pemesanan[0]?.komisi_reusemart == 0 && p.metode_pengiriman.trim().toLowerCase()==="kurir").length;

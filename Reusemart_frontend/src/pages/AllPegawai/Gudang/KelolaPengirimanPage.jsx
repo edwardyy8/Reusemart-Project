@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Overlay, Popover } from "react-bootstrap";
+import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Overlay, Popover, Spinner } from "react-bootstrap";
 import Datepicker from "../../../components/date/DatePicker";
 import { FaEye, FaCalendarAlt } from "react-icons/fa";
 import { useNavigate, Outlet } from "react-router-dom";
@@ -17,6 +17,7 @@ const KelolaPengirimanPage = () => {
   const [selectedPemesanan, setSelectedPemesanan] = useState(null);
   const [showDatepicker, setShowDatepicker] = useState(false);
   const [calendarTarget, setCalendarTarget] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   let minDate = new Date();
 
@@ -24,6 +25,7 @@ const KelolaPengirimanPage = () => {
   const itemsPerPage = 10;
 
   const fetchPemesanan = async () => {
+    setLoading(true);
     const response = await GetAllDelivery();
     const sortedData = response.data.sort((a, b) => {
       const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
@@ -31,6 +33,7 @@ const KelolaPengirimanPage = () => {
       return numA - numB;
     });
     setPemesananList(sortedData);
+    setLoading(false);
   };
 
   const fetchKurir = async () => {
@@ -58,6 +61,16 @@ const KelolaPengirimanPage = () => {
         
         return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
   };
+
+  if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="success" />
+        <p className="mt-3">Memuat data...</p>
+      </Container>
+    );
+  }
+
 
   const totalPesanan = pemesananList.filter((p) => p.tanggal_pengiriman == null).length;
 
