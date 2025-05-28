@@ -87,6 +87,7 @@ export const ConfirmRequest = async (id_request) => {
       {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         validateStatus: function (status) {
           return status < 500;

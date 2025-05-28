@@ -171,6 +171,18 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: "/pegawai/Gudang",
+        element: <ProtectedRoutes allowedRoles={["pegawai"]} allowedJabatan={["Gudang"]}><Outlet /></ProtectedRoutes>,
+        children: [
+          { path: "", element: <SeluruhPemesananPage/> },
+          { path: "catatPengambilan", element:<CatatPengambilanBarangPage/> },
+          { path: "kelolaPengiriman", element: <KelolaPengirimanPage /> },
+          { path: "kelolaPickup", element: <KelolaPickupPage /> },
+          { path: "SeluruhPemesanan", element: <SeluruhPemesananPage /> },
+          { path: "CetakNota", element: <CetakNotaPage /> },
+        ],
+      },
+      {
         path: "/pembeli",
         element: <ProtectedRoutes allowedRoles={["pembeli"]}><Outlet /></ProtectedRoutes>,
         children: [

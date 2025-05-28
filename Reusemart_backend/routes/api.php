@@ -117,8 +117,6 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::put('/penitip/{id}', [PenitipController::class, 'update']);
         Route::post('/deletePenitip/{id}', [PenitipController::class, 'destroy']);
 
-
-        // Klaim Merchandise
         Route::get('/getAllClaimMerchandise', [ClaimMerchandiseController::class, 'getAllClaimMerchandise']);
         Route::get('/getClaimMerchandiseById/{id}', [ClaimMerchandiseController::class, 'getClaimMerchandiseById']);
         Route::post('/confirmClaimMerchandise/{id_request}', [ClaimMerchandiseController::class, 'confirmClaimMerchandise']);

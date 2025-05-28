@@ -13,6 +13,7 @@ const ManagePenitipPage = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedPenitip, setSelectedPenitip] = useState(null);
   const navigate = useNavigate();
 
@@ -20,6 +21,7 @@ const ManagePenitipPage = () => {
   const itemsPerPage = 10;
 
   const fetchPenitip = async () => {
+    setLoading(true);
     const data = await GetAllPenitip();
     const sortedData = data.sort((a, b) => {
       const numA = parseInt(a.id_penitip.replace(/[^\d]/g, ""));
@@ -27,11 +29,21 @@ const ManagePenitipPage = () => {
       return numA - numB;
     });
     setPenitipList(sortedData);
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchPenitip();
   }, []);
+
+  if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="success" />
+        <p className="mt-3">Memuat data...</p>
+      </Container>
+    );
+  }
 
   const handleDelete = async () => {
     if (!selectedPenitip) return;
@@ -126,15 +138,24 @@ const ManagePenitipPage = () => {
                 <td style={{ border: 'none' }}>{penitip.id_penitip}</td>
                 <td style={{ border: 'none' }}>{penitip.nama}</td>
                 <td style={{ border: 'none' }} className="d-flex justify-content-center gap-3 align-items-center">
-                  <Button variant="success" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDetail(true); }}>
+                  {penitip.is_aktif === "Ya" ? (
+                    <>
+                    <Button variant="success" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDetail(true); }}>
                     <FaEye />
-                  </Button>
-                  <Button variant="primary" size="sm" onClick={() => navigate(`/pegawai/Customer Service/managePenitip/editPenitip/${penitip.id_penitip}`)}>
-                    <FaRegPenToSquare />
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDelete(true); }}>
-                    <FaRegTrashCan />
-                  </Button>
+                    </Button>
+                    <Button variant="primary" size="sm" onClick={() => navigate(`/pegawai/Customer Service/managePenitip/editPenitip/${penitip.id_penitip}`)}>
+                      <FaRegPenToSquare />
+                    </Button>
+                    <Button variant="danger" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDelete(true); }}>
+                      <FaRegTrashCan />
+                    </Button>
+                    </>
+                  ) : (
+                    <Button variant="success" size="sm" onClick={() => { setSelectedPenitip(penitip); setShowDetail(true); }}>
+                    <FaEye />
+                    </Button>
+                  )}
+                  
                 </td>
               </tr>
             ))}

@@ -51,7 +51,6 @@ export const donasiByPenitip = async (id_barang) => {
   }
 };
 
-
 export const AmbilBarang = async (id_barang) =>{
   try{
     const response = await useAxios.post(`/ambilBarang/${id_barang}`, {},

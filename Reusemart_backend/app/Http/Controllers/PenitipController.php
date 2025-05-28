@@ -49,7 +49,7 @@ class PenitipController extends Controller
             'foto_profile' => 'required|image|max:2048',
         ]);
 
-        $ktpPath = $request->file('foto_ktp')->store('foto_ktp', 'public');
+        $ktpPath = $request->file('foto_ktp')->store('foto_ktp', 'private');
         $profilePath = $request->file('foto_profile')->store('foto_profile', 'public');
 
         $penitip = Penitip::create([
