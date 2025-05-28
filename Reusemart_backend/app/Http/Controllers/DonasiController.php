@@ -57,91 +57,92 @@ class DonasiController extends Controller
 
 
 
-public function createDonasiOwner(Request $request)
-{
-    $validated = $request->validate([
-        'id_barang' => 'required|exists:barang,id_barang',
-        'id_request' => 'required|exists:request_donasi,id_request',
-        'id_pegawai' => 'required|exists:pegawai,id_pegawai',
-        'nama_penerima' => 'required|string|max:255',
-    ]);
-
-    $validated['tanggal_donasi'] = now(); // otomatis isi tanggal sekarang
-
-    // Gunakan transaksi agar data konsisten
-    DB::beginTransaction();
-    try {
-        // Buat donasi
-        $donasi = Donasi::create($validated);
-
-          $barang = Barang::findOrFail($validated['id_barang']);
-
-    $rincian = Rincian_Penitipan::where('id_barang', $request->id_barang)
-        ->with('Penitipan')
-        ->first();
-
-    $penitip = Penitip::findOrFail($rincian->penitipan->id_penitip);
-
-    if ($penitip && $penitip->fcm_token) {
-        // kirim notif
-        $notifRequest = new Request([
-            'fcm_token' => $penitip->fcm_token,
-            'title' => 'Barang Anda Telah Didonasikan',
-            'body' => 'Barang Anda dengan ID ' . $request->id_barang . ' telah didonasikan pada tanggal ' . $validated['tanggal_donasi'],
-            'data' => [
-                'penitipan_id' => (string) $rincian->penitipan->id_penitipan,
-            ]
+    public function createDonasiOwner(Request $request)
+    {
+        $validated = $request->validate([
+            'id_barang' => 'required|exists:barang,id_barang',
+            'id_request' => 'required|exists:request_donasi,id_request',
+            'id_pegawai' => 'required|exists:pegawai,id_pegawai',
+            'nama_penerima' => 'required|string|max:255',
         ]);
 
-    $rincian = Rincian_Penitipan::where('id_barang', $request->id_barang)
-        ->with('Penitipan')
-        ->first();
+        $validated['tanggal_donasi'] = now(); // otomatis isi tanggal sekarang
 
-    $penitip = Penitip::findOrFail($rincian->penitipan->id_penitip);
+        // Gunakan transaksi agar data konsisten
+        DB::beginTransaction();
+        try {
+            // Buat donasi
+            $donasi = Donasi::create($validated);
 
-    if ($penitip && $penitip->fcm_token) {
-        // kirim notif
-        $notifRequest = new Request([
-            'fcm_token' => $penitip->fcm_token,
-            'title' => 'Barang Anda Telah Didonasikan',
-            'body' => 'Barang Anda dengan ID ' . $request->id_barang . ' telah didonasikan pada tanggal ' . $validated['tanggal_donasi'],
-            'data' => [
-                'penitipan_id' => (string) $rincian->penitipan->id_penitipan,
-            ]
-        ]);
+            $barang = Barang::findOrFail($validated['id_barang']);
 
-        $this->notificationController->sendFcmNotification($notifRequest);
+            $rincian = Rincian_Penitipan::where('id_barang', $request->id_barang)
+                ->with('Penitipan')
+                ->first();
+
+            $penitip = Penitip::findOrFail($rincian->penitipan->id_penitip);
+
+            if ($penitip && $penitip->fcm_token) {
+                // kirim notif
+                $notifRequest = new Request([
+                    'fcm_token' => $penitip->fcm_token,
+                    'title' => 'Barang Anda Telah Didonasikan',
+                    'body' => 'Barang Anda dengan ID ' . $request->id_barang . ' telah didonasikan pada tanggal ' . $validated['tanggal_donasi'],
+                    'data' => [
+                        'penitipan_id' => (string) $rincian->penitipan->id_penitipan,
+                    ]
+                ]);
+
+                $rincian = Rincian_Penitipan::where('id_barang', $request->id_barang)
+                    ->with('Penitipan')
+                    ->first();
+
+                $penitip = Penitip::findOrFail($rincian->penitipan->id_penitip);
+
+                if ($penitip && $penitip->fcm_token) {
+                    // kirim notif
+                    $notifRequest = new Request([
+                        'fcm_token' => $penitip->fcm_token,
+                        'title' => 'Barang Anda Telah Didonasikan',
+                        'body' => 'Barang Anda dengan ID ' . $request->id_barang . ' telah didonasikan pada tanggal ' . $validated['tanggal_donasi'],
+                        'data' => [
+                            'penitipan_id' => (string) $rincian->penitipan->id_penitipan,
+                        ]
+                    ]);
+
+                    $this->notificationController->sendFcmNotification($notifRequest);
+                }
+            }
+
+            // Update status barang jadi 'didonasikan'
+            $barang->status_barang = 'Didonasikan';
+            $barang->save();
+
+            // Hitung poin yang didapat penitip
+            $poinTambahan = (int) ceil($barang->harga_barang / 10000);
+
+            // Update poin penitip
+            $penitip = $barang->penitip;
+            $penitip->poin_penitip += $poinTambahan;
+            $penitip->save();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Donasi berhasil ditambahkan',
+                'data' => $donasi,
+                'poin_didapat' => $poinTambahan,
+                'total_poin_penitip' => $penitip->poin_penitip
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal membuat donasi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-
-        // Update status barang jadi 'didonasikan'
-        $barang->status_barang = 'Didonasikan';
-        $barang->save();
-
-        // Hitung poin yang didapat penitip
-        $poinTambahan = (int) ceil($barang->harga_barang / 10000);
-
-        // Update poin penitip
-        $penitip = $barang->penitip;
-        $penitip->poin_penitip += $poinTambahan;
-        $penitip->save();
-
-        DB::commit();
-
-        return response()->json([
-            'message' => 'Donasi berhasil ditambahkan',
-            'data' => $donasi,
-            'poin_didapat' => $poinTambahan,
-            'total_poin_penitip' => $penitip->poin_penitip
-        ], 201);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json([
-            'message' => 'Gagal membuat donasi',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-}
 
     public function store(Request $request)
     {
