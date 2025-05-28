@@ -100,7 +100,7 @@ const KelolaPengirimanPage = () => {
     }
   };
 
-  const getMinDateForKurir = (tanggalPelunasan) => {
+  const getMinDateForKurir = () => {
       const tgl = new Date();
       const jam = tgl.getHours();
       
@@ -117,7 +117,7 @@ const KelolaPengirimanPage = () => {
   };
 
   if (selectedPemesanan){
-    minDate = getMinDateForKurir(selectedPemesanan.tanggal_pelunasan);
+    minDate = getMinDateForKurir();
   }
 
    
