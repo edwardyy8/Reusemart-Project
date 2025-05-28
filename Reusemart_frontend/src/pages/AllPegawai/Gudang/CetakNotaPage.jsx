@@ -29,20 +29,25 @@ const CetakNotaPage = ({pemesanan}) => {
 
   const fetchPemesanan = async () => {
     setLoading(true);
-    const response = await GetAllPemesananUntukNota();
-    console.log("API response:", response);
+    try{
+      const response = await GetAllPemesananUntukNota();
+      console.log("API response:", response);
 
-    const pemesanan = response.data;
-    console.log("pemesanan array:", pemesanan);
+      const pemesanan = response.data;
+      console.log("pemesanan array:", pemesanan);
 
-    const sortedData = pemesanan.sort((a, b) => {
-      const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
-      const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
-      return numA - numB;
-    });
-    setPemesananList(sortedData);
-    setAlamatDef(response.alamatDef);
-    setLoading(false);
+      const sortedData = pemesanan.sort((a, b) => {
+        const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
+        const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
+        return numA - numB;
+      });
+      setPemesananList(sortedData);
+      setAlamatDef(response.alamatDef);
+    } catch (error) {
+      toast.error("Gagal memuat data: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -59,16 +64,6 @@ const CetakNotaPage = ({pemesanan}) => {
     
     return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
   };
-
-  if (loading) {
-    return (
-      <Container className="mt-5 text-center">
-        <Spinner animation="border" variant="success" />
-        <p className="mt-3">Memuat data...</p>
-      </Container>
-    );
-  }
-
 
   const totalPesanan = pemesananList.filter((p) => p.rincian_pemesanan[0]?.komisi_reusemart == 0).length;
   const totalDelivery = pemesananList.filter((p) => p.rincian_pemesanan[0]?.komisi_reusemart == 0 && p.metode_pengiriman.trim().toLowerCase()==="kurir").length;
@@ -134,6 +129,14 @@ const CetakNotaPage = ({pemesanan}) => {
   checkAndPrint();
 }, [printNota]);
 
+if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="success" />
+        <p className="mt-3">Memuat data...</p>
+      </Container>
+    );
+  }
 
   return (
     <Container className="mt-5">
