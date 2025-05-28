@@ -22,38 +22,39 @@ class DonasiController extends Controller
     {
         $this->notificationController = $notificationController;
     }
-    public function index()
-{
-    try {
-        $donasis = Donasi::join('barang', 'donasi.id_barang', '=', 'barang.id_barang')
-            ->join('request_donasi', 'donasi.id_request', '=', 'request_donasi.id_request')
-            ->join('organisasi', 'request_donasi.id_organisasi', '=', 'organisasi.id_organisasi')
-            ->select(
-                'donasi.id_donasi',
-                'donasi.tanggal_donasi',
-                'barang.nama_barang',
-                'barang.foto_barang', // Sekarang berasal langsung dari tabel barang
-                'organisasi.foto_profile',
-                'organisasi.nama'
-            )
-            ->orderBy('donasi.tanggal_donasi', 'desc')
-            ->get()
-            ->groupBy(function ($item) {
-                return Carbon::parse($item->tanggal_donasi)->format('Y-m-d');
-            });
 
-        return response()->json([
-            'message' => 'All donasi retrieved successfully',
-            'status' => 'success',
-            'data' => $donasis,
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => $e->getMessage(),
-            'status' => 'error',
-        ], 500);
+    public function index()
+    {
+        try {
+            $donasis = Donasi::join('barang', 'donasi.id_barang', '=', 'barang.id_barang')
+                ->join('request_donasi', 'donasi.id_request', '=', 'request_donasi.id_request')
+                ->join('organisasi', 'request_donasi.id_organisasi', '=', 'organisasi.id_organisasi')
+                ->select(
+                    'donasi.id_donasi',
+                    'donasi.tanggal_donasi',
+                    'barang.nama_barang',
+                    'barang.foto_barang', // Sekarang berasal langsung dari tabel barang
+                    'organisasi.foto_profile',
+                    'organisasi.nama'
+                )
+                ->orderBy('donasi.tanggal_donasi', 'desc')
+                ->get()
+                ->groupBy(function ($item) {
+                    return Carbon::parse($item->tanggal_donasi)->format('Y-m-d');
+                });
+
+            return response()->json([
+                'message' => 'All donasi retrieved successfully',
+                'status' => 'success',
+                'data' => $donasis,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'status' => 'error',
+            ], 500);
+        }
     }
-}
 
 
 
@@ -93,26 +94,9 @@ class DonasiController extends Controller
                     ]
                 ]);
 
-                $rincian = Rincian_Penitipan::where('id_barang', $request->id_barang)
-                    ->with('Penitipan')
-                    ->first();
-
-                $penitip = Penitip::findOrFail($rincian->penitipan->id_penitip);
-
-                if ($penitip && $penitip->fcm_token) {
-                    // kirim notif
-                    $notifRequest = new Request([
-                        'fcm_token' => $penitip->fcm_token,
-                        'title' => 'Barang Anda Telah Didonasikan',
-                        'body' => 'Barang Anda dengan ID ' . $request->id_barang . ' telah didonasikan pada tanggal ' . $validated['tanggal_donasi'],
-                        'data' => [
-                            'penitipan_id' => (string) $rincian->penitipan->id_penitipan,
-                        ]
-                    ]);
-
-                    $this->notificationController->sendFcmNotification($notifRequest);
-                }
+                $this->notificationController->sendFcmNotification($notifRequest);
             }
+            
 
             // Update status barang jadi 'didonasikan'
             $barang->status_barang = 'Didonasikan';

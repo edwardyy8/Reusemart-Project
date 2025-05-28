@@ -8,5 +8,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 
-Schedule::command('barang:donasikan')->daily();
 Schedule::command('notif:notif-pengiriman-barang')->everyMinute();
