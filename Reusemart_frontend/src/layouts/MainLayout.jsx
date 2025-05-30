@@ -53,7 +53,7 @@ const MainLayout = ({ children }) => {
           setIdPegawai(jabatanData.id_pegawai);
 
           const fotoPegawaiLaravel = await getFotoPegawai(jabatanData.foto_profile);
-          
+          console.log(fotoPegawaiLaravel);
           const fileFoto =  URL.createObjectURL(fotoPegawaiLaravel);
           setPathFotoPegawai(fileFoto);
 
