@@ -21,6 +21,7 @@ export const GetAllBarangTerdonasikan = async () => {
     const response = await useAxios.get("/getAllBarangTerdonasikan", {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
     return response.data.data;
@@ -86,9 +87,9 @@ export const ConfirmRequest = async (id_request) => {
       {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         validateStatus: function (status) {
-          // Anggap semua response < 500 sebagai berhasil
           return status < 500;
         },
       }
@@ -127,7 +128,7 @@ export const GetBarangTerdonasikan = async () => {
     const response = await useAxios.get("/barang/didonasi", {
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     });
     return response.data.data;

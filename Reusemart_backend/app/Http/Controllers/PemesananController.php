@@ -254,8 +254,42 @@ class PemesananController extends Controller
                 }
             }
 
-
             $pemesanan = Pemesanan::where('id_pemesanan', $id_pemesanan)->firstOrFail();
+            $tglAmbil = Carbon::now('Asia/Jakarta');
+
+            foreach ($rincian as $item) {
+                $penitip = $item->barang->penitip;
+
+                if ($penitip && $penitip->fcm_token) {
+                    // kirim notif ke penitip
+                    $request = new Request([
+                        'fcm_token' => $penitip->fcm_token,
+                        'title' => 'Barang Telah Dijambil',
+                        'body' => 'Barang Anda dengan ID ' . $item->id_barang . ' telah diambil pada tanggal ' . $tglAmbil,
+                        'data' => [
+                            'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                        ]
+                    ]);
+    
+                    $this->notificationController->sendFcmNotification($request);
+                }
+            }
+
+            // kirim notif ke pembeli
+            $pembeli = Pembeli::findOrFail($pemesanan->id_pembeli);
+            if ($pembeli && $pembeli->fcm_token) {
+                $request = new Request([
+                    'fcm_token' => $pembeli->fcm_token,
+                    'title' => 'Barang Telah Diambil',
+                    'body' => 'Barang Anda untuk pemesanan '. $pemesanan->id_pemesanan .' telah diambil pada tanggal ' . $tglAmbil,
+                    'data' => [
+                        'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                    ]
+                ]);
+    
+                $this->notificationController->sendFcmNotification($request);
+            }
+            
             $pemesanan->status_pengiriman = 'Transaksi Selesai';
             $pemesanan->save();
 
@@ -408,7 +442,7 @@ class PemesananController extends Controller
                 $request = new Request([
                     'fcm_token' => $pembeli->fcm_token,
                     'title' => 'Jadwal Pengambilan Barang',
-                    'body' => 'Jadwal pengambilan barang Anda untuk pemesanan '. $pemesanan->id_pemesanan .'telah dijadwalkan pada tanggal ' . $pemesanan->jadwal_pengambilan,
+                    'body' => 'Jadwal pengambilan barang Anda untuk pemesanan '. $pemesanan->id_pemesanan .' telah dijadwalkan pada tanggal ' . $pemesanan->jadwal_pengambilan,
                     'data' => [
                         'pemesanan_id' => (string) $pemesanan->id_pemesanan,
                     ]

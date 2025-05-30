@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination } from "react-bootstrap";
+import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Spinner } from "react-bootstrap";
 import { FaPrint } from "react-icons/fa6";
 import { useNavigate, Outlet } from "react-router-dom";
 import { useReactToPrint } from 'react-to-print';
@@ -14,6 +14,7 @@ const CetakNotaPage = ({pemesanan}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetail, setShowDetail] = useState(false);
   const [showKonfirmasi, setShowKonfirmasi] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedPemesanan, setSelectedPemesanan] = useState(null);
   const [printNota, setPrintNota] = useState(null);
   const navigate = useNavigate();
@@ -27,19 +28,26 @@ const CetakNotaPage = ({pemesanan}) => {
   const itemsPerPage = 10;
 
   const fetchPemesanan = async () => {
-    const response = await GetAllPemesananUntukNota();
-    console.log("API response:", response);
+    setLoading(true);
+    try{
+      const response = await GetAllPemesananUntukNota();
+      console.log("API response:", response);
 
-    const pemesanan = response.data;
-    console.log("pemesanan array:", pemesanan);
+      const pemesanan = response.data;
+      console.log("pemesanan array:", pemesanan);
 
-    const sortedData = pemesanan.sort((a, b) => {
-      const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
-      const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
-      return numA - numB;
-    });
-    setPemesananList(sortedData);
-    setAlamatDef(response.alamatDef);
+      const sortedData = pemesanan.sort((a, b) => {
+        const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
+        const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
+        return numA - numB;
+      });
+      setPemesananList(sortedData);
+      setAlamatDef(response.alamatDef);
+    } catch (error) {
+      toast.error("Gagal memuat data: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -121,6 +129,14 @@ const CetakNotaPage = ({pemesanan}) => {
   checkAndPrint();
 }, [printNota]);
 
+if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="success" />
+        <p className="mt-3">Memuat data...</p>
+      </Container>
+    );
+  }
 
   return (
     <Container className="mt-5">

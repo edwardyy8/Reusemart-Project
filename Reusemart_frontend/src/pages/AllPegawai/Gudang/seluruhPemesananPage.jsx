@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination } from "react-bootstrap";
+import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Spinner } from "react-bootstrap";
 import { FaEye, FaCalendarAlt } from "react-icons/fa";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { useNavigate, Outlet } from "react-router-dom";
@@ -11,8 +11,7 @@ const SeluruhPemesananPage = () => {
   const [pemesananList, setPemesananList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetail, setShowDetail] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedPemesanan, setSelectedPemesanan] = useState(null);
   const navigate = useNavigate();
 
@@ -20,6 +19,7 @@ const SeluruhPemesananPage = () => {
   const itemsPerPage = 10;
 
   const fetchPemesanan = async () => {
+    setLoading(true);
     const response = await GetAllPemesanan();
     console.log("API response:", response);
 
@@ -32,6 +32,7 @@ const SeluruhPemesananPage = () => {
       return numA - numB;
     });
     setPemesananList(sortedData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -48,6 +49,16 @@ const SeluruhPemesananPage = () => {
         
         return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
   };
+
+  if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="success" />
+        <p className="mt-3">Memuat data...</p>
+      </Container>
+    );
+  }
+
 
   const totalPesanan = pemesananList.length;
   const totalDelivery = pemesananList.filter((p) => p.metode_pengiriman==="kurir").length;

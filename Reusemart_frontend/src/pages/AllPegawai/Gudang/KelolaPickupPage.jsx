@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Overlay, Popover } from "react-bootstrap";
+import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Overlay, Popover, Spinner } from "react-bootstrap";
 import Datepicker from "../../../components/date/DatePicker";
 import { FaEye, FaCalendarAlt, FaCheck } from "react-icons/fa";
 import { useNavigate, Outlet } from "react-router-dom";
@@ -14,6 +14,7 @@ const KelolaPickupPage = () => {
   const [assignData, setAssignData] = useState({ id_pemesanan: null});
   const [selectedPemesanan, setSelectedPemesanan] = useState(null);
   const [showDatepicker, setShowDatepicker] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [calendarTarget, setCalendarTarget] = useState(null);
   const navigate = useNavigate();
   let minDate = new Date();
@@ -22,6 +23,7 @@ const KelolaPickupPage = () => {
   const itemsPerPage = 10;
 
   const fetchPemesanan = async () => {
+    setLoading(true);
     const response = await GetAllPickup();
     const sortedData = response.data.sort((a, b) => {
       const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
@@ -29,6 +31,7 @@ const KelolaPickupPage = () => {
       return numA - numB;
     });
     setPemesananList(sortedData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -46,7 +49,17 @@ const KelolaPickupPage = () => {
         return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
   };
 
-  const totalPesanan = pemesananList.filter((p) => p.status_pengiriman != "Sudah Diambil").length;
+  if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="success" />
+        <p className="mt-3">Memuat data...</p>
+      </Container>
+    );
+  }
+
+
+  const totalPesanan = pemesananList.filter((p) => p.status_pengiriman != "Transaksi Selesai").length;
   const belumDijadwalkan = pemesananList.filter((p) => p.jadwal_pengambilan === null).length;
 
   const filteredData = pemesananList.filter((p) => p.status_pembayaran === "Lunas" && p.status_pengiriman != "Transaksi Selesai").filter((p) => {

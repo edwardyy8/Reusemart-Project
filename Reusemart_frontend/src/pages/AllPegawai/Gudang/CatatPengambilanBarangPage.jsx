@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Popover } from "react-bootstrap";
+import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Spinner } from "react-bootstrap";
 import { FaEye, FaCheck } from "react-icons/fa";
 import { useNavigate, Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -12,16 +12,18 @@ const CatatPengambilanBarangPage = () => {
   const [assignData, setAssignData] = useState({ id_rincianpenitipan: null});
   const [selectedBarang, setSelectedBarang] = useState(null);
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const fetchBarang = async () => {
+    setLoading(true);
     const response = await GetAllBarangDiambil();
     console.log("RESPON WOY: ", response);
     const sortedData = response.data.sort((a, b) => a.id_rincianpenitipan - b.id_rincianpenitipan);
 
     setBarangList(sortedData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -38,6 +40,16 @@ const CatatPengambilanBarangPage = () => {
         
         return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
   };
+
+  if (loading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="success" />
+        <p className="mt-3">Memuat data...</p>
+      </Container>
+    );
+  }
+
 
   const totalAmbil= barangList.filter((b) => b.status_penitipan == "Diambil Kembali" && b.barang.status_barang == "Tersedia").length;
 

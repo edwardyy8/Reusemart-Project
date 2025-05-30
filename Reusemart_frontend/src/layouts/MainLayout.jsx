@@ -370,7 +370,6 @@ const MainLayout = ({ children }) => {
           { path: "/pegawai/Admin/kelolaMerchandise", name: "Kelola Merchandise" },
         ];
       }
-   
       else if (jabatan === "Owner") {
         return [
           { path: "/pegawai/Owner/kelolaRequestDonasi", name: "Kelola Request Donasi" },
@@ -397,6 +396,7 @@ const MainLayout = ({ children }) => {
           { path: "/pegawai/Gudang/kelolaPickup", name: "Kelola Pickup" },
           { path: "/pegawai/Gudang/kelolaPengiriman", name: "Kelola Pengiriman" },
           { path: "/pegawai/Gudang/cetakNota", name: "Cetak Nota" },
+          { path: "/pegawai/Gudang/KelolaPenitipanBarang", name: "Kelola Penitipan Barang" },
         ];
       }
     }
