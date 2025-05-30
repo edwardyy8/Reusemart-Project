@@ -934,6 +934,33 @@ class PemesananController extends Controller
 
         return response()->file($fullPath);
     }
+
+    public function jumlahPesananKurir(Request $request)
+    {
+        try {
+            $idKurir = $request->user()->id_pegawai;
+            if (!$idKurir) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ID kurir tidak ditemukan',
+                ], 404);
+            }
+
+            $jumlahPesanan = Pemesanan::where('id_kurir', $idKurir)
+                ->count();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Jumlah pesanan kurir',
+                'data' => $jumlahPesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
     
 }
 

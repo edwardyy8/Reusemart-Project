@@ -158,6 +158,11 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::get('/getPenitipanBarangById/{id_barang}', [RincianPenitipanController::class, 'getPenitipanBarangById']);
         Route::get('/penitipan-barang/details/{id_penitipan}', [RincianPenitipanController::class, 'getPenitipanDetails']);
     });
+
+    Route::middleware(cekJabatan::class.':Kurir')->group(function () {
+        Route::get('/jumlah-pesanan-kurir', [PemesananController::class, 'jumlahPesananKurir']);
+    });
+
 });
 
 Route::middleware('auth:penitip')->group(function () {
