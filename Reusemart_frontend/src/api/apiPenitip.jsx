@@ -154,3 +154,17 @@ export const ambilTitipan = async (id_rincianpenitipan) =>{
   }
 };
 
+export const getFotoKtp = async (filename) => {
+    try {
+        const response = await useAxios.get(`/pegawai/foto-ktp/${filename}`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+            responseType: "blob",
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: "Gagal mengambil foto ktp penitip." };
+    }
+};
+
