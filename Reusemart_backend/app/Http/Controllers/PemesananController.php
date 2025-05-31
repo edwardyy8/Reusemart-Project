@@ -48,10 +48,15 @@ class PemesananController extends Controller
                 $hariIni = Carbon::now('Asia/Jakarta');
               
                 if ($batasPengambilan->lt($hariIni) && ($p->metode_pengiriman === 'pickup')
-                    && ($p->status_pengiriman != 'Selesai') && ($pemesanan->jadwal_pengambilan != null)) {
-                        $p->barang->update([
-                            'status_barang' => 'Barang untuk Donasi',
-                        ]);
+                    && ($p->status_pengiriman != 'Selesai') && ($p->jadwal_pengambilan != null)) {
+                        
+                        foreach ($p->rincianPemesanan as $rincian) {
+                            if ($rincian->barang) {
+                                $rincian->barang->update([
+                                    'status_barang' => 'Barang untuk Donasi',
+                                ]);
+                            }
+                        }
 
                         $p->update([
                             'status_pembayaran' => 'Hangus',
