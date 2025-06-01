@@ -281,4 +281,18 @@ class AuthController extends Controller
         return response()->json(['message' => 'FCM token removed'], 200);
     }
 
+
+    public function getUserData(Request $request)
+    {
+        try {
+            return response()->json([
+                'user' => $request->user(),
+                'role' => $request->user()->getUserType(),
+                'jabatan' => $request->user()->jabatan->nama_jabatan ?? '',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    }
+
 }

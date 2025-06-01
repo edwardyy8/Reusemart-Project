@@ -77,17 +77,19 @@ export const GetPegawaiById = async (id) => {
 
 // Ambil foto profil pegawai
 export const getFotoPegawai = async (filename) => {
-    try {
-        const response = await axios.get(`/pegawai/foto-profile/${filename}`, {
-            headers: {
-                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-            },
-            responseType: "blob",
-        });
-        return response.data;
-    } catch (error) {
-        throw error.response?.data || { message: "Gagal mengambil foto pegawai." };
-    }
+  try {
+    const response = await useAxios.get(`/pegawai/foto-profile/${filename}`, {
+        headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        responseType: 'blob',
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching photo:', error.response ? error.response.status : error.message);
+    return null;
+  }
 };
 
 export const GetAllKurir = async () => {

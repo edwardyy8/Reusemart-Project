@@ -48,10 +48,15 @@ class PemesananController extends Controller
                 $hariIni = Carbon::now('Asia/Jakarta');
               
                 if ($batasPengambilan->lt($hariIni) && ($p->metode_pengiriman === 'pickup')
-                    && ($p->status_pengiriman != 'Selesai') && ($pemesanan->jadwal_pengambilan != null)) {
-                        $p->barang->update([
-                            'status_barang' => 'Barang untuk Donasi',
-                        ]);
+                    && ($p->status_pengiriman != 'Selesai') && ($p->jadwal_pengambilan != null)) {
+                        
+                        foreach ($p->rincianPemesanan as $rincian) {
+                            if ($rincian->barang) {
+                                $rincian->barang->update([
+                                    'status_barang' => 'Barang untuk Donasi',
+                                ]);
+                            }
+                        }
 
                         $p->update([
                             'status_pembayaran' => 'Hangus',
@@ -933,6 +938,33 @@ class PemesananController extends Controller
         }
 
         return response()->file($fullPath);
+    }
+
+    public function jumlahPesananKurir(Request $request)
+    {
+        try {
+            $idKurir = $request->user()->id_pegawai;
+            if (!$idKurir) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ID kurir tidak ditemukan',
+                ], 404);
+            }
+
+            $jumlahPesanan = Pemesanan::where('id_kurir', $idKurir)
+                ->count();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Jumlah pesanan kurir',
+                'data' => $jumlahPesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
     }
     
 }

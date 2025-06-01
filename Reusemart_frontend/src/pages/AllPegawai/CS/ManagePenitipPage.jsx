@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination } from "react-bootstrap";
+import { Container, Table, Button, Card, Row, Col, Form, Modal, Pagination, Spinner } from "react-bootstrap";
 import { FaEye} from "react-icons/fa";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
 import { useNavigate, Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
 import reusemart from "../../../assets/images/titlereuse.png";
-import { GetAllPenitip, deletePenitipById } from "../../../api/apiPenitip";
+import { GetAllPenitip, deletePenitipById, getFotoKtp } from "../../../api/apiPenitip";
 
 const ManagePenitipPage = () => {
   const [penitipList, setPenitipList] = useState([]);
@@ -16,6 +16,9 @@ const ManagePenitipPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPenitip, setSelectedPenitip] = useState(null);
   const navigate = useNavigate();
+
+  const [fotoKtp, setFotoKtp] = useState("");
+  const [pathFotoKtp, setPathFotoKtp] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -35,6 +38,32 @@ const ManagePenitipPage = () => {
   useEffect(() => {
     fetchPenitip();
   }, []);
+
+  useEffect(() => {
+    if (!selectedPenitip) return;
+
+    const fetchfotoktp = async () => {
+      console.log(selectedPenitip.foto_ktp);
+      try {
+        const fotoKtpLaravel = await getFotoKtp(selectedPenitip.foto_ktp);
+        
+        const fileFoto =  URL.createObjectURL(fotoKtpLaravel);
+        setPathFotoKtp(fileFoto);
+
+      } catch (error) {
+        console.error("Error fetching foto KTP:", error);
+        toast.error("Gagal memuat foto KTP");
+      }
+    }
+    
+    fetchfotoktp();
+
+    return () => {
+      if (pathFotoKtp) {
+        URL.revokeObjectURL(pathFotoKtp);
+      }
+    };
+  }, [selectedPenitip]);
 
   if (loading) {
     return (
@@ -134,7 +163,7 @@ const ManagePenitipPage = () => {
         </thead>
         <tbody>
           {currentItems.map((penitip) => (
-              <tr key={penitip.id}>
+              <tr key={penitip.id_penitip}>
                 <td style={{ border: 'none' }}>{penitip.id_penitip}</td>
                 <td style={{ border: 'none' }}>{penitip.nama}</td>
                 <td style={{ border: 'none' }} className="d-flex justify-content-center gap-3 align-items-center">
@@ -225,7 +254,8 @@ const ManagePenitipPage = () => {
               </Col>
               <Col ms={6} className="d-flex flex-column align-items-end mt-5">
                 <img 
-                  src={`http://127.0.0.1:8000/storage/foto_ktp/${selectedPenitip.foto_ktp}`}
+                  // src={`http://127.0.0.1:8000/storage/foto_ktp/${selectedPenitip.foto_ktp}`}
+                  src={pathFotoKtp}
                   alt="Foto KTP" 
                   style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
                 />

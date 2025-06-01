@@ -69,7 +69,7 @@ public function tambahPegawai(Request $request)
     // Simpan foto jika ada
     if ($request->hasFile('foto_pegawai')) {
         $file = $request->file('foto_pegawai');
-        $image_uploaded_path = $file->store(path: 'foto_profile', 'public');
+        $image_uploaded_path = $file->store('foto_profile_pegawai', 'private');
     } else {
         $path = null;
     }
@@ -309,6 +309,17 @@ public function resetPassword($id)
     public function getFotoProfile($filename)
     {
         $fullPath = storage_path('app/private/foto_profile_pegawai/' . $filename);
+
+        if (!file_exists($fullPath)) {
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+        return response()->file($fullPath);
+    }
+
+    public function getFotoKtp($filename)
+    {
+        $fullPath = storage_path('app/private/foto_ktp/' . $filename);
 
         if (!file_exists($fullPath)) {
             return response()->json(['message' => 'File not found'], 404);
