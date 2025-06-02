@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\FotoBarang;
+use App\Models\Barang;
 use Illuminate\Support\Facades\Storage;
 
 class FotoBarangController extends Controller
@@ -62,5 +63,30 @@ class FotoBarangController extends Controller
     ]);
 }
 
+    public function show($filename)
+    {
+        $fullPath = storage_path('app/public/foto_barang/' . $filename);
+
+        if (!file_exists($fullPath)) {
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+        return response()->file($fullPath);
+    }
+
+    public function showById($id_barang, $filename)
+    {
+        $barang = Barang::find($id_barang);
+        if (!$barang) {
+            return response()->json(['message' => 'Barang not found'], 404);
+        }
+        $fullPath = storage_path('app/public/foto_barang/' . $filename);
+
+        if (!file_exists($fullPath)) {
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+        return response()->file($fullPath);
+    }
 
 }

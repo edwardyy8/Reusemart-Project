@@ -49,9 +49,14 @@ class PemesananController extends Controller
               
                 if ($batasPengambilan->lt($hariIni) && ($p->metode_pengiriman === 'pickup')
                     && ($p->status_pengiriman != 'Selesai') && ($pemesanan->jadwal_pengambilan != null)) {
-                        $p->barang->update([
-                            'status_barang' => 'Barang untuk Donasi',
-                        ]);
+
+                        foreach($p->rincianPemesanan as $rincian){
+                            if($rincian->barang){
+                                $rincian->barang->update([
+                                    'status_barang' => 'Barang untuk Donasi',
+                                ]);
+                            }
+                        }
 
                         $p->update([
                             'status_pembayaran' => 'Hangus',
