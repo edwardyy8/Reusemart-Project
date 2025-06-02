@@ -41,7 +41,7 @@ const CheckoutPage = () => {
     const [data, setData] = useState({
         metode_pengiriman: "kurir",
         id_pembeli: null,
-        id_alamat: location.state?.alamat.id_alamat || null,
+        id_alamat: location.state?.alamat.id_alamat || 0,
         poin_digunakan: 0,
         poin_didapatkan: Math.floor(totalHargaBarang * 0.0001 + (totalHargaBarang >= 500000 ? (totalHargaBarang * 0.0001) * 0.2 : 0)),
         status_pembayaran: "Menunggu Pembayaran",
@@ -85,6 +85,11 @@ const CheckoutPage = () => {
             if(!selectedAlamat) {
                 const response = await GetDefaultAlamat();
                 setAlamatData(response.data);
+                setData({
+                    ...data,
+                    id_alamat: response.data.id_alamat,
+                });
+                console.log("Alamat default:", response.data);
             }else {
                 setAlamatData(selectedAlamat);
             }
@@ -175,7 +180,12 @@ const CheckoutPage = () => {
         setIsLoading(true);
     
         try {
-            const response = await TambahPemesanan(data);
+            const finalData = {
+                ...data,
+                id_alamat: alamatData?.id_alamat, 
+            };
+            
+            const response = await TambahPemesanan(finalData);
             setIdPemesanan(response.data.id_pemesanan);
             setIsCheckout(true);
             fetchKeranjang();

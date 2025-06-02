@@ -26,6 +26,7 @@ use App\Http\Controllers\RequestDonasiController;
 use App\Http\Controllers\PenitipanController;
 use App\Http\Controllers\KeranjangController;
 
+use App\Http\Controllers\LaporanController;
 
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -135,6 +136,12 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::delete('/deleteRequestOwner/{id}', [RequestDonasiController::class, 'deleteRequestOwner']);
         Route::post('/confirmRequest/{id_request}', [RequestDonasiController::class, 'confirmRequest']);
         Route::get('/get-request-donasi', [RequestDonasiController::class, 'getRequestDonasi']);
+        
+        Route::get('/penitip', [PenitipController::class, 'index']);
+        Route::get('/laporanDonasiBarang/{tahun}', [LaporanController::class, 'laporanDonasiBarang']);
+        Route::get('/laporanRekapRequest', [LaporanController::class, 'laporanRekapRequest']);
+        Route::get('/laporanPenitip/{tahun}/{bulan}/{id}', [LaporanController::class, 'laporanPenitip']);
+
     });
 
     Route::middleware(cekJabatan::class.':Gudang')->group(function () {

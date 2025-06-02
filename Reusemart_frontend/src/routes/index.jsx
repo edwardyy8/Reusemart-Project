@@ -49,7 +49,7 @@ import EditPenitipPage from "../pages/AllPegawai/CS/EditPenitipPage";
 import KelolaPengirimanPage from "../pages/AllPegawai/Gudang/KelolaPengirimanPage";
 import KelolaPickupPage from "../pages/AllPegawai/Gudang/KelolaPickupPage";
 import SeluruhPemesananPage from "../pages/AllPegawai/Gudang/seluruhPemesananPage";
-import CetakNotaPage from "../pages/AllPegawai/Gudang/cetakNotaPage";
+import CetakNotaPage from "../pages/AllPegawai/Gudang/CetakNotaPage";
 import CatatPengambilanBarangPage from "../pages/AllPegawai/Gudang/CatatPengambilanBarangPage";
 import KelolaPenitipanBarangPage from "../pages/AllPegawai/Gudang/KelolaPenitipanBarangPage";
 import EditPenitipanBarangPage from "../pages/AllPegawai/Gudang/EditPenitipanBarangPage";
@@ -74,6 +74,7 @@ import CheckoutPage from "../pages/pembeli/CheckoutPage";
 import UbahAlamatPage from "../pages/pembeli/UbahAlamatPage";
 import TransferBuktiPage from "../pages/pembeli/TransferBuktiPage";
 
+import CetakLaporanPage from "../pages/AllPegawai/Owner/CetakLaporanPage";
 
 
 const router = createBrowserRouter([
@@ -139,6 +140,7 @@ const router = createBrowserRouter([
           { path: "kelolaRequestDonasi", element: <KelolaRequestDonasiPage /> },
           { path: "kelolaDonasi", element: <KelolaDonasiPage /> },
           { path: "kelolaDonasi/tambahDonasiOwner", element: <TambahDonasiOwner /> },
+          { path: "cetakLaporan", element: <CetakLaporanPage /> },
         ],
       },
       {
