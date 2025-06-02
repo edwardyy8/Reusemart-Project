@@ -53,4 +53,31 @@ class PenitipanController extends Controller
         }
     }
 
+    public function jumlahItemHunter(Request $request)
+    {
+        try {
+            $idHunter = $request->user()->id_pegawai;
+            if (!$idHunter) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ID Hunter tidak ditemukan',
+                ], 404);
+            }
+
+            $jumlahItem = Penitipan::where('id_hunter', $idHunter)
+                ->count();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Jumlah item hunter',
+                'data' => $jumlahItem,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }

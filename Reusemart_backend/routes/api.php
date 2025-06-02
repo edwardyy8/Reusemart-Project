@@ -170,6 +170,10 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::get('/jumlah-pesanan-kurir', [PemesananController::class, 'jumlahPesananKurir']);
     });
 
+    Route::middleware(cekJabatan::class.':Hunter')->group(function () {
+        Route::get('/jumlah-item-hunter', [PenitipanController::class, 'jumlahItemHunter']);
+    });
+
 });
 
 Route::middleware('auth:penitip')->group(function () {
@@ -196,8 +200,11 @@ Route::middleware('auth:organisasi')->group(function () {
 
 
 Route::post('/fotobarang', [FotoBarangController::class, 'store']);
+Route::get('/foto-barang/{filename}', [FotoBarangController::class, 'show']);
+Route::get('/foto-barang/{id_barang}/{filename}', [FotoBarangController::class, 'showById']);
 Route::get('/fotobarang/barang/{id_barang}', [FotoBarangController::class, 'getByBarangId']);
 Route::delete('/fotobarang/{id}', [FotoBarangController::class, 'destroy']);
+Route::get('/penitip/foto-profile/{filename}', [PenitipController::class, 'getFotoProfile']);
 
 Route::get('/kategori', [KategoriController::class, 'index']);
 Route::get('/kategori/{id}', [KategoriController::class, 'show']);
