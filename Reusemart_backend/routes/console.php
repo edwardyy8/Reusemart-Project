@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('notif:notif-pengiriman-barang')->everyMinute();
+Schedule::command('notif:notif-masa-penitipan')->daily();

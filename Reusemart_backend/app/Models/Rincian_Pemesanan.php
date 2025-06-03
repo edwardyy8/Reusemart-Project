@@ -21,6 +21,7 @@ class Rincian_Pemesanan extends Model
         'komisi_hunter',
         'komisi_reusemart',
         'bonus_penitip',
+        'rating'
     ];
 
     public function pemesanan()

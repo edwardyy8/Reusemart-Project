@@ -41,6 +41,22 @@ export const GetPemesananByIdPemesanan = async (id) => {
     }
 }
 
+export const AddRating = async (id_rincianpemesanan, rating) => {
+    try {
+        const response = await useAxios.post(`/addRating`, {
+            id_rincianpemesanan,
+            rating
+        }, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
 export const GetAllPemesanan = async () => {
     try {
         const response = await useAxios.get("/getAllPemesanan",{

@@ -113,6 +113,7 @@ export const EditPenitipanBarang = async (id, formData) => {
     const response = await useAxios.post(`/editPenitipanBarang/${id}`, formData, {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;

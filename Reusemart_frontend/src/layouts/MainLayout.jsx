@@ -390,13 +390,12 @@ const MainLayout = ({ children }) => {
 
       else if (jabatan === "Gudang") {
         return [
-          { path: "/pegawai/Gudang/kelolaBarang", name: "Kelola Barang" },
+          { path: "/pegawai/Gudang/KelolaPenitipanBarang", name: "Kelola Penitipan Barang" },
           { path: "/pegawai/Gudang/catatPengambilan", name: "Catat Pengambilan Barang" },
           { path: "/pegawai/Gudang/seluruhPemesanan", name: "Seluruh Pemesanan" },
           { path: "/pegawai/Gudang/kelolaPickup", name: "Kelola Pickup" },
           { path: "/pegawai/Gudang/kelolaPengiriman", name: "Kelola Pengiriman" },
           { path: "/pegawai/Gudang/cetakNota", name: "Cetak Nota" },
-          { path: "/pegawai/Gudang/KelolaPenitipanBarang", name: "Kelola Penitipan Barang" },
         ];
       }
     }

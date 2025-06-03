@@ -136,7 +136,7 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::delete('/deleteRequestOwner/{id}', [RequestDonasiController::class, 'deleteRequestOwner']);
         Route::post('/confirmRequest/{id_request}', [RequestDonasiController::class, 'confirmRequest']);
         Route::get('/get-request-donasi', [RequestDonasiController::class, 'getRequestDonasi']);
-        
+
         Route::get('/penitip', [PenitipController::class, 'index']);
         Route::get('/laporanDonasiBarang/{tahun}', [LaporanController::class, 'laporanDonasiBarang']);
         Route::get('/laporanRekapRequest', [LaporanController::class, 'laporanRekapRequest']);
@@ -227,6 +227,8 @@ Route::middleware('auth:pembeli')->group(function () {
     Route::get('/getAlamatById/{id}', [AlamatController::class, 'getAlamatById']);
     Route::post('tambahAlamat', [AlamatController::class, 'tambahAlamat']);
     Route::get('/getPemesananByIdPemesanan/{id}', [PemesananController::class, 'getPemesananByIdPemesanan']);
+    Route::post('/addRating', [PemesananController::class, 'addRating']);
+
 
     Route::get('/getKeranjangByIdPembeli', [KeranjangController::class, 'getKeranjangByIdPembeli']);
     Route::post('/tambahKeranjang', [KeranjangController::class, 'tambahKeranjang']);
