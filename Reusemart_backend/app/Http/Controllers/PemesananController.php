@@ -1013,4 +1013,43 @@ class PemesananController extends Controller
             ], 500);
         }
     }
+
+    public function getPemesananKurir(Request $request)
+    {
+        try {
+            $idKurir = $request->user()->id_pegawai;
+            if (!$idKurir) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ID kurir tidak ditemukan',
+                ], 404);
+            }
+
+            $pemesananAktif = Pemesanan::where('id_kurir', $idKurir)
+                ->where('status_pengiriman', 'Menunggu Kurir')
+                ->with(['rincianPemesanan.barang'])
+                ->get();
+            
+            $pemesananHistori = Pemesanan::where('id_kurir', $idKurir)
+                ->where('status_pengiriman', 'Transaksi Selesai')
+                ->with(['rincianPemesanan.barang'])
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data pemesanan kurir aktif',
+                'data' => [
+                    'pemesananAktif' => $pemesananAktif,
+                    'pemesananHistori' => $pemesananHistori,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    
 }
