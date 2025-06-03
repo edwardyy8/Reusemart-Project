@@ -199,18 +199,18 @@ class BarangController extends Controller
             ->with(['barang', 'barang.penitip'])
             ->get();
 
-            if ($barangList->isEmpty()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Tidak ada barang dengan status Diambil Kembali',
-                ], 404);
-            }
+            // if ($barangList->isEmpty()) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Tidak ada barang dengan status Diambil Kembali',
+            //     ], 404);
+            // }
 
             foreach ($barangList as $barang){
                 $batasAkhir = Carbon::parse($barang->batas_akhir);
                 $hariIni = Carbon::now('Asia/Jakarta');
 
-                if ($batasAkhir->lt($hariIni) && ($barang->barang->status_barang === 'Diambil Kembali' || $barang->barang->status_barang === 'Tersedia')) {
+                if ($batasAkhir->lt($hariIni) && ($barang->barang->status_barang === 'Tersedia')) {
                     $barang->barang->update([
                         'status_barang' => 'Barang untuk Donasi',
                     ]);

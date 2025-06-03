@@ -98,7 +98,6 @@ const ProfilePenitipPage = () => {
         ? { 
             ...titipan, 
             status_penitipan: "Diambil Kembali",
-            status_barang: "Barang Diambil Kembali",
             batas_akhir: response.batas_akhir
           } 
         : titipan
@@ -344,68 +343,66 @@ const ProfilePenitipPage = () => {
             <h6 className="text-muted">Karena kebijakan privasi kami, peran Anda tidak mengizinkan perubahan profil secara mandiri. Silakan kunjungi kantor kami jika ingin memperbarui data pribadi.</h6>
           </Container>
         </Tab>
-
         <Tab eventKey="barang" title="Barang Saya">
           <Row className="mb-4 d-flex align-items-end">
-              <Col>
-                  <Form.Control
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-              </Col>
-            </Row>
-            {titipanData.length > 0 ? (
-              <div>
-                {titipanData.filter((titipan) => searchTerm==="" || titipan.barang.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()))
-                  .map((titipan, idx) => {
-                    return (
-                      <Row className="g-3" key={idx}>
-                        <Col md={12} sm={12} xs={12} lg={12} className="mb-3 px-5 d-flex justify-content-center">
-                          <Card className="h-100 w-100">
-                            <Card.Body>
-                              <Card.Title className="border-bottom">
-                                <h5>ID Titipan : {titipan.id_penitipan}</h5>
-                                <p className="text-muted h6">Tanggal Titip : {formatTanpaDetik(titipan.barang.tanggal_masuk)}</p>
-                              </Card.Title>
-                              <div className="d-flex flex-column">
-                                <div className="d-flex justify-content-between align-items-center">
-                                  <div>
-                                    <p className="fw-bold mb-0 h5">{titipan.barang.nama_barang}</p>
-                                  </div>
-                                  <div>
-                                    <img
-                                      src={`http://127.0.0.1:8000/storage/foto_barang/${titipan.barang.foto_barang}`}
-                                      alt="Foto Barang"
-                                      height={100}
-                                      className="rounded-2"
-                                    />
-                                  </div>
+            <Col>
+              <Form.Control
+                type="text"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </Col>
+          </Row>
+
+          {titipanData.length > 0 ? (
+            <div>
+              {titipanData
+                .filter((titipan) => {
+                  const term = searchTerm.toLowerCase();
+                  return (
+                    searchTerm === "" ||
+                    titipan.id_penitipan.toString().toLowerCase().includes(term) ||
+                    titipan.barang.nama_barang.toLowerCase().includes(term) ||
+                    titipan.barang.status_barang.toLowerCase().includes(term)
+                  );
+                })
+                .map((titipan, idx) => {
+                  return (
+                    <Row className="g-3" key={idx}>
+                      <Col md={12} sm={12} xs={12} lg={12} className="mb-3 px-5 d-flex justify-content-center">
+                        <Card className="h-100 w-100">
+                          <Card.Body>
+                            <Card.Title className="border-bottom">
+                              <h5>ID Titipan : {titipan.id_penitipan}</h5>
+                              <p className="text-muted h6">
+                                Tanggal Titip : {formatTanpaDetik(titipan.barang.tanggal_masuk)}
+                              </p>
+                            </Card.Title>
+                            <div className="d-flex flex-column">
+                              <div className="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <p className="fw-bold mb-0 h5">{titipan.barang.nama_barang}</p>
                                 </div>
-                                <div className="text-muted">
-                                  Status Barang : {titipan.barang.status_barang}
+                                <div>
+                                  <img
+                                    src={`http://127.0.0.1:8000/storage/foto_barang/${titipan.barang.foto_barang}`}
+                                    alt="Foto Barang"
+                                    height={100}
+                                    className="rounded-2"
+                                  />
                                 </div>
                               </div>
-                            </Card.Body>
-                            <Card.Footer className="d-flex gap-2">
-                              {renderAdditionalButton(titipan) ? (
-                                <>
-                                  <Button
-                                    className="w-50"
-                                    variant="outline-secondary"
-                                    onClick={() => {
-                                      setSelectedPenitipan(titipan);
-                                      setShowDetail(true);
-                                    }}
-                                  >
-                                    Lihat Detail
-                                  </Button>
-                                  {renderAdditionalButton(titipan)}
-                                </>
-                              ) : (
+                              <div className="text-muted">
+                                Status Barang : {titipan.barang.status_barang}
+                              </div>
+                            </div>
+                          </Card.Body>
+                          <Card.Footer className="d-flex gap-2">
+                            {renderAdditionalButton(titipan) ? (
+                              <>
                                 <Button
-                                  className="w-100"
+                                  className="w-50"
                                   variant="outline-secondary"
                                   onClick={() => {
                                     setSelectedPenitipan(titipan);
@@ -414,19 +411,32 @@ const ProfilePenitipPage = () => {
                                 >
                                   Lihat Detail
                                 </Button>
-                              )}
-                            </Card.Footer>
-                          </Card>
-                        </Col>
-                      </Row>
-                    );
-                  })}
-              </div>
-            ) : (
-              <Alert className="text-center" variant="warning">
-                Belum Ada Titipan :(
-              </Alert>
-            )}
+                                {renderAdditionalButton(titipan)}
+                              </>
+                            ) : (
+                              <Button
+                                className="w-100"
+                                variant="outline-secondary"
+                                onClick={() => {
+                                  setSelectedPenitipan(titipan);
+                                  setShowDetail(true);
+                                }}
+                              >
+                                Lihat Detail
+                              </Button>
+                            )}
+                          </Card.Footer>
+                        </Card>
+                      </Col>
+                    </Row>
+                  );
+                })}
+            </div>
+          ) : (
+            <Alert className="text-center" variant="warning">
+              Belum Ada Titipan :(
+            </Alert>
+          )}
         </Tab>
       </Tabs>
 

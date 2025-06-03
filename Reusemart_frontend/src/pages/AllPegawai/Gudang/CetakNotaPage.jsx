@@ -54,6 +54,12 @@ const CetakNotaPage = ({pemesanan}) => {
     fetchPemesanan();
   }, []);
 
+ useEffect(() => {
+    if (!loading && filteredData.length === 0) {
+      toast.warning("Tidak ada nota yang perlu dicetak");
+    }
+  }, [loading, pemesananList]); 
+
   const formatTanpaDetik = (tanggal) => {
     const date = new Date(tanggal);
     const tahun = date.getFullYear();

@@ -26,14 +26,21 @@ const KelolaPengirimanPage = () => {
 
   const fetchPemesanan = async () => {
     setLoading(true);
-    const response = await GetAllDelivery();
-    const sortedData = response.data.sort((a, b) => {
-      const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
-      const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
-      return numA - numB;
-    });
-    setPemesananList(sortedData);
-    setLoading(false);
+    try{
+      const response = await GetAllDelivery();
+      const sortedData = response.data.sort((a, b) => {
+        const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
+        const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
+        return numA - numB;
+      });
+      setPemesananList(sortedData);
+      
+    } catch (error) {
+      console.error("Gagal mengambil data pengiriman:", error);
+      toast.error("Gagal mengambil data pengiriman");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchKurir = async () => {
@@ -50,6 +57,12 @@ const KelolaPengirimanPage = () => {
     fetchPemesanan();
     fetchKurir();
   }, []);
+
+  useEffect(() => {
+    if (!loading && filteredData.length === 0) {
+      toast.warning("Tidak ada pengiriman yang perlu dijadwalkan");
+    }
+  }, [loading, pemesananList]);
 
   const formatTanpaDetik = (tanggal) => {
         const date = new Date(tanggal);
