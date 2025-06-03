@@ -216,7 +216,7 @@ const DetailBarangPage = () => {
     return (
       <div className="text-center my-5">
         <Spinner animation="border" variant="success" />
-        <p>Loading Detail barang.barang...</p>
+        <p>Loading Detail barang...</p>
       </div>
     );
   }

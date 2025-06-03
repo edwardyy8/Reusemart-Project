@@ -64,10 +64,16 @@ const KelolaPenitipanBarangPage = () => {
             const nama = barang.nama_barang ? barang.nama_barang.toLowerCase() : "";
             const status = barang.status_barang ? barang.status_barang.toLowerCase() : "";
             const id = barang.id_barang ? barang.id_barang.toLowerCase() : "";
+            const idqc = barang.rincian_penitipan?.penitipan?.id_qc ? barang.rincian_penitipan.penitipan.id_qc.toLowerCase() : "";
+            const id_hunter = barang.rincian_penitipan?.penitipan?.id_hunter ? barang.rincian_penitipan.penitipan.id_hunter.toLowerCase() : "";
+            const statusPenitipan = barang.rincian_penitipan?.status_penitipan ? barang.rincian_penitipan.status_penitipan.toLowerCase() : "";
             return (
                 nama.includes(keyword.toLowerCase()) ||
                 status.includes(keyword.toLowerCase()) ||
-                id.includes(keyword.toLowerCase())
+                id.includes(keyword.toLowerCase()) ||
+                statusPenitipan.includes(keyword.toLowerCase()) ||
+                idqc.includes(keyword.toLowerCase()) ||
+                id_hunter.includes(keyword.toLowerCase())
             );
         });
 

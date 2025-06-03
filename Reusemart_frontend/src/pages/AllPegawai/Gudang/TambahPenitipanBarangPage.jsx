@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Container, Form, Button, Spinner, Card, Row, Col, Modal } from "react-bootstrap";
+import { saveAs } from "file-saver";
+import { jsPDF } from "jspdf";
+import { useEffect, useState } from "react";
+import { Button, Card, Col, Container, Form, Image, Modal, Row, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { TambahPenitipanBarang, GetAllRequiredTambahBarang, GetPenitipanDetails } from "../../../api/apiBarang";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
+import { GetAllRequiredTambahBarang, GetPenitipanDetails, TambahPenitipanBarang } from "../../../api/apiBarang";
 
 const TambahPenitipanBarangPage = () => {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     id_penitip: "",
     id_qc: "",
@@ -23,11 +22,11 @@ const TambahPenitipanBarangPage = () => {
         deskripsi: "",
         berat_barang: 0,
         foto_barang: null,
+        foto_preview: null,
         tanggal_garansi: "",
       },
     ],
   });
-
   const [dropdownData, setDropdownData] = useState({
     pegawai: [],
     kategori: [],
@@ -35,7 +34,6 @@ const TambahPenitipanBarangPage = () => {
     qc: [],
     hunter: [],
   });
-
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [penitipanData, setPenitipanData] = useState(null);
@@ -43,16 +41,20 @@ const TambahPenitipanBarangPage = () => {
 
   useEffect(() => {
     const fetchDropdowns = async () => {
-      const data = await GetAllRequiredTambahBarang();
-      const qcFiltered = data.pegawai.filter((p) => p.id_jabatan === 6);
-      const hunterFiltered = data.pegawai.filter((p) => p.id_jabatan === 4);
-      setDropdownData({
-        pegawai: data.pegawai,
-        kategori: data.kategori,
-        penitip: data.penitip,
-        qc: qcFiltered,
-        hunter: hunterFiltered,
-      });
+      try {
+        const data = await GetAllRequiredTambahBarang();
+        const qcFiltered = data.pegawai.filter((p) => p.id_jabatan === 6);
+        const hunterFiltered = data.pegawai.filter((p) => p.id_jabatan === 4);
+        setDropdownData({
+          pegawai: data.pegawai,
+          kategori: data.kategori,
+          penitip: data.penitip,
+          qc: qcFiltered,
+          hunter: hunterFiltered,
+        });
+      } catch (err) {
+        toast.error("Gagal memuat data dropdown.");
+      }
     };
     fetchDropdowns();
   }, []);
@@ -76,12 +78,21 @@ const TambahPenitipanBarangPage = () => {
   };
 
   const handleFileChange = (e, index) => {
-    setFormData((prev) => ({
-      ...prev,
-      barang: prev.barang.map((item, i) =>
-        i === index ? { ...item, foto_barang: e.target.files[0] } : item
-      ),
-    }));
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        barang: prev.barang.map((item, i) =>
+          i === index
+            ? {
+                ...item,
+                foto_barang: file,
+                foto_preview: URL.createObjectURL(file),
+              }
+            : item
+        ),
+      }));
+    }
   };
 
   const addBarang = () => {
@@ -97,6 +108,7 @@ const TambahPenitipanBarangPage = () => {
           deskripsi: "",
           berat_barang: 0,
           foto_barang: null,
+          foto_preview: null,
           tanggal_garansi: "",
         },
       ],
@@ -117,23 +129,26 @@ const TambahPenitipanBarangPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    const missingPhotos = formData.barang.some((barang) => !barang.foto_barang);
+    if (missingPhotos) {
+      toast.error("Semua barang harus memiliki foto.");
+      setLoading(false);
+      return;
+    }
     const payload = new FormData();
     payload.append("id_penitip", formData.id_penitip);
     payload.append("id_qc", formData.id_qc);
     payload.append("id_hunter", formData.id_hunter || "");
     payload.append("isHunting", formData.isHunting);
-
     formData.barang.forEach((barang, index) => {
       Object.entries(barang).forEach(([key, val]) => {
         if (key === "foto_barang" && val) {
-          payload.append(`barang[${index}][${key}]`, val);
-        } else if (val !== null && key !== "foto_barang") {
+          payload.append(`barang[${index}][foto_barang]`, val);
+        } else if (key !== "foto_preview" && val !== null) {
           payload.append(`barang[${index}][${key}]`, val);
         }
       });
     });
-
     try {
       const response = await TambahPenitipanBarang(payload);
       if (!response || !response.id_penitipan) {
@@ -151,83 +166,92 @@ const TambahPenitipanBarangPage = () => {
   };
 
   const handlePrintNota = async () => {
-    try {
-      if (!penitipanData || !penitipanData.id_penitipan) {
-        throw new Error("Nomor transaksi tidak tersedia.");
-      }
-      const penitipanDetails = await GetPenitipanDetails(penitipanData.id_penitipan);
-      const fullData = penitipanDetails.status ? penitipanDetails.data : penitipanDetails;
-
-      if (!fullData || !fullData.id_penitipan) {
-        throw new Error("Data penitipan tidak valid atau tidak ditemukan.");
-      }
-
-      if (!fullData.rincian_penitipan || fullData.rincian_penitipan.length === 0) {
-        throw new Error("Tidak ada rincian penitipan untuk dicetak.");
-      }
-
-      const notaElement = document.createElement('div');
-      notaElement.style.position = 'absolute';
-      notaElement.style.left = '-9999px';
-      notaElement.innerHTML = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px;">
-          <div style="text-align: left;">
-            <h2 style="font-weight: bold; margin-bottom: 5px;">ReUse Mart</h2>
-            <p style="margin: 0;">Jl. Green Eco Park No. 456 Yogyakarta</p>
-          </div>
-          <br/>
-          <div style="margin: 20px 0;">
-            <p style="margin-bottom: 5px;">No Nota: ${fullData.id_penitipan}</p>
-            <p style="margin-bottom: 5px;">Tanggal Penitipan: ${new Date(fullData.tanggal_masuk).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}</p>
-            <p style="margin-bottom: 5px;">Masa Penitipan Sampai: ${new Date(fullData.rincian_penitipan[0].tanggal_akhir).toLocaleDateString('id-ID')}</p>
-            <br/>
-            <p style="margin-bottom: 5px;"><strong>Penitip:</strong> ${fullData.penitip.id_penitip} / ${fullData.penitip.nama}</p>
-            <p style="margin: 0;">Perumahan Margonda 2/50, Caturtunggal, Depok, Sleman</p>
-            <br/>
-          </div>
-          <div style="margin-bottom: 20px;">
-            ${fullData.rincian_penitipan.map((rincian) => `
-              <div style="margin-bottom: 15px;">
-                <p style="margin: 0; display: flex; justify-content: space-between;">
-                  <span>${rincian.barang.nama_barang}</span>
-                  <span>${rincian.barang.harga_barang.toLocaleString('id-ID')}</span>
-                </p>
-                ${rincian.barang.tanggal_garansi ? `
-                  <p style="margin: 0;">Garansi ON ${new Date(rincian.barang.tanggal_garansi).toLocaleString('id-ID', { month: 'long', year: 'numeric' })}</p>
-                ` : ''}
-                <p style="margin: 0;">Berat Barang: ${rincian.barang.berat_barang} kg</p>
-              </div>
-            `).join('')}
-          </div>
-          <br/>
-          <div style="margin-top: 20px;">
-            <p style="margin-bottom: 5px;">Diterima dan QC oleh:</p>
-            <br/><br/><br/>
-            <p style="margin: 0; margin-left: 20px;">${fullData.qc.id_pegawai} - ${fullData.qc.nama}</p>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(notaElement);
-
-      const canvas = await html2canvas(notaElement);
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`nota-${fullData.id_penitipan}.pdf`);
-
-      document.body.removeChild(notaElement);
-
-      setShowDialog(false);
-      toast.success("Nota berhasil diunduh!");
-      navigate("/pegawai/Gudang/kelolaPenitipanBarang");
-    } catch (err) {
-      console.error("Error di handlePrintNota:", err);
-      toast.error(err.message || "Gagal mencetak nota.");
+  try {
+    if (!penitipanData || !penitipanData.id_penitipan) {
+      throw new Error("Nomor transaksi tidak tersedia.");
     }
-  };
+    const penitipanDetails = await GetPenitipanDetails(penitipanData.id_penitipan);
+    const fullData = penitipanDetails.status ? penitipanDetails.data : penitipanDetails;
+    if (!fullData || !fullData.id_penitipan) {
+      throw new Error("Data penitipan tidak valid atau tidak ditemukan.");
+    }
+    if (!fullData.rincian_penitipan || fullData.rincian_penitipan.length === 0) {
+      throw new Error("Tidak ada rincian penitipan untuk dicetak.");
+    }
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    const textMargin = margin + 5; // Tambah jarak 5 mm dari garis kiri
+    const maxWidth = pageWidth - 2 * margin;
+    const halfWidth = pageWidth / 2;
+    let yPosition = margin;
+
+    const addText = (text, x, y, fontSize = 12, style = "normal") => {
+      pdf.setFont("helvetica", style);
+      pdf.setFontSize(fontSize);
+      pdf.text(text, x, y, { maxWidth });
+      return pdf.getTextDimensions(text, { maxWidth, fontSize }).h;
+    };
+    yPosition += addText(" ", textMargin, yPosition, 12, "bold");
+    yPosition += addText("Reusemart", textMargin, yPosition, 12, "bold");
+    yPosition += addText("Jl. Green Eco Park No. 456 Yogyakarta", textMargin, yPosition, 10);
+    yPosition += 5;
+    yPosition += addText(`No Nota                    : ${fullData.id_penitipan}`, textMargin, yPosition, 10);
+    yPosition += addText(`Tanggal Penitipan        : ${new Date(fullData.tanggal_masuk).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })}`, textMargin, yPosition, 10);
+    yPosition += addText(`Masa Penitipan Sampai: ${new Date(fullData.rincian_penitipan[0].tanggal_akhir).toLocaleDateString("id-ID")}`, textMargin, yPosition, 10);
+    yPosition += 5;
+    yPosition += addText(`Penitip: ${fullData.penitip.id_penitip} / ${fullData.penitip.nama}`, textMargin, yPosition, 10, "bold");
+    yPosition += 5;
+
+    const currentDate = new Date("2025-06-02");
+    fullData.rincian_penitipan.forEach((rincian) => {
+      const itemText = `${rincian.barang.nama_barang.padEnd(30)} ${rincian.barang.harga_barang.toLocaleString("id-ID")}`;
+      let garansiText = "";
+      if (rincian.barang.tanggal_garansi) {
+        const garansiDate = new Date(rincian.barang.tanggal_garansi);
+        if (garansiDate >= currentDate) {
+          garansiText = `Garansi ON ${garansiDate.toLocaleString("id-ID", { month: "long", year: "numeric" })}`;
+        }
+      }
+      const beratText = `Berat Barang: ${rincian.barang.berat_barang} gram`;
+      const requiredHeight = 10 + (garansiText ? 5 : 0) + 5 + 10;
+      if (yPosition + requiredHeight > pageHeight - margin) {
+        pdf.addPage();
+        yPosition = margin;
+      }
+      yPosition += addText(itemText, textMargin, yPosition, 10);
+      if (garansiText) {
+        yPosition += addText(garansiText, textMargin, yPosition, 10);
+      }
+      yPosition += addText(beratText, textMargin, yPosition, 10);
+      yPosition += 5;
+    });
+
+    if (yPosition + 30 > pageHeight - margin) {
+      pdf.addPage();
+      yPosition = margin;
+    }
+    yPosition += addText("Diterima dan QC oleh:", textMargin, yPosition, 10);
+    yPosition += 15;
+    yPosition += addText(`${fullData.qc?.id_pegawai || "N/A"} - ${fullData.qc?.nama || "Unknown"}`, textMargin + 5, yPosition, 10); // Indentasi lebih untuk bagian ini
+
+    const contentHeight = yPosition - margin + 10;
+    pdf.setLineWidth(0.5);
+    pdf.rect(margin, margin, halfWidth - margin, contentHeight, "S");
+
+    const pdfBlob = pdf.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, "_blank");
+    saveAs(pdfBlob, `nota-${fullData.id_penitipan}.pdf`);
+    setShowDialog(false);
+    toast.success("Nota berhasil diunduh dan dibuka!");
+    navigate("/pegawai/Gudang/kelolaPenitipanBarang");
+  } catch (err) {
+    console.error("Error di handlePrintNota:", err);
+    toast.error(err.message || "Gagal mencetak nota.");
+  }
+};
 
   const prevForm = () => {
     setCurrentFormIndex((prev) => Math.max(0, prev - 1));
@@ -253,7 +277,6 @@ const TambahPenitipanBarangPage = () => {
           TAMBAH PENITIPAN BARANG
         </h1>
       </div>
-
       <Container className="py-5 px-5 rounded-3 w-75" style={{ border: "1px solid #535353", backgroundColor: "#f1ede9" }}>
         <Form onSubmit={handleSubmit} encType="multipart/form-data">
           <Row className="mb-5">
@@ -312,7 +335,6 @@ const TambahPenitipanBarangPage = () => {
               )}
             </Col>
           </Row>
-
           <h4 className="mt-4 mb-4 fw-bold">Daftar Barang</h4>
           <Row className="justify-content-center">
             <Col md={10}>
@@ -330,9 +352,13 @@ const TambahPenitipanBarangPage = () => {
                             required
                           >
                             <option value="">Pilih Kategori</option>
-                            {dropdownData.kategori.map((k) => (
-                              <option key={k.id_kategori} value={k.id_kategori}>{k.nama_kategori}</option>
-                            ))}
+                            {dropdownData.kategori
+                              .filter((k) => k.id_kategori % 10 !== 0)
+                              .map((k) => (
+                                <option key={k.id_kategori} value={k.id_kategori}>
+                                  {k.nama_kategori}
+                                </option>
+                              ))}
                           </Form.Select>
                         </Form.Group>
                       </Col>
@@ -394,7 +420,7 @@ const TambahPenitipanBarangPage = () => {
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>Berat Barang (kg)</Form.Label>
+                          <Form.Label>Berat Barang (gram)</Form.Label>
                           <Form.Control
                             type="number"
                             name="berat_barang"
@@ -412,7 +438,6 @@ const TambahPenitipanBarangPage = () => {
                             name="tanggal_garansi"
                             value={formData.barang[currentFormIndex].tanggal_garansi}
                             onChange={(e) => handleChange(e, currentFormIndex)}
-                            required
                           />
                         </Form.Group>
                       </Col>
@@ -428,6 +453,14 @@ const TambahPenitipanBarangPage = () => {
                             accept="image/*"
                             required
                           />
+                          {formData.barang[currentFormIndex].foto_preview && (
+                            <Image
+                              src={formData.barang[currentFormIndex].foto_preview}
+                              alt="Preview"
+                              className="mt-2 rounded"
+                              style={{ maxWidth: "100%", maxHeight: "150px" }}
+                            />
+                          )}
                         </Form.Group>
                       </Col>
                       <Col md={6} className="d-flex align-items-end justify-content-end">
@@ -447,6 +480,7 @@ const TambahPenitipanBarangPage = () => {
                       onClick={prevForm}
                       style={{ width: "45px", height: "45px", borderRadius: "50%", fontSize: "1.3rem" }}
                     >
+                      &lt;
                     </Button>
                   )}
                 </div>
@@ -457,6 +491,7 @@ const TambahPenitipanBarangPage = () => {
                       onClick={nextForm}
                       style={{ width: "45px", height: "45px", borderRadius: "50%", fontSize: "1.3rem" }}
                     >
+                      &gt;
                     </Button>
                   ) : (
                     <Button
@@ -476,31 +511,26 @@ const TambahPenitipanBarangPage = () => {
               </div>
             </Col>
           </Row>
-
           <div className="text-center mt-5">
-            <Button variant="success" type="submit" style={{ padding: "10px 30px", fontSize: "1.1rem" }}>
-              Simpan Penitipan
+            <Button
+              variant="success"
+              type="submit"
+              disabled={loading}
+              style={{ padding: "10px 30px", fontSize: "1.1rem" }}
+            >
+              {loading ? <Spinner animation="border" size="sm" /> : "Simpan Penitipan"}
             </Button>
           </div>
         </Form>
       </Container>
-
-      <Modal
-        show={showDialog}
-        onHide={() => {}}
-        backdrop="static"
-        keyboard={false}
-        centered
-      >
+      <Modal show={showDialog} onHide={() => {}} backdrop="static" keyboard={false} centered>
         <Modal.Body className="text-center">
           <div className="mb-3">
             <i className="bi bi-check-circle-fill" style={{ fontSize: "3rem", color: "green" }}></i>
           </div>
           <h4>PENITIPAN BERHASIL DIBUAT</h4>
           <p>Nomor Transaksi: {penitipanData?.id_penitipan}</p>
-          <p>
-            Terima kasih atas penitipan Anda! Nota akan dicetak. Silakan simpan nota sebagai bukti penitipan.
-          </p>
+          <p>Terima kasih atas penitipan Anda! Nota akan dicetak. Silakan simpan nota sebagai bukti penitipan.</p>
         </Modal.Body>
         <Modal.Footer className="justify-content-center">
           <Button variant="success" onClick={handlePrintNota}>
