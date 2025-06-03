@@ -15,6 +15,7 @@ class BarangController extends Controller
     {
         $barang = Barang::with('penitip') // Eager load relasi penitip
                         ->where('status_barang', 'Tersedia')
+                        ->where('stok_barang', '>', 0)
                         ->orderBy('tanggal_masuk', 'desc')
                         ->get();
 
@@ -150,6 +151,9 @@ class BarangController extends Controller
     {
         try {
             $barang = Barang::with('rincian_penitipan')->findOrFail($id);
+            $barang->stok_barang = 0;
+            $barang->save();
+
             $barang->rincian_penitipan->batas_akhir = Carbon::now('Asia/Jakarta')->addDays(7);
             $barang->rincian_penitipan->status_penitipan = 'Diambil Kembali';
             $barang->rincian_penitipan->save();

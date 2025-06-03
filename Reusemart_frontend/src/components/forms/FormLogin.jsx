@@ -10,7 +10,7 @@ import { SignIn } from "../../api/apiAuth";
 
 const FormLogin = () => {
   const navigate = useNavigate();
-  const [isDisabled, setIsDisabled] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const [data, setData] = useState({
     email: "",
@@ -32,10 +32,11 @@ const FormLogin = () => {
 
   const Login = (event) => {
     event.preventDefault();
+    setIsDisabled(true);
     SignIn(data)
       .then((res) => {
         sessionStorage.setItem("token", res.token);
-        
+        setIsDisabled(false);
         toast.success(res.message); 
         if(res.user_type === "pegawai") {
           console.log(res.jabatan);
@@ -54,6 +55,7 @@ const FormLogin = () => {
       .catch((err) => {
         console.log(err);
         toast.error(err.message);
+        setIsDisabled(false);
       });
   };
 
@@ -90,6 +92,7 @@ const FormLogin = () => {
                 type="submit"
                 className="mb-3 border-0 buttonSubmit btn-lg rounded-5 shadow-sm"
                 style={{ backgroundColor: "rgba(4, 121, 2, 1)" }}
+                disabled={isDisabled}
               >
                 LOGIN
               </Button>

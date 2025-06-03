@@ -71,6 +71,7 @@ Route::middleware('auth:pegawai')->group(function () {
     Route::get('/getJabatan', [AuthController::class, 'getJabatan']);
     Route::get('/pegawai/foto-profile/{filename}', [PegawaiController::class, 'getFotoProfile']);
     Route::get('/pegawai/foto-ktp/{filename}', [PegawaiController::class, 'getFotoKtp']);
+    Route::get('/penitip', [PenitipController::class, 'index']);
 
     Route::middleware(CekJabatan::class . ':Admin')->group(function () {
         Route::post('/resetPassPegawai/{id_pegawai}', [AuthController::class, 'resetPassPegawai'])
@@ -112,7 +113,7 @@ Route::middleware('auth:pegawai')->group(function () {
     });
 
     Route::middleware(CekJabatan::class . ':Customer Service')->group(function () {
-        Route::post('/penitip', [PenitipController::class, 'store']);
+        // Route::post('/penitip', [PenitipController::class, 'store']);
         Route::get('/getAllDiskusiKecualiCS', [DiskusiController::class, 'getAllDiskusiKecualiCS']);
         Route::get('/penitip', [PenitipController::class, 'index']);
         // Route::get('/penitip/{id}', [PenitipController::class, 'show']);
@@ -137,7 +138,7 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::post('/confirmRequest/{id_request}', [RequestDonasiController::class, 'confirmRequest']);
         Route::get('/get-request-donasi', [RequestDonasiController::class, 'getRequestDonasi']);
 
-        Route::get('/penitip', [PenitipController::class, 'index']);
+        // Route::get('/penitip', [PenitipController::class, 'index']);
         Route::get('/laporanDonasiBarang/{tahun}', [LaporanController::class, 'laporanDonasiBarang']);
         Route::get('/laporanRekapRequest', [LaporanController::class, 'laporanRekapRequest']);
         Route::get('/laporanPenitip/{tahun}/{bulan}/{id}', [LaporanController::class, 'laporanPenitip']);

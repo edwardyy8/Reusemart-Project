@@ -268,15 +268,15 @@ const CheckoutPage = () => {
                                 <Row >
                                     <Col md={12}className="me-auto">
                                         <h4 className="hijau">Detail Alamat</h4>
-                                        <Card className={`mb-3 shadow-sm border-1 border-dark rounded-3 ${metode === 'Pickup' ? 'opacity-50 pe-none bg-white' : ''}`}> 
+                                        <Card className={`mb-3 shadow-sm border-1 border-dark rounded-3 ${metode === 'pickup' ? 'opacity-50 pe-none bg-white' : ''}`}> 
                                             <Card.Body>
                                                 <div className="d-flex justify-content-between align-items-center">
                                                     <p className="h5 mb-0"> {alamatData.nama_penerima} <span className="text-muted">({alamatData.label_alamat})</span></p>    
-                                                    <Button variant="light" className={metode === 'Pickup'? '' : 'text-decoration-underline'}
-                                                        onClick={() => {metode === 'Pickup' 
+                                                    <Button variant="light" className={metode === 'pickup'? '' : 'text-decoration-underline'}
+                                                        onClick={() => {metode === 'pickup' 
                                                             ? null 
                                                             : navigate('/pembeli/ubahAlamat', { state: { alamat: alamatData } })}}
-                                                        disabled={metode === 'Pickup'}
+                                                        disabled={metode === 'pickup'}
                                                     >
                                                         Ubah Alamat
                                                     </Button>

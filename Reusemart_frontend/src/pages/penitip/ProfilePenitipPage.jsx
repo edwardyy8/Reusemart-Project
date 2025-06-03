@@ -145,6 +145,7 @@ const ProfilePenitipPage = () => {
     const sudahPerpanjang = titipan.perpanjangan === "Ya";
     const diambil = titipan.status_penitipan === "Diambil Kembali";
     const hampirHabis = sisaHari <=3;
+    const batasAmbil = 7 + sisaHari;
 
     if (terproses) return null;
 
@@ -167,13 +168,14 @@ const ProfilePenitipPage = () => {
     if (hampirHabis && !sudahPerpanjang &&tersedia) {
       return (
         <Button 
-          className="btnHijau w-50"
+          className={sisaHari <= 0 ? "w-50 btn-danger" : "w-50 btnHijau"}
+          variant={sisaHari <= 0 ? "danger" : ""}
           onClick={() => {
             setSelectedPenitipan(titipan);
             setPenitipanHabis(true);
           }}
         >
-          Ambil/Perpanjang ({sisaHari} hari tersisa)
+          Ambil/Perpanjang ({batasAmbil} hari tersisa sebelum barang didonasikan)
         </Button>
       );
     }
@@ -367,26 +369,24 @@ const ProfilePenitipPage = () => {
                                 <h5>ID Titipan : {titipan.id_penitipan}</h5>
                                 <p className="text-muted h6">Tanggal Titip : {formatTanpaDetik(titipan.barang.tanggal_masuk)}</p>
                               </Card.Title>
-                              <Card.Text>
-                                <div className="d-flex flex-column">
-                                  <div className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                      <h5 className="fw-bold mb-0">{titipan.barang.nama_barang}</h5>
-                                    </div>
-                                    <div>
-                                      <img
-                                        src={`http://127.0.0.1:8000/storage/foto_barang/${titipan.barang.foto_barang}`}
-                                        alt="Foto Barang"
-                                        height={100}
-                                        className="rounded-2"
-                                      />
-                                    </div>
+                              <div className="d-flex flex-column">
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <div>
+                                    <p className="fw-bold mb-0 h5">{titipan.barang.nama_barang}</p>
                                   </div>
-                                  <div className="text-muted">
-                                    Status Barang : {titipan.barang.status_barang}
+                                  <div>
+                                    <img
+                                      src={`http://127.0.0.1:8000/storage/foto_barang/${titipan.barang.foto_barang}`}
+                                      alt="Foto Barang"
+                                      height={100}
+                                      className="rounded-2"
+                                    />
                                   </div>
                                 </div>
-                              </Card.Text>
+                                <div className="text-muted">
+                                  Status Barang : {titipan.barang.status_barang}
+                                </div>
+                              </div>
                             </Card.Body>
                             <Card.Footer className="d-flex gap-2">
                               {renderAdditionalButton(titipan) ? (
@@ -478,7 +478,7 @@ const ProfilePenitipPage = () => {
             <>
             <Row>
               <Col md={8} className="gap-4">
-                <h3><b>{selectedPenitipan.barang.nama_barang}</b></h3>
+                <p className="h3"><b>{selectedPenitipan.barang.nama_barang}</b></p>
                 <div className="d-flex flex-column gap-1">
                   <span>Status: <span className="text-muted">{selectedPenitipan.barang.status_barang}</span></span>
                   <span>Harga: <span className="text-muted">{selectedPenitipan.barang.harga_barang}</span></span>
