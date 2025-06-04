@@ -571,7 +571,7 @@ class PemesananController extends Controller
                 $harga_barang = $barang->harga_barang;
                 $tanggal_masuk = Carbon::parse($barang->tanggal_masuk);
                 $tanggal_pesan = Carbon::parse($pemesanan->tanggal_pemesanan);
-                $lama_laku = $tanggal_pesan->diffInDays($tanggal_masuk);
+                $lama_laku = $tanggal_masuk->diffInDays($tanggal_pesan);
 
                 $id_hunter = $penitipan->id_hunter;
                 $perpanjangan = $rincian_penitipan->perpanjangan ?? 'Tidak';
@@ -700,6 +700,10 @@ class PemesananController extends Controller
                     'stok_barang' => 0,
                 ]);
 
+                $barang->rincian_penitipan->penitipan->update([
+                    'status_penitipan' => 'Terjual',
+                ]);
+
                 // hapus keranjag checked
                 $keranjang = Keranjang::find($item['id_keranjang']);
                 if ($keranjang) {
@@ -771,6 +775,10 @@ class PemesananController extends Controller
                         $barang->update([
                             'status_barang' => 'Tersedia',
                             'stok_barang' => $barang->stok_barang + 1,
+                        ]);
+
+                        $barang->rincian_penitipan->penitipan->update([
+                            'status_penitipan' => 'Sedang Dititipkan',
                         ]);
                     } else {
                         return response()->json([
@@ -1042,7 +1050,7 @@ class PemesananController extends Controller
                     'pemesananAktif' => $pemesananAktif,
                     'pemesananHistori' => $pemesananHistori,
                 ],
-            ]);
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
