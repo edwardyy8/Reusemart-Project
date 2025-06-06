@@ -261,7 +261,7 @@ const CetakLaporanPage = () => {
                                         <td>Barang yang Masa Penitipannya Sudah Habis</td>
                                         <td className="text-center">
                                             <Button variant="primary" size="sm" 
-                                                onClick={() => {setShowModalNoYear(true); setNamaLaporan("Laporan Penitipan Habis");}}>
+                                                onClick={() => {setShowModal(true); setNamaLaporan("Laporan Penitipan Habis");}}>
                                                 <FaPrint />
                                             </Button>
                                         </td>
