@@ -126,3 +126,40 @@ export const DeleteMerchandise = async (id) => {
     throw new Error(error.response?.data?.message || "Gagal menghapus merchandise");
   }
 };
+
+export const GetAllMerchandise = async () => {
+  try {
+    const response = await useAxios.get("/merchandise", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const GetFotoMerchandise= async () => {
+  try {
+    const response = await useAxios.get(`/foto-merchandise/${filename}`);
+    return response.data.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const ClaimMerchandise = async (id_merchandise) => {
+  try {
+    const response = await useAxios.post(`/claimMerchandise/${id_merchandise}`, {}, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
