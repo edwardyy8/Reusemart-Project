@@ -139,8 +139,82 @@ class LaporanController extends Controller
 
     }
 
+    public function laporanByKategori($tahun) 
+    {
+        $data = DB::table('kategori as k2')
+            ->select([
+                'k2.nama_kategori as nama_kategori_utama',
+                DB::raw("COUNT(CASE WHEN b.status_barang = 'Terjual' AND p.id_pemesanan IS NOT NULL THEN 1 END) as jumlah_barang_terjual"),
+                DB::raw("COUNT(CASE WHEN b.status_barang != 'Terjual' AND p.id_pemesanan IS NOT NULL THEN 1 END) as jumlah_barang_gagal_terjual")
+            ])
+            ->rightJoin('kategori as k', function ($join) {
+                $join->on(DB::raw('FLOOR(k.id_kategori / 10) * 10'), '=', 'k2.id_kategori');
+            })
+            ->leftJoin('barang as b', 'b.id_kategori', '=', 'k.id_kategori')
+            ->leftJoin('rincian_pemesanan as rp', 'rp.id_barang', '=', 'b.id_barang')
+            ->leftJoin('pemesanan as p', function ($join) use ($tahun) {
+                $join->on('p.id_pemesanan', '=', 'rp.id_pemesanan')
+                    ->whereYear('p.tanggal_pemesanan', $tahun);
+            })
+            ->groupBy('k2.nama_kategori', 'k2.id_kategori')
+            ->orderBy('k2.id_kategori')
+            ->get();
+        
+        $totalTerjual = $data->sum('jumlah_barang_terjual');
+        $totalGagalTerjual = $data->sum('jumlah_barang_gagal_terjual');
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => 'Tidak ada data penjualan untuk tahun yang diminta',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $data,
+            'total' => [
+                'jumlah_terjual' => $totalTerjual,
+                'jumlah_gagal_terjual' => $totalGagalTerjual,
+                'tahun' => $tahun
+            ],
+            'message' => 'Data penjualan per kategori berhasil diambil',
+        ], 200);
+    }
+
+    public function laporanPenitipanHabis ()
+    {
+        $data = DB::table('barang as b')
+            ->select([
+                'b.id_barang',
+                'b.nama_barang',
+                'p.id_penitip',
+                'p.nama',
+                'b.tanggal_masuk',
+                'rp.tanggal_akhir',
+                'rp.batas_akhir',
+                'b.status_barang',
+            ])
+            ->join('rincian_penitipan as rp', 'b.id_barang', '=', 'rp.id_barang')
+            ->join('penitip as p', 'b.id_penitip', '=', 'p.id_penitip')
+            ->where('b.status_barang', '!=', 'Diambil Kembali')
+            ->orderBy('rp.tanggal_akhir', 'asc')
+            ->get();
 
 
+        if ($data->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => 'Tidak ada data penitipan habis',
+            ], 404);
+        }
 
-
+        return response()->json([
+            'status' => true,
+            'data' => $data,
+            'message' => 'Data penjualan penitip berhasil diambil',
+        ], 200);
+    }
 }

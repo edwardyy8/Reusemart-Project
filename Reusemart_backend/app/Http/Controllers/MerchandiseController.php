@@ -148,4 +148,28 @@ class MerchandiseController extends Controller
             return response()->json(['message' => 'Gagal menghapus merchandise', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function index()
+    {
+        try {
+            $merchandises = Merchandise::all();
+            return response()->json([
+                'data' => $merchandises,
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('GetAllMerchandise Error: ' . $e->getMessage());
+            return response()->json(['message' => 'Gagal mengambil data merchandise', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function fotoMerchandise($filename)
+    {
+        $fullPath = storage_path('app/public/merchandise/' . $filename);
+
+        if (!file_exists($fullPath)) {
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+        return response()->file($fullPath);
+    }
 }

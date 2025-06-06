@@ -38,3 +38,29 @@ export const GetLaporanPenitip = async (tahun, bulan, id) => {
     throw error.response.data;
   }
 }
+
+export const GetLaporanByKategori = async (tahun) => {
+  try {
+    const response = await useAxios.get(`/laporanByKategori/${tahun}`, {
+        headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+}
+
+export const GetLaporanPenitipanHabis = async () => {
+  try {
+    const response = await useAxios.get(`/laporanPenitipanHabis`, {
+        headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+}
