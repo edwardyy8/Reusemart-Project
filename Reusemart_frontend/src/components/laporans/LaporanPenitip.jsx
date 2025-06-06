@@ -16,7 +16,7 @@ const LaporanPenitip = forwardRef(({ laporan }, ref) => {
         <br />
         Nama Penitip : {laporan.data && laporan.data.length > 0 && laporan.data[0].nama_penitip}
         <br />
-        Bulan : 
+        Bulan : {laporan.data && laporan.data.length > 0 && new Date(laporan.data[0].tanggal_laku).toLocaleString('id-ID', { month: 'long' })}
         <br />
         Tahun : {laporan.data && laporan.data.length > 0 && new Date(laporan.data[0].tanggal_laku).getFullYear()}
         <br />

@@ -170,7 +170,7 @@ Route::middleware('auth:pegawai')->group(function () {
     Route::middleware(cekJabatan::class.':Kurir')->group(function () {
         Route::get('/jumlah-pesanan-kurir', [PemesananController::class, 'jumlahPesananKurir']);
         Route::get('/getPemesananKurir', [PemesananController::class, 'getPemesananKurir']);
-        
+        Route::post('/terimaSelesaiKirim/{id}', [PemesananController::class, 'terimaSelesaiKirim']);
     });
 
     Route::middleware(cekJabatan::class.':Hunter')->group(function () {

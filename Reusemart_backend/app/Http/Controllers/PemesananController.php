@@ -1035,12 +1035,12 @@ class PemesananController extends Controller
 
             $pemesananAktif = Pemesanan::where('id_kurir', $idKurir)
                 ->where('status_pengiriman', 'Menunggu Kurir')
-                ->with(['rincianPemesanan.barang'])
+                ->with(['rincianPemesanan.barang', 'alamat'])
                 ->get();
             
             $pemesananHistori = Pemesanan::where('id_kurir', $idKurir)
                 ->where('status_pengiriman', 'Transaksi Selesai')
-                ->with(['rincianPemesanan.barang'])
+                ->with(['rincianPemesanan.barang', 'alamat'])
                 ->get();
 
             return response()->json([
@@ -1050,6 +1050,125 @@ class PemesananController extends Controller
                     'pemesananAktif' => $pemesananAktif,
                     'pemesananHistori' => $pemesananHistori,
                 ],
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function terimaSelesaiKirim(Request $request, $id)
+    {
+        try {
+            $pemesanan = Pemesanan::findOrFail($id);
+            $pemesanan->status_pengiriman = 'Transaksi Selesai';
+            $pemesanan->tanggal_diterima = Carbon::now('Asia/Jakarta');
+            $pemesanan->save();
+
+            $total_saldo_penitip = [];
+            $total_poin = 0;
+
+            foreach ($pemesanan->rincianPemesanan as $rincian) {
+                $barang = $rincian->barang;
+                $penitip = $barang->penitip;
+
+                $rincian_penitipan = $barang->rincian_penitipan;
+                $rincian_penitipan->status_penitipan = 'Terjual';
+
+                $penitipan = $rincian_penitipan->penitipan;
+
+                $harga_barang = $barang->harga_barang;
+                $tanggal_masuk = Carbon::parse($barang->tanggal_masuk);
+                $tanggal_pesan = Carbon::parse($pemesanan->tanggal_pemesanan);
+                $lama_laku = $tanggal_masuk->diffInDays($tanggal_pesan);
+
+                $id_hunter = $penitipan->id_hunter;
+                $perpanjangan = $rincian_penitipan->perpanjangan ?? 'Tidak';
+
+                $komisi_hunter = $id_hunter ? 0.05 * $harga_barang : 0;
+
+                if ($id_hunter && $perpanjangan === 'Tidak') {
+                    $komisi_reusemart = 0.15 * $harga_barang;
+                } elseif (!$id_hunter && $perpanjangan === 'Tidak') {
+                    $komisi_reusemart = 0.20 * $harga_barang;
+                } elseif ($id_hunter && $perpanjangan === 'Ya') {
+                    $komisi_reusemart = 0.25 * $harga_barang;
+                } else {
+                    $komisi_reusemart = 0.30 * $harga_barang;
+                }
+
+                // Bonus Penitip
+                $bonus_penitip = $lama_laku < 7 ? 0.10 * $komisi_reusemart : 0;
+
+                // Hitung saldo penitip
+                $saldo_penitip = $harga_barang + $bonus_penitip - $komisi_hunter - $komisi_reusemart;
+
+                // Simpan ke rincian pemesanan
+                $rincian->komisi_hunter = $komisi_hunter;
+                $rincian->komisi_reusemart = $komisi_reusemart;
+                $rincian->bonus_penitip = $bonus_penitip;
+                $rincian->save();
+
+                // Akumulasi saldo penitip
+                if (!isset($total_saldo_penitip[$penitip->id_penitip])) {
+                    $total_saldo_penitip[$penitip->id_penitip] = 0;
+                }
+                $total_saldo_penitip[$penitip->id_penitip] += $saldo_penitip;
+
+                // Akumulasi poin pembeli
+                $total_poin += $pemesanan->poin_didapatkan;
+            }
+
+            // Tambahkan poin ke pembeli
+            $pembeli = $pemesanan->pembeli;
+            $pembeli->poin_pembeli += $total_poin;
+            $pembeli->save();
+
+            // Update saldo semua penitip
+            foreach ($total_saldo_penitip as $id_penitip => $saldo) {
+                $penitip = Penitip::findOrFail($id_penitip);
+                if ($penitip) {
+                    $penitip->saldo_penitip += $saldo;
+                    $penitip->save();
+                }
+            }
+
+            if ($pembeli && $pembeli->fcm_token) {
+                $request = new Request([
+                    'fcm_token' => $pembeli->fcm_token,
+                    'title' => 'Pengiriman Selesai',
+                    'body' => 'Pengiriman barang Anda untuk pemesanan ' . $pemesanan->id_pemesanan . ' telah selesai.',
+                    'data' => [
+                        'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                    ]
+                ]);
+
+                $this->notificationController->sendFcmNotification($request);
+            }
+
+            foreach ($pemesanan->rincianPemesanan as $item) {
+                $penitip = $item->barang->penitip;
+
+                if ($penitip && $penitip->fcm_token) {
+                    $request = new Request([
+                        'fcm_token' => $penitip->fcm_token,
+                        'title' => 'Pengiriman Selesai',
+                        'body' => 'Barang Anda dengan ID ' . $item->id_barang . ' telah selesai dikirim.',
+                        'data' => [
+                            'pemesanan_id' => (string) $pemesanan->id_pemesanan,
+                        ]
+                    ]);
+
+                    $this->notificationController->sendFcmNotification($request);
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Pengiriman berhasil ditandai selesai',
+                'data' => $pemesanan,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
