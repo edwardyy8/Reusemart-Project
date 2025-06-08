@@ -140,7 +140,10 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::get('/penitip', [PenitipController::class, 'index']);
         Route::get('/laporanDonasiBarang/{tahun}', [LaporanController::class, 'laporanDonasiBarang']);
         Route::get('/laporanRekapRequest', [LaporanController::class, 'laporanRekapRequest']);
+        Route::get('/laporanStokGudang', [LaporanController::class, 'laporanStokGudang']);
+        Route::get('/laporanKomisiBulanan/{tahun}/{bulan}', [LaporanController::class, 'laporanKomisiBulanan']);
         Route::get('/laporanPenitip/{tahun}/{bulan}/{id}', [LaporanController::class, 'laporanPenitip']);
+        Route::get('/laporanPenjualanKeseluruhan/{tahun}', [LaporanController::class, 'laporanPenjualanKeseluruhan']);
 
     });
 
