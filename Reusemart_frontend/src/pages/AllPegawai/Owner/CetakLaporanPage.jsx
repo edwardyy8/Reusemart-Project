@@ -6,7 +6,7 @@ import { FaPrint } from "react-icons/fa";
 import { useReactToPrint } from 'react-to-print';
 
 import { GetAllPenitip } from "../../../api/apiPenitip";
-import { GetLaporanDonasiBarang, GetLaporanRekapRequest, GetLaporanPenitip, GetLaporanStokGudang, GetLaporanKomisiBulanan, GetLaporanPenjualanKeseluruhan } from "../../../api/apiLaporan";
+import { GetLaporanDonasiBarang, GetLaporanRekapRequest, GetLaporanPenitip, GetLaporanByKategori, GetLaporanPenitipanHabis, GetLaporanStokGudang, GetLaporanKomisiBulanan, GetLaporanPenjualanKeseluruhan } from "../../../api/apiLaporan";
 
 import LaporanDonasiBarang from "../../../components/laporans/LaporanDonasiBarang";
 import LaporanRekapRequest from "../../../components/laporans/LaporanRekapRequest";
@@ -14,6 +14,8 @@ import LaporanPenitip from "../../../components/laporans/LaporanPenitip";
 import LaporanStokGudang from "../../../components/laporans/LaporanStokGudang";
 import LaporanKomisiBulanan from "../../../components/laporans/LaporanKomisiBulanan";
 import LaporanPenjualanKeseluruhan from "../../../components/laporans/LaporanPenjualanKeseluruhan";
+import LaporanByKategori from "../../../components/laporans/LaporanByKategori";
+import LaporanPenitipanHabis from "../../../components/laporans/LaporanPenitipanHabis";
 
 const CetakLaporanPage = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +31,8 @@ const CetakLaporanPage = () => {
     const [selectedPenitip, setSelectedPenitip] = useState("");
     const [isLoadingCetak, setIsLoadingCetak] = useState(false);
     const [laporan, setLaporan] = useState([]);
+    const [laporanKategori, setLaporanKategori] = useState([]);
+    const [laporanPenitipan, setLaporanPenitipan] = useState([]);
     const [laporanPenitip, setLaporanPenitip] = useState([]);
     const [laporanKomisiBulanan, setLaporanKomisiBulanan] = useState([]);
 
@@ -36,12 +40,16 @@ const CetakLaporanPage = () => {
     const refRekapRequest = useRef(null);
     const refPenitip = useRef(null);
     const refStokGudang = useRef(null);
+    const refByKategori = useRef(null);
+    const refPenitipan = useRef(null);
     const refKomisiBulanan = useRef(null);
     const refPenjualanKeseluruhan = useRef(null);
 
     const handlePrintDonasiBarang = useReactToPrint({ contentRef: refDonasiBarang });
     const handlePrintRekapRequest = useReactToPrint({ contentRef: refRekapRequest });
     const handlePrintPenitip = useReactToPrint({ contentRef: refPenitip });
+    const handlePrintByKategori = useReactToPrint({ contentRef: refByKategori });
+    const handlePrintPenitipanHabis = useReactToPrint({ contentRef: refPenitipan });
     const handlePrintStokGudang = useReactToPrint({ contentRef: refStokGudang });
     const handlePrintKomisiBulanan = useReactToPrint({ contentRef: refKomisiBulanan });
     const handlePrintPenjualanKeseluruhan = useReactToPrint({ contentRef: refPenjualanKeseluruhan });
@@ -101,6 +109,42 @@ const CetakLaporanPage = () => {
             .catch((err) => {
                 console.log(err);
                 toast.error(`Tidak ada data laporan penitip pada tahun ${tahun}, bulan ${bulan}, dan penitip ${selectedPenitip}`);
+                setIsLoadingCetak(false);
+            });
+    };
+
+    const fetchLaporanByKategori = () => {
+        setIsLoadingCetak(true);
+        GetLaporanByKategori(tahun)
+            .then((data) => {
+                console.log(data);
+                setLaporanKategori(data);
+                toast.success("Laporan Penjualan berhasil diambil");
+                setTahun("");
+                setDisabled(true);
+                setIsLoadingCetak(false);
+                checkAndPrint(refByKategori, handlePrintByKategori);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(`Tidak ada data laporan penjualan pada tahun ${tahun}`);
+                setIsLoadingCetak(false);
+            });
+    }
+
+    const fetchLaporanPenitipanHabis = () => {
+        setIsLoadingCetak(true);
+        GetLaporanPenitipanHabis(tahun)
+            .then((data) => {
+                setLaporanPenitipan(data.data);
+                toast.success("Laporan Penitipan Habis berhasil diambil");
+                setDisabled(true);
+                setIsLoadingCetak(false);
+                checkAndPrint(refPenitipan, handlePrintPenitipanHabis);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(`Tidak ada data laporan penitipan habis pada tahun ${tahun}`);
                 setIsLoadingCetak(false);
             });
     };
@@ -183,6 +227,8 @@ const CetakLaporanPage = () => {
         'Donasi Barang': fetchLaporanDonasiBarang,
         'Rekap request donasi': fetchLaporanRekapRequestDonasi,
         'Laporan untuk Penitip': fetchLaporanPenitip,
+        'Laporan Penjualan Per Kategori': fetchLaporanByKategori,
+        'Laporan Penitipan Habis': fetchLaporanPenitipanHabis,
         'Stok Gudang': fetchLaporanStokGudang,
         'Komisi Bulanan': fetchLaporanKomisiBulanan,
         'Penjualan Keseluruhan': fetchLaporanPenjualanKeseluruhan,
@@ -288,7 +334,8 @@ const CetakLaporanPage = () => {
                                         <td className="text-center">4</td>
                                         <td>Penjualan per kategori barang (dalam 1 tahun)</td>
                                         <td className="text-center">
-                                            <Button variant="primary" size="sm" onClick={() => { window.print() }}>
+                                             <Button variant="primary" size="sm" 
+                                                onClick={() => {setShowModal(true); setNamaLaporan("Laporan Penjualan Per Kategori");}}>
                                                 <FaPrint />
                                             </Button>
                                         </td>
@@ -297,7 +344,8 @@ const CetakLaporanPage = () => {
                                         <td className="text-center">5</td>
                                         <td>Barang yang Masa Penitipannya Sudah Habis</td>
                                         <td className="text-center">
-                                            <Button variant="primary" size="sm" onClick={() => { window.print() }}>
+                                            <Button variant="primary" size="sm" 
+                                                onClick={() => {setShowModal(true); setNamaLaporan("Laporan Penitipan Habis");}}>
                                                 <FaPrint />
                                             </Button>
                                         </td>
@@ -594,6 +642,16 @@ const CetakLaporanPage = () => {
                     <LaporanPenitip
                         ref={refPenitip}
                         laporan={laporanPenitip ? laporanPenitip : null}
+                    />
+
+                    <LaporanByKategori
+                        ref={refByKategori}
+                        laporan={laporanKategori ? laporanKategori : null}
+                    />
+
+                    <LaporanPenitipanHabis
+                        ref={refPenitipan}
+                        laporan={laporanPenitipan ? laporanPenitipan : null}
                     />
 
                     <LaporanStokGudang

@@ -143,6 +143,8 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::get('/laporanStokGudang', [LaporanController::class, 'laporanStokGudang']);
         Route::get('/laporanKomisiBulanan/{tahun}/{bulan}', [LaporanController::class, 'laporanKomisiBulanan']);
         Route::get('/laporanPenitip/{tahun}/{bulan}/{id}', [LaporanController::class, 'laporanPenitip']);
+        Route::get('/laporanByKategori/{tahun}', [LaporanController::class, 'laporanByKategori']);
+        Route::get('/laporanPenitipanHabis/{tahun}', [LaporanController::class, 'laporanPenitipanHabis']);
         Route::get('/laporanPenjualanKeseluruhan/{tahun}', [LaporanController::class, 'laporanPenjualanKeseluruhan']);
 
     });

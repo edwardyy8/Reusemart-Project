@@ -79,43 +79,6 @@ class LaporanController extends Controller
             'message' => 'Data request donasi yang belum dipenuhi berhasil diambil',
         ], 200);
     }
-
-    public function laporanStokGudang()
-    {
-        $data = DB::table('rincian_penitipan as rp')
-            ->join('penitipan as p', 'rp.id_penitipan', '=', 'p.id_penitipan')
-            ->join('barang as b', 'rp.id_barang', '=', 'b.id_barang')
-            ->join('penitip as pt', 'p.id_penitip', '=', 'pt.id_penitip')
-            ->join('pegawai as h', 'p.id_hunter', '=', 'h.id_pegawai')
-            ->select(
-                'b.id_barang as kode_produk',
-                'b.nama_barang as nama_produk',
-                'pt.id_penitip',
-                'pt.nama as nama_penitip',
-                'p.tanggal_masuk',
-                'rp.perpanjangan',
-                'h.id_pegawai as id_hunter',
-                'h.nama as nama_hunter',
-                'b.harga_barang'
-            )
-            ->orderBy('p.tanggal_masuk', 'desc')
-            ->get();
-
-        if ($data->isEmpty()) {
-            return response()->json([
-                'status' => false,
-                'data' => [],
-                'message' => 'Tidak ada data stok gudang tersedia.',
-            ], 404);
-        }
-
-        return response()->json([
-            'status' => true,
-            'data' => $data,
-            'message' => 'Data stok gudang berhasil diambil.',
-        ], 200);
-    }
-
     public function laporanPenitip($tahun, $bulan, $id)
     {
         $data = DB::table('barang as b')
@@ -174,6 +137,123 @@ class LaporanController extends Controller
         ], 200);
     }
 
+public function laporanByKategori($tahun)
+    {
+        $data = DB::table('kategori as k2')
+            ->select([
+                'k2.nama_kategori as nama_kategori_utama',
+                DB::raw("COUNT(CASE WHEN b.status_barang = 'Terjual' AND p.id_pemesanan IS NOT NULL THEN 1 END) as jumlah_barang_terjual"),
+                DB::raw("COUNT(CASE WHEN b.status_barang != 'Terjual' AND p.id_pemesanan IS NOT NULL THEN 1 END) as jumlah_barang_gagal_terjual")
+            ])
+            ->rightJoin('kategori as k', function ($join) {
+                $join->on(DB::raw('FLOOR(k.id_kategori / 10) * 10'), '=', 'k2.id_kategori');
+            })
+            ->leftJoin('barang as b', 'b.id_kategori', '=', 'k.id_kategori')
+            ->leftJoin('rincian_pemesanan as rp', 'rp.id_barang', '=', 'b.id_barang')
+            ->leftJoin('pemesanan as p', function ($join) use ($tahun) {
+                $join->on('p.id_pemesanan', '=', 'rp.id_pemesanan')
+                    ->whereYear('p.tanggal_pemesanan', $tahun);
+            })
+            ->groupBy('k2.nama_kategori', 'k2.id_kategori')
+            ->orderBy('k2.id_kategori')
+            ->get();
+
+        $totalTerjual = $data->sum('jumlah_barang_terjual');
+        $totalGagalTerjual = $data->sum('jumlah_barang_gagal_terjual');
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => 'Tidak ada data penjualan untuk tahun yang diminta',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $data,
+            'total' => [
+                'jumlah_terjual' => $totalTerjual,
+                'jumlah_gagal_terjual' => $totalGagalTerjual,
+                'tahun' => $tahun
+            ],
+            'message' => 'Data penjualan per kategori berhasil diambil',
+        ], 200);
+    }
+
+    public function laporanPenitipanHabis ($tahun)
+    {
+        $sekarang = Carbon::now('Asia/Jakarta');
+        $data = DB::table('barang as b')
+            ->select([
+                'b.id_barang',
+                'b.nama_barang',
+                'p.id_penitip',
+                'p.nama',
+                'b.tanggal_masuk',
+                'rp.tanggal_akhir',
+                'rp.batas_akhir',
+                'b.status_barang',
+            ])
+            ->join('rincian_penitipan as rp', 'b.id_barang', '=', 'rp.id_barang')
+            ->join('penitip as p', 'b.id_penitip', '=', 'p.id_penitip')
+            ->where('rp.tanggal_akhir', '<', $sekarang)
+            ->where('b.status_barang', '!=', 'Terjual')
+            ->whereYear('rp.tanggal_akhir', $tahun)
+            ->orderBy('rp.tanggal_akhir', 'asc')
+            ->get();
+
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => 'Tidak ada data penitipan habis',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $data,
+            'message' => 'Data penitipan habis berhasil diambil',
+        ], 200);
+    }
+
+    public function laporanStokGudang()
+    {
+        $data = DB::table('rincian_penitipan as rp')
+            ->join('penitipan as p', 'rp.id_penitipan', '=', 'p.id_penitipan')
+            ->join('barang as b', 'rp.id_barang', '=', 'b.id_barang')
+            ->join('penitip as pt', 'p.id_penitip', '=', 'pt.id_penitip')
+            ->join('pegawai as h', 'p.id_hunter', '=', 'h.id_pegawai')
+            ->select(
+                'b.id_barang as kode_produk',
+                'b.nama_barang as nama_produk',
+                'pt.id_penitip',
+                'pt.nama as nama_penitip',
+                'p.tanggal_masuk',
+                'rp.perpanjangan',
+                'h.id_pegawai as id_hunter',
+                'h.nama as nama_hunter',
+                'b.harga_barang'
+            )
+            ->orderBy('p.tanggal_masuk', 'desc')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => 'Tidak ada data stok gudang tersedia.',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $data,
+            'message' => 'Data stok gudang berhasil diambil.',
+        ], 200);
+    }
     public function laporanKomisiBulanan($tahun, $bulan)
 {
     $data = DB::table('pemesanan as p')

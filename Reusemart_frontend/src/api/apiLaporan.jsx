@@ -13,19 +13,6 @@ export const GetLaporanDonasiBarang = async (tahun) => {
   }
 };
 
-export const GetLaporanKomisiBulanan = async (tahun, bulan) => {
-  try {
-    const response = await useAxios.get(`/laporanKomisiBulanan/${tahun}/${bulan}`, {
-        headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-    });
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
 export const GetLaporanRekapRequest = async () => {
   try {
     const response = await useAxios.get(`/laporanRekapRequest`, {
@@ -36,21 +23,6 @@ export const GetLaporanRekapRequest = async () => {
     return response.data;
   } catch (error) {
     throw error.response.data;
-  }
-};
-
-export const GetLaporanStokGudang = async () => {
-  try {
-    const response = await useAxios.get(`/laporanStokGudang`, {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-      },
-    });
-    console.log('JANGAN AJA NGILANG:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error API Stok Gudang:', error.response?.data || error);
-    throw error.response?.data || error;
   }
 };
 
@@ -79,3 +51,57 @@ export const GetLaporanPenjualanKeseluruhan = async (tahun) => {
     throw error.response.data;
   }
 };
+
+export const GetLaporanStokGudang = async () => {
+  try {
+    const response = await useAxios.get(`/laporanStokGudang`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    console.log('MANA WOI:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error API Stok Gudang:', error.response?.data || error);
+    throw error.response?.data || error;
+  }
+};
+
+export const GetLaporanKomisiBulanan = async (tahun, bulan) => {
+  try {
+    const response = await useAxios.get(`/laporanKomisiBulanan/${tahun}/${bulan}`, {
+        headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+export const GetLaporanByKategori = async (tahun) => {
+  try {
+    const response = await useAxios.get(`/laporanByKategori/${tahun}`, {
+        headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+}
+
+export const GetLaporanPenitipanHabis = async (tahun) => {
+  try {
+    const response = await useAxios.get(`/laporanPenitipanHabis/${tahun}`, {
+        headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+}
