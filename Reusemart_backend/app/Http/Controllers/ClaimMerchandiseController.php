@@ -88,9 +88,18 @@ class ClaimMerchandiseController extends Controller
             $merchandise->save();
             $pembeli->save();
 
+            $claimMerchandise = new Claim_Merchandise();
+            $claimMerchandise->id_pembeli = $idPembeli;
+            $claimMerchandise->id_merchandise = $id_merchandise;
+            $claimMerchandise->tanggal_claim = null; 
+            $claimMerchandise->id_pegawai = null; 
+            
+            $claimMerchandise->save();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Berhasil Klaim Merchandise',
+                'id_claim' => $claimMerchandise->id_claim,
             ]);
             
         } catch (\Exception $e) {

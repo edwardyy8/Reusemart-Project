@@ -165,3 +165,29 @@ export const GetPenitipanDetails = async (id) => {
     throw error.response?.data || error; // Consistent error handling
   }
 };
+
+export const GetJumlahKomisiHunter = async () => {
+    try {
+        const response = await useAxios.get("/getJumlahKomisiHunter", {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
+export const GetKomisiHunter = async () => {
+    try {
+        const response = await useAxios.get(`/getKomisiHunter`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};

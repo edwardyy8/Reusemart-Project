@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Models\Barang;
@@ -185,8 +186,9 @@ class LaporanController extends Controller
         ], 200);
     }
 
-    public function laporanPenitipanHabis ()
+    public function laporanPenitipanHabis ($tahun)
     {
+        $sekarang = Carbon::now('Asia/Jakarta');
         $data = DB::table('barang as b')
             ->select([
                 'b.id_barang',
@@ -200,7 +202,9 @@ class LaporanController extends Controller
             ])
             ->join('rincian_penitipan as rp', 'b.id_barang', '=', 'rp.id_barang')
             ->join('penitip as p', 'b.id_penitip', '=', 'p.id_penitip')
-            ->where('b.status_barang', '!=', 'Diambil Kembali')
+            ->where('rp.tanggal_akhir', '<', $sekarang)
+            ->where('b.status_barang', '!=', 'Terjual')
+            ->whereYear('rp.tanggal_akhir', $tahun)
             ->orderBy('rp.tanggal_akhir', 'asc')
             ->get();
 
@@ -216,7 +220,7 @@ class LaporanController extends Controller
         return response()->json([
             'status' => true,
             'data' => $data,
-            'message' => 'Data penjualan penitip berhasil diambil',
+            'message' => 'Data penitipan habis berhasil diambil',
         ], 200);
     }
 }
