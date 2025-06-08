@@ -15,6 +15,7 @@ class BarangController extends Controller
     {
         $barang = Barang::with('penitip') // Eager load relasi penitip
                         ->where('status_barang', 'Tersedia')
+                        ->where('stok_barang', '>', 0)
                         ->orderBy('tanggal_masuk', 'desc')
                         ->get();
 
@@ -150,6 +151,9 @@ class BarangController extends Controller
     {
         try {
             $barang = Barang::with('rincian_penitipan')->findOrFail($id);
+            $barang->stok_barang = 0;
+            $barang->save();
+
             $barang->rincian_penitipan->batas_akhir = Carbon::now('Asia/Jakarta')->addDays(7);
             $barang->rincian_penitipan->status_penitipan = 'Diambil Kembali';
             $barang->rincian_penitipan->save();
@@ -195,18 +199,18 @@ class BarangController extends Controller
             ->with(['barang', 'barang.penitip'])
             ->get();
 
-            if ($barangList->isEmpty()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Tidak ada barang dengan status Diambil Kembali',
-                ], 404);
-            }
+            // if ($barangList->isEmpty()) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Tidak ada barang dengan status Diambil Kembali',
+            //     ], 404);
+            // }
 
             foreach ($barangList as $barang){
                 $batasAkhir = Carbon::parse($barang->batas_akhir);
                 $hariIni = Carbon::now('Asia/Jakarta');
 
-                if ($batasAkhir->lt($hariIni) && ($barang->barang->status_barang === 'Diambil Kembali' || $barang->barang->status_barang === 'Tersedia')) {
+                if ($batasAkhir->lt($hariIni) && ($barang->barang->status_barang === 'Tersedia')) {
                     $barang->barang->update([
                         'status_barang' => 'Barang untuk Donasi',
                     ]);

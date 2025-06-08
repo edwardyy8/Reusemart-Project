@@ -18,12 +18,21 @@ const CatatPengambilanBarangPage = () => {
 
   const fetchBarang = async () => {
     setLoading(true);
-    const response = await GetAllBarangDiambil();
-    console.log("RESPON WOY: ", response);
-    const sortedData = response.data.sort((a, b) => a.id_rincianpenitipan - b.id_rincianpenitipan);
+    try{
+      const response = await GetAllBarangDiambil();
+      console.log("RESPON WOY: ", response);
+      const sortedData = response.data.sort((a, b) => a.id_rincianpenitipan - b.id_rincianpenitipan);
+      setBarangList(sortedData);
 
-    setBarangList(sortedData);
-    setLoading(false);
+      if (sortedData.length === 0) {
+        toast.warning("Tidak ada titipan dengan status 'Diambil Kembali'");
+      }
+    } catch (error) {
+      console.error("Gagal mengambil data titipan:", error);
+      toast.error("Gagal mengambil data titipan");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

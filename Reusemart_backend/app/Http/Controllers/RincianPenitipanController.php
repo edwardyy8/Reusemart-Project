@@ -132,7 +132,7 @@ class RincianPenitipanController extends Controller
             $rincian->update([
                 'tanggal_akhir' => $tanggal_akhir,
                 'batas_akhir' => $tanggal_akhir,
-                'perpanjangan' => 1
+                'perpanjangan' => "Ya",
             ]);
 
             return response()->json([

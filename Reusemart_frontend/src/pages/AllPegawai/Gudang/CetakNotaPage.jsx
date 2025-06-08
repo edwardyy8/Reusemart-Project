@@ -54,6 +54,12 @@ const CetakNotaPage = ({pemesanan}) => {
     fetchPemesanan();
   }, []);
 
+ useEffect(() => {
+    if (!loading && filteredData.length === 0) {
+      toast.warning("Tidak ada nota yang perlu dicetak");
+    }
+  }, [loading, pemesananList]); 
+
   const formatTanpaDetik = (tanggal) => {
     const date = new Date(tanggal);
     const tahun = date.getFullYear();
@@ -65,11 +71,11 @@ const CetakNotaPage = ({pemesanan}) => {
     return `${tahun}-${bulan}-${hari} ${jam}:${menit}`;
   };
 
-  const totalPesanan = pemesananList.filter((p) => p.rincian_pemesanan[0]?.komisi_reusemart == 0).length;
-  const totalDelivery = pemesananList.filter((p) => p.rincian_pemesanan[0]?.komisi_reusemart == 0 && p.metode_pengiriman.trim().toLowerCase()==="kurir").length;
-  const totalPickup = pemesananList.filter((p) => p.rincian_pemesanan[0]?.komisi_reusemart == 0 && p.metode_pengiriman.trim().toLowerCase()==="pickup").length;
+  const totalPesanan = pemesananList.length;
+  const totalDelivery = pemesananList.filter((p) => p.metode_pengiriman.trim().toLowerCase()==="kurir").length;
+  const totalPickup = pemesananList.filter((p) => p.metode_pengiriman.trim().toLowerCase()==="pickup").length;
 
-  const filteredData = pemesananList.filter((p) => p.status_pembayaran === "Lunas" && p.rincian_pemesanan[0]?.komisi_reusemart == 0).filter((p) => {
+  const filteredData = pemesananList.filter((p) => p.status_pembayaran === "Lunas").filter((p) => {
     const term = searchTerm.toLowerCase();
     return (
       p.id_pemesanan.toString().toLowerCase().includes(term) ||

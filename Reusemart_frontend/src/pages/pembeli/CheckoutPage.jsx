@@ -41,7 +41,7 @@ const CheckoutPage = () => {
     const [data, setData] = useState({
         metode_pengiriman: "kurir",
         id_pembeli: null,
-        id_alamat: location.state?.alamat.id_alamat || null,
+        id_alamat: location.state?.alamat.id_alamat || 0,
         poin_digunakan: 0,
         poin_didapatkan: Math.floor(totalHargaBarang * 0.0001 + (totalHargaBarang >= 500000 ? (totalHargaBarang * 0.0001) * 0.2 : 0)),
         status_pembayaran: "Menunggu Pembayaran",
@@ -85,6 +85,11 @@ const CheckoutPage = () => {
             if(!selectedAlamat) {
                 const response = await GetDefaultAlamat();
                 setAlamatData(response.data);
+                setData({
+                    ...data,
+                    id_alamat: response.data.id_alamat,
+                });
+                console.log("Alamat default:", response.data);
             }else {
                 setAlamatData(selectedAlamat);
             }
@@ -175,7 +180,12 @@ const CheckoutPage = () => {
         setIsLoading(true);
     
         try {
-            const response = await TambahPemesanan(data);
+            const finalData = {
+                ...data,
+                id_alamat: alamatData?.id_alamat, 
+            };
+            
+            const response = await TambahPemesanan(finalData);
             setIdPemesanan(response.data.id_pemesanan);
             setIsCheckout(true);
             fetchKeranjang();
@@ -258,15 +268,15 @@ const CheckoutPage = () => {
                                 <Row >
                                     <Col md={12}className="me-auto">
                                         <h4 className="hijau">Detail Alamat</h4>
-                                        <Card className={`mb-3 shadow-sm border-1 border-dark rounded-3 ${metode === 'Pickup' ? 'opacity-50 pe-none bg-white' : ''}`}> 
+                                        <Card className={`mb-3 shadow-sm border-1 border-dark rounded-3 ${metode === 'pickup' ? 'opacity-50 pe-none bg-white' : ''}`}> 
                                             <Card.Body>
                                                 <div className="d-flex justify-content-between align-items-center">
                                                     <p className="h5 mb-0"> {alamatData.nama_penerima} <span className="text-muted">({alamatData.label_alamat})</span></p>    
-                                                    <Button variant="light" className={metode === 'Pickup'? '' : 'text-decoration-underline'}
-                                                        onClick={() => {metode === 'Pickup' 
+                                                    <Button variant="light" className={metode === 'pickup'? '' : 'text-decoration-underline'}
+                                                        onClick={() => {metode === 'pickup' 
                                                             ? null 
                                                             : navigate('/pembeli/ubahAlamat', { state: { alamat: alamatData } })}}
-                                                        disabled={metode === 'Pickup'}
+                                                        disabled={metode === 'pickup'}
                                                     >
                                                         Ubah Alamat
                                                     </Button>

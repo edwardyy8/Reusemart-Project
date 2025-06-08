@@ -20,24 +20,36 @@ const SeluruhPemesananPage = () => {
 
   const fetchPemesanan = async () => {
     setLoading(true);
-    const response = await GetAllPemesanan();
-    console.log("API response:", response);
+    try {
+      const response = await GetAllPemesanan();
+      console.log("API response:", response);
 
-    const pemesanan = response.data;
-    console.log("pemesanan array:", pemesanan);
+      const pemesanan = response.data;
+      console.log("pemesanan array:", pemesanan);
 
-    const sortedData = pemesanan.sort((a, b) => {
-      const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
-      const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
-      return numA - numB;
-    });
-    setPemesananList(sortedData);
-    setLoading(false);
+      const sortedData = pemesanan.sort((a, b) => {
+        const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
+        const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
+        return numA - numB;
+      });
+      setPemesananList(sortedData);
+    } catch (error) {
+      console.error("Gagal mengambil data pengiriman:", error);
+      toast.error("Gagal mengambil data pengiriman");
+    } finally {
+      setLoading(false);
+    }    
   };
 
   useEffect(() => {
     fetchPemesanan();
   }, []);
+
+  useEffect(() => {
+    if (!loading && filteredData.length === 0) {
+      toast.warning("Tidak ada pemesanan yang perlu dijadwalkan");
+    }
+  }, [loading, pemesananList]);
 
   const formatTanpaDetik = (tanggal) => {
         const date = new Date(tanggal);

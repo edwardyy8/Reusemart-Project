@@ -24,19 +24,32 @@ const KelolaPickupPage = () => {
 
   const fetchPemesanan = async () => {
     setLoading(true);
-    const response = await GetAllPickup();
-    const sortedData = response.data.sort((a, b) => {
-      const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
-      const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
-      return numA - numB;
-    });
-    setPemesananList(sortedData);
-    setLoading(false);
+    try{
+      const response = await GetAllPickup();
+      const sortedData = response.data.sort((a, b) => {
+        const numA = parseInt(a.id_pemesanan.replace(/[^\d]/g, ""));
+        const numB = parseInt(b.id_pemesanan.replace(/[^\d]/g, ""));
+        return numA - numB;
+      });
+      setPemesananList(sortedData);
+    } catch (error) {
+      console.error("Gagal mengambil data pickup:", error);
+      toast.error("Gagal mengambil data pickup");
+    } finally {
+      setLoading(false);
+    }
+    
   };
 
   useEffect(() => {
     fetchPemesanan();
   }, []);
+
+  useEffect(() => {
+    if (!loading && filteredData.length === 0) {
+      toast.warning("Tidak ada pickup yang perlu dijadwalkan");
+    }
+  }, [loading, pemesananList]);
 
   const formatTanpaDetik = (tanggal) => {
         const date = new Date(tanggal);

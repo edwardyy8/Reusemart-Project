@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Card, Spinner, Alert, Row, Col, Button, Form } from "react-bootstrap";
+import { Container, Card, Spinner, Alert, Row, Col, Button, Form, Modal } from "react-bootstrap";
 import { BsCaretRightFill } from "react-icons/bs";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -11,6 +11,8 @@ import { toast } from "react-toastify";
 const KeranjangPage = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [idKeranjangHapus, setIdKeranjangHapus] = useState(null);
     
     const { 
         itemKeranjang, setItemKeranjang, fetchKeranjang, totalHargaBarang, 
@@ -35,6 +37,9 @@ const KeranjangPage = () => {
         try {
             const response = await DeleteKeranjang(id);
             fetchKeranjang();
+            setShowModal(false);
+            toast.success("Berhasil menghapus barang dari keranjang");
+            setIdKeranjangHapus(null);
         } catch (error) {
             console.error("Gagal menghapus barang:", error);
         } finally {
@@ -96,7 +101,10 @@ const KeranjangPage = () => {
                                                     </div>
                                                 </div>
                                                 <Button className="bg-white border-0 shadow-sm ms-auto" 
-                                                    onClick={() => handleDelete(item.id_keranjang)} 
+                                                    onClick={() => {
+                                                        setIdKeranjangHapus(item.id_keranjang);
+                                                        setShowModal(true);
+                                                    }} 
                                                     disabled={isLoading}>
                                                         <FaRegTrashCan className="hijau"/>     
                                                 </Button>
@@ -161,6 +169,23 @@ const KeranjangPage = () => {
                     </Row>
                )}
             </Container>
+
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Konfirmasi Hapus</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Apakah Anda yakin ingin menghapus barang ini dari keranjang?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Batal
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDelete(idKeranjangHapus)}>
+                        Hapus
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             
         </>
     );

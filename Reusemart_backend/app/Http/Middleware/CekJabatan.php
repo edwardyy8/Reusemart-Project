@@ -28,7 +28,7 @@ class CekJabatan
         if ($user->jabatan->nama_jabatan != $jabatan) {
             return response()->json([
                 'success' => false,
-                'message' => 'Akses ditolak: Jabatan tidak sesuai',
+                'message' => 'Akses ditolak: Jabatan tidak sesuai: ' . $user->jabatan->nama_jabatan . ', harus ' . $jabatan,
             ], 403);
         }
 
