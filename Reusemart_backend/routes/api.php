@@ -143,7 +143,7 @@ Route::middleware('auth:pegawai')->group(function () {
         Route::get('/laporanRekapRequest', [LaporanController::class, 'laporanRekapRequest']);
         Route::get('/laporanPenitip/{tahun}/{bulan}/{id}', [LaporanController::class, 'laporanPenitip']);
         Route::get('/laporanByKategori/{tahun}', [LaporanController::class, 'laporanByKategori']);
-        Route::get('/laporanPenitipanHabis', [LaporanController::class, 'laporanPenitipanHabis']);
+        Route::get('/laporanPenitipanHabis/{tahun}', [LaporanController::class, 'laporanPenitipanHabis']);
     });
 
     Route::middleware(cekJabatan::class.':Gudang')->group(function () {
@@ -176,6 +176,8 @@ Route::middleware('auth:pegawai')->group(function () {
 
     Route::middleware(cekJabatan::class.':Hunter')->group(function () {
         Route::get('/jumlah-item-hunter', [PenitipanController::class, 'jumlahItemHunter']);
+        Route::get('/getKomisiHunter', [PenitipanController::class, 'getKomisiHunter']);
+        Route::get('/getJumlahKomisiHunter', [PenitipanController::class, 'getJumlahKomisiHunter']);
     });
 
 });
@@ -209,6 +211,7 @@ Route::get('/foto-barang/{id_barang}/{filename}', [FotoBarangController::class, 
 Route::get('/fotobarang/barang/{id_barang}', [FotoBarangController::class, 'getByBarangId']);
 Route::delete('/fotobarang/{id}', [FotoBarangController::class, 'destroy']);
 Route::get('/penitip/foto-profile/{filename}', [PenitipController::class, 'getFotoProfile']);
+Route::get('/getPemesananByIdOrder/{id}', [PemesananController::class, 'getPemesananByIdOrder']);
 
 Route::get('/kategori', [KategoriController::class, 'index']);
 Route::get('/kategori/{id}', [KategoriController::class, 'show']);

@@ -1178,5 +1178,29 @@ class PemesananController extends Controller
         }
     }
 
+    public function getPemesananByIdOrder($id)
+    {
+        try {
+            $pemesanan = Pemesanan::where('id_pemesanan', $id)->first();
+
+            if (!$pemesanan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pemesanan tidak ditemukan',
+                ], 404);
+            }
+            
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Pemesanan',
+                'data' => $pemesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
     
 }

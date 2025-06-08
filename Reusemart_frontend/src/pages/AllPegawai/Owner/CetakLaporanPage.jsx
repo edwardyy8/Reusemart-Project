@@ -123,7 +123,7 @@ const CetakLaporanPage = () => {
 
     const fetchLaporanPenitipanHabis = () => {
         setIsLoadingCetak(true);
-        GetLaporanPenitipanHabis()
+        GetLaporanPenitipanHabis(tahun)
             .then((data) => {
                 setLaporanPenitipan(data.data);
                 toast.success("Laporan Penitipan Habis berhasil diambil");
@@ -133,7 +133,7 @@ const CetakLaporanPage = () => {
             })
             .catch((err) => {
                 console.log(err);
-                toast.error(`Tidak ada data laporan penitipan habis`);
+                toast.error(`Tidak ada data laporan penitipan habis pada tahun ${tahun}`);
                 setIsLoadingCetak(false);
             });
     };

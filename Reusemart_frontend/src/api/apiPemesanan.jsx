@@ -41,6 +41,17 @@ export const GetPemesananByIdPemesanan = async (id) => {
     }
 }
 
+export const GetPemesananByIdOrder = async (id) => {
+    try {
+        const response = await useAxios.get(`/getPemesananByIdOrder/${id}`, {
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+}
+
 export const AddRating = async (id_rincianpemesanan, rating) => {
     try {
         const response = await useAxios.post(`/addRating`, {

@@ -52,9 +52,9 @@ export const GetLaporanByKategori = async (tahun) => {
   }
 }
 
-export const GetLaporanPenitipanHabis = async () => {
+export const GetLaporanPenitipanHabis = async (tahun) => {
   try {
-    const response = await useAxios.get(`/laporanPenitipanHabis`, {
+    const response = await useAxios.get(`/laporanPenitipanHabis/${tahun}`, {
         headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
