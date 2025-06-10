@@ -3,6 +3,15 @@ import React, { forwardRef } from 'react';
 const LaporanStokGudang = forwardRef(({ laporan }, ref) => {
   if (!laporan || laporan.length === 0) return <div>Data tidak tersedia</div>;
 
+  const currentDate = new Date();
+  const formattedDate = currentDate instanceof Date && !isNaN(currentDate)
+    ? currentDate.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : 'Tanggal tidak tersedia';
+
   return (
     <div ref={ref} style={{ fontSize: '15px', padding: 20, border: '1px solid black', width: '100%' }}>
       <div>
@@ -14,11 +23,7 @@ const LaporanStokGudang = forwardRef(({ laporan }, ref) => {
       <div>
         <strong className='text-decoration-underline'>LAPORAN STOK GUDANG</strong>
         <br />
-        Tanggal cetak: {new Date().toLocaleDateString('id-ID', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        })}
+        Tanggal cetak: {formattedDate}
       </div>
 
       <div style={{ marginTop: 10 }}>

@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 const LaporanKomisiBulanan = forwardRef(({ laporan, tahun, bulan }, ref) => {
   if (!laporan || laporan.length === 0) return <div>Data tidak tersedia</div>;
@@ -18,9 +18,9 @@ const LaporanKomisiBulanan = forwardRef(({ laporan, tahun, bulan }, ref) => {
       <div>
         <strong className='text-decoration-underline'>LAPORAN KOMISI BULANAN</strong>
         <br />
-        Tahun : {laporan.data && laporan.data.length > 0 && new Date(laporan.data[0].tanggal_laku).getFullYear()}
+        Tahun : April
         <br />
-        Bulan : {laporan.data && laporan.data.length > 0 && new Date(laporan.data[0].tanggal_laku).getMonthYear()}
+        Bulan : 2024
         <br />
         Tanggal cetak: {new Date().toLocaleDateString('id-ID', {
           day: 'numeric',

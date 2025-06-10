@@ -10,3 +10,8 @@ Artisan::command('inspire', function () {
 
 Schedule::command('notif:notif-pengiriman-barang')->everyMinute();
 Schedule::command('notif:notif-masa-penitipan')->daily();
+Schedule::command('penitip:set-top-seller')->everyMinute();
+
+// Schedule::command('penitip:set-top-seller')->monthlyOn(1, time: '00:00');
+Schedule::command('donasi:check')->everyMinute();
+
