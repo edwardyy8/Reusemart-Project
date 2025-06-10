@@ -27,11 +27,22 @@ const KelolaClaimMerchandisePage = () => {
         setCurrentPage(page);
     };
 
+    // Fungsi untuk mengurutkan claims dengan tanggal_claim null di atas
+    const sortClaims = (claimsArray) => {
+        return [...claimsArray].sort((a, b) => {
+            if (a.tanggal_claim === null && b.tanggal_claim === null) return 0;
+            if (a.tanggal_claim === null) return -1;
+            if (b.tanggal_claim === null) return 1;
+            return new Date(a.tanggal_claim) - new Date(b.tanggal_claim);
+        });
+    };
+
     const fetchAllClaims = () => {
         setIsLoading(true);
         GetAllClaimMerchandise()
             .then((data) => {
-                setClaims(data);
+                const sortedData = sortClaims(data);
+                setClaims(sortedData);
                 setJumlah(data.length);
                 setIsLoading(false);
             })
@@ -50,19 +61,29 @@ const KelolaClaimMerchandisePage = () => {
         setCurrentPage(1);
         const keyword = e.target.value;
         setSearchKeyword(keyword);
+        const keywordLower = keyword.toLowerCase();
         const filtered = claims.filter((claim) =>
-            claim.merchandise.nama_merchandise.toLowerCase().includes(keyword.toLowerCase())
+            (claim.merchandise?.nama_merchandise?.toLowerCase() || "").includes(keywordLower) ||
+            (claim.pembeli?.nama?.toLowerCase() || "").includes(keywordLower) ||
+            (claim.pegawai?.nama?.toLowerCase() || "").includes(keywordLower) ||
+            (claim.id_claim?.toString() || "").includes(keywordLower)
         );
-        setFilteredClaims(filtered);
+        const sortedFiltered = sortClaims(filtered);
+        setFilteredClaims(sortedFiltered);
     };
 
     const handleConfirmSuccess = (claimId, updatedClaim) => {
-        setClaims(claims.map(claim =>
+        const updatedClaims = claims.map(claim =>
             claim.id_claim === claimId ? updatedClaim : claim
-        ));
-        setFilteredClaims(filteredClaims.map(claim =>
+        );
+        const sortedUpdatedClaims = sortClaims(updatedClaims);
+        setClaims(sortedUpdatedClaims);
+        
+        const updatedFilteredClaims = filteredClaims.map(claim =>
             claim.id_claim === claimId ? updatedClaim : claim
-        ));
+        );
+        const sortedUpdatedFilteredClaims = sortClaims(updatedFilteredClaims);
+        setFilteredClaims(sortedUpdatedFilteredClaims);
     };
 
     const handleShowModal = (claimId) => {
@@ -100,7 +121,7 @@ const KelolaClaimMerchandisePage = () => {
                         </Button>
                         <Form.Control
                             type="search"
-                            placeholder="Cari nama merchandise"
+                            placeholder="Cari nama merchandise, pembeli, pegawai, atau ID claim"
                             value={searchKeyword}
                             onChange={handleSearchChange}
                             className="ps-5"

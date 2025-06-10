@@ -6,11 +6,14 @@ import { FaPrint } from "react-icons/fa";
 import { useReactToPrint } from 'react-to-print';
 
 import { GetAllPenitip } from "../../../api/apiPenitip";
-import { GetLaporanDonasiBarang, GetLaporanRekapRequest, GetLaporanPenitip, GetLaporanByKategori, GetLaporanPenitipanHabis } from "../../../api/apiLaporan";
+import { GetLaporanDonasiBarang, GetLaporanRekapRequest, GetLaporanPenitip, GetLaporanByKategori, GetLaporanPenitipanHabis, GetLaporanStokGudang, GetLaporanKomisiBulanan, GetLaporanPenjualanKeseluruhan } from "../../../api/apiLaporan";
 
 import LaporanDonasiBarang from "../../../components/laporans/LaporanDonasiBarang";
 import LaporanRekapRequest from "../../../components/laporans/LaporanRekapRequest";
 import LaporanPenitip from "../../../components/laporans/LaporanPenitip";
+import LaporanStokGudang from "../../../components/laporans/LaporanStokGudang";
+import LaporanKomisiBulanan from "../../../components/laporans/LaporanKomisiBulanan";
+import LaporanPenjualanKeseluruhan from "../../../components/laporans/LaporanPenjualanKeseluruhan";
 import LaporanByKategori from "../../../components/laporans/LaporanByKategori";
 import LaporanPenitipanHabis from "../../../components/laporans/LaporanPenitipanHabis";
 
@@ -19,6 +22,7 @@ const CetakLaporanPage = () => {
     const [showModal, setShowModal] = useState(false);
     const [showModalNoYear, setShowModalNoYear] = useState(false);
     const [showModalPenitip, setShowModalPenitip] = useState(false);
+    const [showModalKomisiBulanan, setShowModalKomisiBulanan] = useState(false); // Tambah state untuk modal komisi bulanan
     const [penitipData, setPenitipData] = useState([]);
     const [namaLaporan, setNamaLaporan] = useState("");
     const [disabled, setDisabled] = useState(true);
@@ -27,23 +31,30 @@ const CetakLaporanPage = () => {
     const [selectedPenitip, setSelectedPenitip] = useState("");
     const [isLoadingCetak, setIsLoadingCetak] = useState(false);
     const [laporan, setLaporan] = useState([]);
-    const [laporanPenitip, setLaporanPenitip] = useState([]);
     const [laporanKategori, setLaporanKategori] = useState([]);
     const [laporanPenitipan, setLaporanPenitipan] = useState([]);
+    const [laporanPenitip, setLaporanPenitip] = useState([]);
+    const [laporanKomisiBulanan, setLaporanKomisiBulanan] = useState([]);
 
     const refDonasiBarang = useRef(null);
     const refRekapRequest = useRef(null);
     const refPenitip = useRef(null);
+    const refStokGudang = useRef(null);
     const refByKategori = useRef(null);
     const refPenitipan = useRef(null);
+    const refKomisiBulanan = useRef(null);
+    const refPenjualanKeseluruhan = useRef(null);
 
-    const handlePrintDonasiBarang  = useReactToPrint({ contentRef: refDonasiBarang });
-    const handlePrintRekapRequest  = useReactToPrint({ contentRef: refRekapRequest });
-    const handlePrintPenitip  = useReactToPrint({ contentRef: refPenitip });
-    const handlePrintByKategori  = useReactToPrint({ contentRef: refByKategori });
+    const handlePrintDonasiBarang = useReactToPrint({ contentRef: refDonasiBarang });
+    const handlePrintRekapRequest = useReactToPrint({ contentRef: refRekapRequest });
+    const handlePrintPenitip = useReactToPrint({ contentRef: refPenitip });
+    const handlePrintByKategori = useReactToPrint({ contentRef: refByKategori });
     const handlePrintPenitipanHabis = useReactToPrint({ contentRef: refPenitipan });
+    const handlePrintStokGudang = useReactToPrint({ contentRef: refStokGudang });
+    const handlePrintKomisiBulanan = useReactToPrint({ contentRef: refKomisiBulanan });
+    const handlePrintPenjualanKeseluruhan = useReactToPrint({ contentRef: refPenjualanKeseluruhan });
 
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const fetchLaporanDonasiBarang = () => {
         setIsLoadingCetak(true);
@@ -105,20 +116,20 @@ const CetakLaporanPage = () => {
     const fetchLaporanByKategori = () => {
         setIsLoadingCetak(true);
         GetLaporanByKategori(tahun)
-        .then((data) => {
-            console.log(data);
-            setLaporanKategori(data);
-            toast.success("Laporan Penjualan berhasil diambil");
-            setTahun("");
-            setDisabled(true);
-            setIsLoadingCetak(false);
-            checkAndPrint(refByKategori, handlePrintByKategori);
-        })
-         .catch((err) => {
-            console.log(err);
-            toast.error(`Tidak ada data laporan penjualan pada tahun ${tahun}`);
-            setIsLoadingCetak(false);
-        });
+            .then((data) => {
+                console.log(data);
+                setLaporanKategori(data);
+                toast.success("Laporan Penjualan berhasil diambil");
+                setTahun("");
+                setDisabled(true);
+                setIsLoadingCetak(false);
+                checkAndPrint(refByKategori, handlePrintByKategori);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(`Tidak ada data laporan penjualan pada tahun ${tahun}`);
+                setIsLoadingCetak(false);
+            });
     }
 
     const fetchLaporanPenitipanHabis = () => {
@@ -134,6 +145,62 @@ const CetakLaporanPage = () => {
             .catch((err) => {
                 console.log(err);
                 toast.error(`Tidak ada data laporan penitipan habis pada tahun ${tahun}`);
+                setIsLoadingCetak(false);
+            });
+    };
+
+    const fetchLaporanStokGudang = () => {
+        setIsLoadingCetak(true);
+        GetLaporanStokGudang()
+            .then((data) => {
+                setLaporan(data.data);
+                toast.success("Laporan Stok Gudang berhasil diambil");
+                setTahun("");
+                setDisabled(true);
+                setIsLoadingCetak(false);
+                checkAndPrint(refStokGudang, handlePrintStokGudang);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(`Tidak ada data laporan Stok Gudang donasi yang belum terpenuhi`);
+                setIsLoadingCetak(false);
+            });
+    };
+
+    const fetchLaporanKomisiBulanan = () => {
+        setIsLoadingCetak(true);
+        GetLaporanKomisiBulanan(tahun, bulan)
+            .then((data) => {
+                console.log(data.data);
+                setLaporanKomisiBulanan(data.data);
+                toast.success("Laporan Komisi Bulanan berhasil diambil");
+                setTahun("");
+                setBulan("");
+                setDisabled(true);
+                setIsLoadingCetak(false);
+                checkAndPrint(refKomisiBulanan, handlePrintKomisiBulanan);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(`Tidak ada data laporan komisi bulanan pada tahun ${tahun} dan bulan ${bulan}`);
+                setIsLoadingCetak(false);
+            });
+    };
+
+    const fetchLaporanPenjualanKeseluruhan = () => {
+        setIsLoadingCetak(true);
+        GetLaporanPenjualanKeseluruhan(tahun)
+            .then((data) => {
+                setLaporan(data.data);
+                toast.success("Laporan Penjualan Keseluruhan berhasil diambil");
+                setTahun("");
+                setDisabled(true);
+                setIsLoadingCetak(false);
+                checkAndPrint(refPenjualanKeseluruhan, handlePrintPenjualanKeseluruhan);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast.error(`Tidak ada data laporan Penjualan Keseluruhan pada tahun ${tahun}`);
                 setIsLoadingCetak(false);
             });
     };
@@ -162,10 +229,13 @@ const CetakLaporanPage = () => {
         'Laporan untuk Penitip': fetchLaporanPenitip,
         'Laporan Penjualan Per Kategori': fetchLaporanByKategori,
         'Laporan Penitipan Habis': fetchLaporanPenitipanHabis,
+        'Stok Gudang': fetchLaporanStokGudang,
+        'Komisi Bulanan': fetchLaporanKomisiBulanan,
+        'Penjualan Keseluruhan': fetchLaporanPenjualanKeseluruhan,
     };
 
     useEffect(() => {
-       const fetchPenitipData = async () => {
+        const fetchPenitipData = async () => {
             setIsLoading(true);
             try {
                 const data = await GetAllPenitip();
@@ -193,7 +263,18 @@ const CetakLaporanPage = () => {
             setDisabled(true);
         }
     };
-    
+
+    const validateFormKomisi = (tahun, bulan) => {
+        if (
+            tahun.length === 4 &&
+            !isNaN(tahun) &&
+            bulan !== ''
+        ) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+    };
 
     return (
         <>
@@ -223,7 +304,8 @@ const CetakLaporanPage = () => {
                                         <td className="text-center">1</td>
                                         <td>Penjualan Bulanan Keseluruhan</td>
                                         <td className="text-center">
-                                            <Button variant="primary" size="sm" onClick={() => {window.print()}}>
+                                            <Button variant="primary" size="sm"
+                                                onClick={() => { setShowModal(true); setNamaLaporan("Penjualan Keseluruhan"); }}>
                                                 <FaPrint />
                                             </Button>
                                         </td>
@@ -232,16 +314,18 @@ const CetakLaporanPage = () => {
                                         <td className="text-center">2</td>
                                         <td>Komisi bulanan per produk</td>
                                         <td className="text-center">
-                                            <Button variant="primary" size="sm" onClick={() => {window.print()}}>
+                                            <Button variant="primary" size="sm"
+                                                onClick={() => { setShowModalKomisiBulanan(true); setNamaLaporan("Komisi Bulanan"); }}>
                                                 <FaPrint />
                                             </Button>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td className="text-center">3</td>
+                                        <td className="text-center">6</td>
                                         <td>Stok Gudang</td>
                                         <td className="text-center">
-                                            <Button variant="primary" size="sm" onClick={() => {window.print()}}>
+                                            <Button variant="primary" size="sm"
+                                                onClick={() => { setShowModalNoYear(true); setNamaLaporan("Stok Gudang"); }}>
                                                 <FaPrint />
                                             </Button>
                                         </td>
@@ -250,7 +334,7 @@ const CetakLaporanPage = () => {
                                         <td className="text-center">4</td>
                                         <td>Penjualan per kategori barang (dalam 1 tahun)</td>
                                         <td className="text-center">
-                                            <Button variant="primary" size="sm" 
+                                             <Button variant="primary" size="sm" 
                                                 onClick={() => {setShowModal(true); setNamaLaporan("Laporan Penjualan Per Kategori");}}>
                                                 <FaPrint />
                                             </Button>
@@ -270,8 +354,8 @@ const CetakLaporanPage = () => {
                                         <td className="text-center">6</td>
                                         <td>Donasi Barang</td>
                                         <td className="text-center">
-                                            <Button variant="primary" size="sm" 
-                                                onClick={() => {setShowModal(true); setNamaLaporan("Donasi Barang");}}>
+                                            <Button variant="primary" size="sm"
+                                                onClick={() => { setShowModal(true); setNamaLaporan("Donasi Barang"); }}>
                                                 <FaPrint />
                                             </Button>
                                         </td>
@@ -280,8 +364,8 @@ const CetakLaporanPage = () => {
                                         <td className="text-center">7</td>
                                         <td>Rekap request donasi (semua yang belum terpenuhi)</td>
                                         <td className="text-center">
-                                            <Button variant="primary" size="sm" 
-                                                onClick={() => {setShowModalNoYear(true); setNamaLaporan("Rekap request donasi");}}>
+                                            <Button variant="primary" size="sm"
+                                                onClick={() => { setShowModalNoYear(true); setNamaLaporan("Rekap request donasi"); }}>
                                                 <FaPrint />
                                             </Button>
                                         </td>
@@ -290,8 +374,8 @@ const CetakLaporanPage = () => {
                                         <td className="text-center">8</td>
                                         <td>Laporan untuk Penitip</td>
                                         <td className="text-center">
-                                            <Button variant="primary" size="sm" 
-                                                onClick={() => {setShowModalPenitip(true); setNamaLaporan("Laporan untuk Penitip");}}>
+                                            <Button variant="primary" size="sm"
+                                                onClick={() => { setShowModalPenitip(true); setNamaLaporan("Laporan untuk Penitip"); }}>
                                                 <FaPrint />
                                             </Button>
                                         </td>
@@ -321,7 +405,7 @@ const CetakLaporanPage = () => {
                                 onChange={(e) => {
                                     const year = e.target.value;
                                     setTahun(year);
-                                    
+
                                     if (year.length === 4 && !isNaN(year)) {
                                         setDisabled(false);
                                     } else {
@@ -341,8 +425,8 @@ const CetakLaporanPage = () => {
                             <Spinner animation="border" size="sm" />
                         </Button>
                     ) : (
-                        <Button variant="primary" disabled={disabled} 
-                            onClick={() => {  
+                        <Button variant="primary" disabled={disabled}
+                            onClick={() => {
                                 const action = laporanActions[namaLaporan];
                                 if (action) action();
                             }}>
@@ -369,8 +453,8 @@ const CetakLaporanPage = () => {
                             <Spinner animation="border" size="sm" />
                         </Button>
                     ) : (
-                        <Button variant="primary" 
-                            onClick={() => {  
+                        <Button variant="primary"
+                            onClick={() => {
                                 const action = laporanActions[namaLaporan];
                                 if (action) action();
                             }}>
@@ -387,21 +471,21 @@ const CetakLaporanPage = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <h5>Inputkan periode dan penitip yang mau dicetak!</h5>
-                    
+
                     {/* Tahun */}
                     <Row className="mt-3">
                         <Col>
                             <input
-                            type="number"
-                            className="form-control"
-                            placeholder="Tahun (YYYY)"
-                            min={1900}
-                            value={tahun}
-                            onChange={(e) => {
-                                const year = e.target.value;
-                                setTahun(year);
-                                validateForm(year, bulan, selectedPenitip);
-                            }}
+                                type="number"
+                                className="form-control"
+                                placeholder="Tahun (YYYY)"
+                                min={1900}
+                                value={tahun}
+                                onChange={(e) => {
+                                    const year = e.target.value;
+                                    setTahun(year);
+                                    validateForm(year, bulan, selectedPenitip);
+                                }}
                             />
                         </Col>
                     </Row>
@@ -410,19 +494,19 @@ const CetakLaporanPage = () => {
                     <Row className="mt-3">
                         <Col>
                             <Form.Select
-                            value={bulan}
-                            onChange={(e) => {
-                                setBulan(e.target.value);
-                                validateForm(tahun, e.target.value, selectedPenitip);
-                            }}
+                                value={bulan}
+                                onChange={(e) => {
+                                    setBulan(e.target.value);
+                                    validateForm(tahun, e.target.value, selectedPenitip);
+                                }}
                             >
-                            <option value="">Pilih Bulan</option>
-                            {[
-                                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                            ].map((name, index) => (
-                                <option key={index + 1} value={index + 1}>{name}</option>
-                            ))}
+                                <option value="">Pilih Bulan</option>
+                                {[
+                                    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                                ].map((name, index) => (
+                                    <option key={index + 1} value={index + 1}>{name}</option>
+                                ))}
                             </Form.Select>
                         </Col>
                     </Row>
@@ -453,24 +537,94 @@ const CetakLaporanPage = () => {
                         Batal
                     </Button>
                     {isLoadingCetak ? (
-                    <Button variant="primary" disabled>
-                        <Spinner animation="border" size="sm" />
-                    </Button>
+                        <Button variant="primary" disabled>
+                            <Spinner animation="border" size="sm" />
+                        </Button>
                     ) : (
-                    <Button
-                        variant="primary"
-                        disabled={disabled}
-                        onClick={() => {
-                            const action = laporanActions[namaLaporan];
-                            if (action) action();
-                        }}
-                    >
-                        Cetak
-                    </Button>
+                        <Button
+                            variant="primary"
+                            disabled={disabled}
+                            onClick={() => {
+                                const action = laporanActions[namaLaporan];
+                                if (action) action();
+                            }}
+                        >
+                            Cetak
+                        </Button>
                     )}
                 </Modal.Footer>
             </Modal>
 
+            {/* Modal untuk komisi bulanan */}
+            <Modal show={showModalKomisiBulanan} onHide={() => setShowModalKomisiBulanan(false)} centered backdrop="static">
+                <Modal.Header closeButton>
+                    <Modal.Title>{namaLaporan}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <h5>Inputkan periode yang mau dicetak!</h5>
+
+                    {/* Tahun */}
+                    <Row className="mt-3">
+                        <Col>
+                            <input
+                                type="number"
+                                className="form-control"
+                                placeholder="Tahun (YYYY)"
+                                min={1900}
+                                value={tahun}
+                                onChange={(e) => {
+                                    const year = e.target.value;
+                                    setTahun(year);
+                                    validateFormKomisi(year, bulan);
+                                }}
+                            />
+                        </Col>
+                    </Row>
+
+                    {/* Bulan */}
+                    <Row className="mt-3">
+                        <Col>
+                            <Form.Select
+                                value={bulan}
+                                onChange={(e) => {
+                                    setBulan(e.target.value);
+                                    validateFormKomisi(tahun, e.target.value);
+                                }}
+                            >
+                                <option value="">Pilih Bulan</option>
+                                {[
+                                    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                                ].map((name, index) => (
+                                    <option key={index + 1} value={index + 1}>{name}</option>
+                                ))}
+                            </Form.Select>
+                        </Col>
+                    </Row>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModalKomisiBulanan(false)}>
+                        Batal
+                    </Button>
+                    {isLoadingCetak ? (
+                        <Button variant="primary" disabled>
+                            <Spinner animation="border" size="sm" />
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="primary"
+                            disabled={disabled}
+                            onClick={() => {
+                                const action = laporanActions[namaLaporan];
+                                if (action) action();
+                            }}
+                        >
+                            Cetak
+                        </Button>
+                    )}
+                </Modal.Footer>
+            </Modal>
 
             {/* cetak laporan */}
             {laporan && (
@@ -499,10 +653,23 @@ const CetakLaporanPage = () => {
                         ref={refPenitipan}
                         laporan={laporanPenitipan ? laporanPenitipan : null}
                     />
-                    
+
+                    <LaporanStokGudang
+                        ref={refStokGudang}
+                        laporan={laporan ? laporan : null}
+                    />
+
+                    <LaporanKomisiBulanan
+                        ref={refKomisiBulanan}
+                        laporan={laporanKomisiBulanan ? laporanKomisiBulanan : null}
+                    />
+
+                    <LaporanPenjualanKeseluruhan
+                        ref={refPenjualanKeseluruhan}
+                        laporan={laporan ? laporan : null}
+                    />
                 </div>
             )}
-
         </>
     );
 };

@@ -13,7 +13,7 @@ import { TambahKeranjang, HandleCheckoutDariBarang } from "../../api/apiKeranjan
 import { useKeranjang } from "../../context/KeranjangContext";
 
 import logo from "../../assets/images/logoreuse.png";
-
+import badgeIcon from "../../assets/images/iconbadge.png"; // Impor di awal file
 
 const DetailBarangPage = () => {
   const { id } = useParams();
@@ -131,10 +131,10 @@ const DetailBarangPage = () => {
       .catch((err) => {
         console.log(err);
         fetchKeranjang();
-        if(err.message == "Unauthenticated."){
+        if (err.message == "Unauthenticated.") {
           toast.error("Hanya pembeli yang bisa menambah keranjang!");
         } else if (err.message == "Maaf, Barang sudah habis") {
-          toast.error(err.message); 
+          toast.error(err.message);
           navigate("/kategori");
         } else {
           toast.error(err.message ?? "Hanya pembeli yang bisa menambah keranjang!");
@@ -156,12 +156,12 @@ const DetailBarangPage = () => {
       toast.error("Silahkan login terlebih dahulu!");
       navigate("/login");
       return;
-    }else{
+    } else {
       fetchRole();
     }
 
     HandleCheckoutDariBarang(id)
-      .then((res) => {    
+      .then((res) => {
         fetchKeranjang();
         navigate("/pembeli/checkout");
         setIsPendingKeranjang(false);
@@ -170,10 +170,10 @@ const DetailBarangPage = () => {
       .catch((err) => {
         console.log(err);
         fetchKeranjang();
-        if(err.message == "Unauthenticated."){
+        if (err.message == "Unauthenticated.") {
           toast.error("Hanya pembeli yang bisa melakukan checkout!");
         } else if (err.message == "Maaf, Barang sudah habis") {
-          toast.error(err.message); 
+          toast.error(err.message);
           navigate("/kategori");
         } else {
           toast.error(err.message ?? "Hanya pembeli yang bisa melakukan checkout!");
@@ -263,14 +263,29 @@ const DetailBarangPage = () => {
               <div className="p-3 border rounded">
                 <Row>
                   <Col md={4}>
-                    <img src={`http://127.0.0.1:8000/storage/foto_profile/${penitip?.foto_profile}`}
+                    <img
+                      src={`http://127.0.0.1:8000/storage/foto_profile/${penitip?.foto_profile}`}
                       alt="Penitip"
                       className="img-fluid rounded"
                     />
                   </Col>
                   <Col md={8}>
-                    <h5 className="fw-bold">{penitip?.nama}</h5>
-                    <p className="text-muted mb-1">Rating Penjual: ⭐ {penitip?.rating_penitip} </p>
+                    <div className="d-flex align-items-center">
+                      {penitip?.is_top === "Ya" && (
+                        <img
+                          src={badgeIcon} // Gunakan variabel yang diimpor
+                          alt="Top Seller Badge"
+                          style={{ width: "24px", height: "24px", marginRight: "8px" }}
+                        />
+                      )}
+                      <h5 className="fw-bold mb-0">
+                        {penitip?.nama}
+                      </h5>
+                    </div>
+                    {penitip?.is_top === "Ya" && (
+                      <p className="text-success">Top Seller</p>
+                    )}
+                    <p className="text-muted mb-1">Rating Penjual: ⭐ {penitip?.rating_penitip}</p>
                     <p className="text-muted">Barang Terjual: {penitip?.jumlahTerjual ?? 0}</p>
                   </Col>
                 </Row>

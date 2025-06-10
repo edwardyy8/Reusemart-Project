@@ -40,7 +40,7 @@ class ClaimMerchandiseController extends Controller
             $id_pegawai = $request->input('id_pegawai');
             $claim_merchandise = Claim_Merchandise::findOrFail($id_request);
             $claim_merchandise->tanggal_claim = now();
-            $claim_merchandise->id_pegawai = $id_pegawai;
+            $claim_merchandise->id_pegawai = "P1";
             $claim_merchandise->save();
 
             $claim_merchandise = Claim_Merchandise::with('pegawai', 'pegawai', 'pembeli', 'merchandise')->findOrFail($id_request);
@@ -91,9 +91,9 @@ class ClaimMerchandiseController extends Controller
             $claimMerchandise = new Claim_Merchandise();
             $claimMerchandise->id_pembeli = $idPembeli;
             $claimMerchandise->id_merchandise = $id_merchandise;
-            $claimMerchandise->tanggal_claim = null; 
-            $claimMerchandise->id_pegawai = null; 
-            
+            $claimMerchandise->tanggal_claim = null;
+            $claimMerchandise->id_pegawai = null;
+
             $claimMerchandise->save();
 
             return response()->json([
@@ -101,7 +101,7 @@ class ClaimMerchandiseController extends Controller
                 'message' => 'Berhasil Klaim Merchandise',
                 'id_claim' => $claimMerchandise->id_claim,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
