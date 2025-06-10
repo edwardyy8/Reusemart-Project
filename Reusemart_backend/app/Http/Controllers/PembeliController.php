@@ -22,5 +22,16 @@ class PembeliController extends Controller
         }
     }
 
+    public function getFotoProfile($filename)
+    {
+        $fullPath = storage_path('app/public/foto_profile/' . $filename);
+
+        if (!file_exists($fullPath)) {
+            return response()->json(['message' => 'File not found'], 404);
+        }
+
+        return response()->file($fullPath);
+    }
+
 
 }

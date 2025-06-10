@@ -215,6 +215,7 @@ Route::get('/foto-barang/{id_barang}/{filename}', [FotoBarangController::class, 
 Route::get('/fotobarang/barang/{id_barang}', [FotoBarangController::class, 'getByBarangId']);
 Route::delete('/fotobarang/{id}', [FotoBarangController::class, 'destroy']);
 Route::get('/penitip/foto-profile/{filename}', [PenitipController::class, 'getFotoProfile']);
+Route::get('/pembeli/foto-profile/{filename}', [PembeliController::class, 'getFotoProfile']);
 Route::get('/getPemesananByIdOrder/{id}', [PemesananController::class, 'getPemesananByIdOrder']);
 
 Route::get('/kategori', [KategoriController::class, 'index']);
