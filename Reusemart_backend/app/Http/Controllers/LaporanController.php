@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Models\Barang;
@@ -101,6 +102,7 @@ class LaporanController extends Controller
             ->whereNotIn('p.status_pembayaran', ['Batal', 'Menunggu Verifikasi'])
             ->whereMonth('p.tanggal_pemesanan', $bulan)
             ->whereYear('p.tanggal_pemesanan', $tahun)
+            ->where('p.tanggal_diterima', '!=', null)
             ->orderByDesc('p.tanggal_pelunasan')
             ->get();
 
@@ -109,6 +111,7 @@ class LaporanController extends Controller
             ->join('pemesanan as p', 'r.id_pemesanan', '=', 'p.id_pemesanan')
             ->where('b.id_penitip', '=', $id)
             ->where('b.status_barang', 'Terjual')
+            ->where('p.tanggal_diterima', '!=', null)
             ->whereNotIn('p.status_pembayaran', ['Batal', 'Menunggu Verifikasi'])
             ->whereMonth('p.tanggal_pemesanan', $bulan)
             ->whereYear('p.tanggal_pemesanan', $tahun)
