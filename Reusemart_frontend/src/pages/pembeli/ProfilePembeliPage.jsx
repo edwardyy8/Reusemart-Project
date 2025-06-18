@@ -52,6 +52,7 @@ const ProfilePembeliPage = () => {
           );
         }
         setPembelianData(pembelian.data);
+        console.log(pembelian.data);
 
         const response = await FetchMenungguPembayaran();
         
@@ -236,10 +237,13 @@ const ProfilePembeliPage = () => {
                               )}
                             </div>
                             <div>
-                              <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.rincian_pemesanan[0].barang.foto_barang}`} 
-                                    alt="Foto Barang" 
-                                    height={100}
-                                    className="rounded-2"/>
+                              {item.rincian_pemesanan.map((rc, idx) => (
+                                idx == 0 && 
+                                <img src={`http://127.0.0.1:8000/storage/foto_barang/${rc.barang.foto_barang}`} 
+                                      alt="Foto Barang" 
+                                      height={100}
+                                      className="rounded-2"/>
+                              ))}
                             </div>
                           </div>
                         </Card.Body>

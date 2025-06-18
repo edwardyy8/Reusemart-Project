@@ -748,7 +748,7 @@ class PemesananController extends Controller
 
                     if ($penitip && $penitip->fcm_token) {
                         // kirim notif
-                        $request = new Request([
+                        $notifRequest = new Request([
                             'fcm_token' => $penitip->fcm_token,
                             'title' => 'Barang Anda Terjual',
                             'body' => 'Barang Anda dengan ID ' . $item->id_barang . ' telah terjual. Di pemesanan ID ' . $pemesanan->id_pemesanan,
@@ -757,7 +757,7 @@ class PemesananController extends Controller
                             ]
                         ]);
 
-                        $this->notificationController->sendFcmNotification($request);
+                        $this->notificationController->sendFcmNotification($notifRequest);
                     }
                 }
             } else {
