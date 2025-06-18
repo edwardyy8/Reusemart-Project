@@ -1,4 +1,4 @@
-import { Container, Tab, Tabs, Card, Spinner, Alert, Button, Row, Col, Form, Modal, ModalFooter } from "react-bootstrap";
+import { Container, Tab, Tabs, Card, Spinner, Alert, Button, Row, Col, Form, Modal, ModalFooter, Image, Carousel } from "react-bootstrap";
 import reusemart from "../../assets/images/titlereuse.png";
 import { getProfileData, getPenitipanData, perpanjangRincianPenitipan, ambilTitipan } from "../../api/apiPenitip";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ const ProfilePenitipPage = () => {
   const [profileData, setProfileData] = useState(null);
   const [penjualanData, setPenjualanData] = useState([]);
   const [titipanData, setTitipanData] = useState([]);
+  const [photos, setPhotos] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetail, setShowDetail] = useState(false);
   const [sudahPerpanjang, setSudahPerpanjang] = useState(false);
@@ -448,7 +449,44 @@ const ProfilePenitipPage = () => {
           {selectedPenitipan && (
             <>
             <Row>
-              <Col md={8} className="gap-4">
+              <Col md={12} className="d-flex justify-content-center align-items-center">
+                {(() => {
+                  const barang = selectedPenitipan.barang;
+                  const photoList = [barang.foto_barang, barang.foto_barang2, barang.foto_barang3];
+                  const photos = photoList
+                    .filter((foto) => foto)
+                    .map((foto, i) => ({
+                      src: `http://127.0.0.1:8000/storage/foto_barang/${foto}`,
+                    }));
+
+                  if (photos.length === 0) {
+                    return (
+                      <div className="w-100 text-center p-3 bg-light rounded border text-muted" style={{ height: 300 }}>
+                        Tidak ada foto tersedia
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Carousel>
+                      {photos.map((photo, index) => (
+                        <Carousel.Item key={index}>
+                          <div className="d-flex justify-content-center align-items-center bg-light rounded" style={{ height: 220 }}>
+                            <Image
+                              src={photo.src}
+                              alt={photo.caption}
+                              style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", borderRadius: 10 }}
+                            />
+                          </div>
+                        </Carousel.Item>
+                      ))}
+                    </Carousel>
+                  );
+                })()}
+              </Col>
+            </Row>
+            <Row>
+              <Col md={8} className="mt-3 gap-4">
                 <h3><b>{selectedPenitipan.barang.nama_barang}</b></h3>
                 <div className="d-flex flex-column gap-1">
                   <span>Status: <span className="text-muted">{selectedPenitipan.barang.status_barang}</span></span>
@@ -465,13 +503,6 @@ const ProfilePenitipPage = () => {
                     disabled
                   />
                 </div>
-              </Col>
-              <Col ms={6} className="d-flex flex-column align-items-end mt-5">
-                <img 
-                  src={`http://127.0.0.1:8000/storage/foto_barang/${selectedPenitipan.barang.foto_barang}`}
-                  alt="Foto barang" 
-                  style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
-                />
               </Col>
             </Row>
             </>
