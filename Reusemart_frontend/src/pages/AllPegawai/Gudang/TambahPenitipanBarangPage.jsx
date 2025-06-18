@@ -18,15 +18,18 @@ const TambahPenitipanBarangPage = () => {
         id_kategori: "",
         nama_barang: "",
         stok_barang: 1,
-        harga_barang: 0,
+        harga_barang: 1,
         deskripsi: "",
-        berat_barang: 0,
+        berat_barang: 1,
         foto_barang: null,
         foto_barang2: null,
         foto_barang3: null,
         foto_preview: null,
         foto_preview2: null,
         foto_preview3: null,
+        foto_barang_preview: null,
+        foto_barang2_preview: null,
+        foto_barang3_preview: null,
         tanggal_garansi: "",
       },
     ],
@@ -453,9 +456,9 @@ const TambahPenitipanBarangPage = () => {
                             accept="image/*"
                             required
                           />
-                          {formData.barang[currentFormIndex].foto_preview && (
+                          {formData.barang[currentFormIndex].foto_barang_preview && (
                             <Image
-                              src={formData.barang[currentFormIndex].foto_preview}
+                              src={formData.barang[currentFormIndex].foto_barang_preview}
                               alt="Preview Utama"
                               className="mt-2 rounded"
                               style={{ maxWidth: "100%", maxHeight: "100px" }}
@@ -473,9 +476,9 @@ const TambahPenitipanBarangPage = () => {
                             accept="image/*"
                             required
                           />
-                          {formData.barang[currentFormIndex].foto_preview2 && (
+                          {formData.barang[currentFormIndex].foto_barang2_preview && (
                             <Image
-                              src={formData.barang[currentFormIndex].foto_preview2}
+                              src={formData.barang[currentFormIndex].foto_barang2_preview}
                               alt="Preview Kedua"
                               className="mt-2 rounded"
                               style={{ maxWidth: "100%", maxHeight: "100px" }}
@@ -492,9 +495,9 @@ const TambahPenitipanBarangPage = () => {
                             onChange={(e) => handleFileChange(e, currentFormIndex, "foto_barang3")}
                             accept="image/*"
                           />
-                          {formData.barang[currentFormIndex].foto_preview3 && (
+                          {formData.barang[currentFormIndex].foto_barang3_preview && (
                             <Image
-                              src={formData.barang[currentFormIndex].foto_preview3}
+                              src={formData.barang[currentFormIndex].foto_barang3_preview}
                               alt="Preview Ketiga"
                               className="mt-2 rounded"
                               style={{ maxWidth: "100%", maxHeight: "100px" }}
