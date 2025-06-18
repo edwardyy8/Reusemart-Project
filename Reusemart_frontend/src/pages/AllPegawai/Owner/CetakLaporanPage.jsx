@@ -321,7 +321,7 @@ const CetakLaporanPage = () => {
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td className="text-center">6</td>
+                                        <td className="text-center">3</td>
                                         <td>Stok Gudang</td>
                                         <td className="text-center">
                                             <Button variant="primary" size="sm"

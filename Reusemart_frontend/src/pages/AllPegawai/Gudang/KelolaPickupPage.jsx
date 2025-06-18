@@ -5,6 +5,7 @@ import { FaEye, FaCalendarAlt, FaCheck } from "react-icons/fa";
 import { useNavigate, Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
 import { GetAllPickup, UpdateTanggalPengambilan, AmbilPemesanan } from "../../../api/apiPemesanan";
+import ImageCarouselModal from "../../../components/ImageCarouselModal";
 
 const KelolaPickupPage = () => {
   const [pemesananList, setPemesananList] = useState([]);
@@ -305,22 +306,34 @@ const KelolaPickupPage = () => {
                 </div>
                 <div className="d-flex flex-column gap-1 mt-3">
                     <ul className="mb-2 list-unstyled">
-                      {selectedPemesanan.rincian_pemesanan?.map((pemesanan, index) => (
-                        <li key={index} className="mb-1">
-                          <div className="d-flex gap-2">
-                            <img
-                                src={`http://127.0.0.1:8000/storage/foto_barang/${pemesanan.barang?.foto_barang}`}
-                                alt="Foto Barang"
-                                height={100}
-                                className="rounded-2 mb-2"
-                              /> 
-                            <div className="d-flex flex-column">
-                              <span className="fw-bold">{pemesanan.barang?.nama_barang}</span>  
-                              <span>Rp {pemesanan.barang?.harga_barang.toLocaleString()}</span>
-                            </div> 
-                          </div>
-                        </li>
-                      ))}
+                      {selectedPemesanan.rincian_pemesanan?.map((pemesanan, index) => {
+                        const images = [
+                          {
+                            img: `http://127.0.0.1:8000/storage/foto_barang/${pemesanan.barang.foto_barang}` ?? null,
+                            title: 'Foto Barang 1',
+                          },
+                          {
+                            img: `http://127.0.0.1:8000/storage/foto_barang/${pemesanan.barang.foto_barang2}` ?? null,
+                            title: 'Foto Barang 2',
+                          },
+                          {
+                            img: `http://127.0.0.1:8000/storage/foto_barang/${pemesanan.barang.foto_barang3}` ?? null,
+                            title: 'Foto Barang 3',
+                          },
+                        ];
+
+                        return (
+                          <li key={index} className="mb-1">
+                            <div className="d-flex gap-2">
+                              <ImageCarouselModal images={images}/>
+                              <div className="d-flex flex-column">
+                                <span className="fw-bold">{pemesanan.barang?.nama_barang}</span>  
+                                <span>Rp {pemesanan.barang?.harga_barang.toLocaleString()}</span>
+                              </div> 
+                            </div>
+                          </li>
+                        );
+                      })}
                     </ul>
                   
                 </div>
