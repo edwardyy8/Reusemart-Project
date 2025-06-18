@@ -22,7 +22,11 @@ const TambahPenitipanBarangPage = () => {
         deskripsi: "",
         berat_barang: 0,
         foto_barang: null,
+        foto_barang2: null,
+        foto_barang3: null,
         foto_preview: null,
+        foto_preview2: null,
+        foto_preview3: null,
         tanggal_garansi: "",
       },
     ],
@@ -77,7 +81,7 @@ const TambahPenitipanBarangPage = () => {
     }
   };
 
-  const handleFileChange = (e, index) => {
+  const handleFileChange = (e, index, field) => {
     const file = e.target.files[0];
     if (file) {
       setFormData((prev) => ({
@@ -86,8 +90,8 @@ const TambahPenitipanBarangPage = () => {
           i === index
             ? {
                 ...item,
-                foto_barang: file,
-                foto_preview: URL.createObjectURL(file),
+                [field]: file,
+                [`${field}_preview`]: URL.createObjectURL(file),
               }
             : item
         ),
@@ -108,7 +112,11 @@ const TambahPenitipanBarangPage = () => {
           deskripsi: "",
           berat_barang: 0,
           foto_barang: null,
+          foto_barang2: null,
+          foto_barang3: null,
           foto_preview: null,
+          foto_preview2: null,
+          foto_preview3: null,
           tanggal_garansi: "",
         },
       ],
@@ -129,9 +137,11 @@ const TambahPenitipanBarangPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const missingPhotos = formData.barang.some((barang) => !barang.foto_barang);
+    const missingPhotos = formData.barang.some(
+      (barang) => !barang.foto_barang || !barang.foto_barang2
+    );
     if (missingPhotos) {
-      toast.error("Semua barang harus memiliki foto.");
+      toast.error("Semua barang harus memiliki foto utama dan foto kedua.");
       setLoading(false);
       return;
     }
@@ -142,9 +152,12 @@ const TambahPenitipanBarangPage = () => {
     payload.append("isHunting", formData.isHunting);
     formData.barang.forEach((barang, index) => {
       Object.entries(barang).forEach(([key, val]) => {
-        if (key === "foto_barang" && val) {
-          payload.append(`barang[${index}][foto_barang]`, val);
-        } else if (key !== "foto_preview" && val !== null) {
+        if (
+          (key === "foto_barang" || key === "foto_barang2" || key === "foto_barang3") &&
+          val
+        ) {
+          payload.append(`barang[${index}][${key}]`, val);
+        } else if (!key.includes("preview") && val !== null) {
           payload.append(`barang[${index}][${key}]`, val);
         }
       });
@@ -166,92 +179,92 @@ const TambahPenitipanBarangPage = () => {
   };
 
   const handlePrintNota = async () => {
-  try {
-    if (!penitipanData || !penitipanData.id_penitipan) {
-      throw new Error("Nomor transaksi tidak tersedia.");
-    }
-    const penitipanDetails = await GetPenitipanDetails(penitipanData.id_penitipan);
-    const fullData = penitipanDetails.status ? penitipanDetails.data : penitipanDetails;
-    if (!fullData || !fullData.id_penitipan) {
-      throw new Error("Data penitipan tidak valid atau tidak ditemukan.");
-    }
-    if (!fullData.rincian_penitipan || fullData.rincian_penitipan.length === 0) {
-      throw new Error("Tidak ada rincian penitipan untuk dicetak.");
-    }
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 10;
-    const textMargin = margin + 5; // Tambah jarak 5 mm dari garis kiri
-    const maxWidth = pageWidth - 2 * margin;
-    const halfWidth = pageWidth / 2;
-    let yPosition = margin;
-
-    const addText = (text, x, y, fontSize = 12, style = "normal") => {
-      pdf.setFont("helvetica", style);
-      pdf.setFontSize(fontSize);
-      pdf.text(text, x, y, { maxWidth });
-      return pdf.getTextDimensions(text, { maxWidth, fontSize }).h;
-    };
-    yPosition += addText(" ", textMargin, yPosition, 12, "bold");
-    yPosition += addText("Reusemart", textMargin, yPosition, 12, "bold");
-    yPosition += addText("Jl. Green Eco Park No. 456 Yogyakarta", textMargin, yPosition, 10);
-    yPosition += 5;
-    yPosition += addText(`No Nota                    : ${fullData.id_penitipan}`, textMargin, yPosition, 10);
-    yPosition += addText(`Tanggal Penitipan        : ${new Date(fullData.tanggal_masuk).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })}`, textMargin, yPosition, 10);
-    yPosition += addText(`Masa Penitipan Sampai: ${new Date(fullData.rincian_penitipan[0].tanggal_akhir).toLocaleDateString("id-ID")}`, textMargin, yPosition, 10);
-    yPosition += 5;
-    yPosition += addText(`Penitip: ${fullData.penitip.id_penitip} / ${fullData.penitip.nama}`, textMargin, yPosition, 10, "bold");
-    yPosition += 5;
-
-    const currentDate = new Date("2025-06-02");
-    fullData.rincian_penitipan.forEach((rincian) => {
-      const itemText = `${rincian.barang.nama_barang.padEnd(30)} ${rincian.barang.harga_barang.toLocaleString("id-ID")}`;
-      let garansiText = "";
-      if (rincian.barang.tanggal_garansi) {
-        const garansiDate = new Date(rincian.barang.tanggal_garansi);
-        if (garansiDate >= currentDate) {
-          garansiText = `Garansi ON ${garansiDate.toLocaleString("id-ID", { month: "long", year: "numeric" })}`;
-        }
+    try {
+      if (!penitipanData || !penitipanData.id_penitipan) {
+        throw new Error("Nomor transaksi tidak tersedia.");
       }
-      const beratText = `Berat Barang: ${rincian.barang.berat_barang} gram`;
-      const requiredHeight = 10 + (garansiText ? 5 : 0) + 5 + 10;
-      if (yPosition + requiredHeight > pageHeight - margin) {
+      const penitipanDetails = await GetPenitipanDetails(penitipanData.id_penitipan);
+      const fullData = penitipanDetails.status ? penitipanDetails.data : penitipanDetails;
+      if (!fullData || !fullData.id_penitipan) {
+        throw new Error("Data penitipan tidak valid atau tidak ditemukan.");
+      }
+      if (!fullData.rincian_penitipan || fullData.rincian_penitipan.length === 0) {
+        throw new Error("Tidak ada rincian penitipan untuk dicetak.");
+      }
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const textMargin = margin + 5;
+      const maxWidth = pageWidth - 2 * margin;
+      const halfWidth = pageWidth / 2;
+      let yPosition = margin;
+
+      const addText = (text, x, y, fontSize = 12, style = "normal") => {
+        pdf.setFont("helvetica", style);
+        pdf.setFontSize(fontSize);
+        pdf.text(text, x, y, { maxWidth });
+        return pdf.getTextDimensions(text, { maxWidth, fontSize }).h;
+      };
+      yPosition += addText(" ", textMargin, yPosition, 12, "bold");
+      yPosition += addText("Reusemart", textMargin, yPosition, 12, "bold");
+      yPosition += addText("Jl. Green Eco Park No. 456 Yogyakarta", textMargin, yPosition, 10);
+      yPosition += 5;
+      yPosition += addText(`No Nota                    : ${fullData.id_penitipan}`, textMargin, yPosition, 10);
+      yPosition += addText(`Tanggal Penitipan        : ${new Date(fullData.tanggal_masuk).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })}`, textMargin, yPosition, 10);
+      yPosition += addText(`Masa Penitipan Sampai: ${new Date(fullData.rincian_penitipan[0].tanggal_akhir).toLocaleDateString("id-ID")}`, textMargin, yPosition, 10);
+      yPosition += 5;
+      yPosition += addText(`Penitip: ${fullData.penitip.id_penitip} / ${fullData.penitip.nama}`, textMargin, yPosition, 10, "bold");
+      yPosition += 5;
+
+      const currentDate = new Date("2025-06-02");
+      fullData.rincian_penitipan.forEach((rincian) => {
+        const itemText = `${rincian.barang.nama_barang.padEnd(30)} ${rincian.barang.harga_barang.toLocaleString("id-ID")}`;
+        let garansiText = "";
+        if (rincian.barang.tanggal_garansi) {
+          const garansiDate = new Date(rincian.barang.tanggal_garansi);
+          if (garansiDate >= currentDate) {
+            garansiText = `Garansi ON ${garansiDate.toLocaleString("id-ID", { month: "long", year: "numeric" })}`;
+          }
+        }
+        const beratText = `Berat Barang: ${rincian.barang.berat_barang} gram`;
+        const requiredHeight = 10 + (garansiText ? 5 : 0) + 5 + 10;
+        if (yPosition + requiredHeight > pageHeight - margin) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        yPosition += addText(itemText, textMargin, yPosition, 10);
+        if (garansiText) {
+          yPosition += addText(garansiText, textMargin, yPosition, 10);
+        }
+        yPosition += addText(beratText, textMargin, yPosition, 10);
+        yPosition += 5;
+      });
+
+      if (yPosition + 30 > pageHeight - margin) {
         pdf.addPage();
         yPosition = margin;
       }
-      yPosition += addText(itemText, textMargin, yPosition, 10);
-      if (garansiText) {
-        yPosition += addText(garansiText, textMargin, yPosition, 10);
-      }
-      yPosition += addText(beratText, textMargin, yPosition, 10);
-      yPosition += 5;
-    });
+      yPosition += addText("Diterima dan QC oleh:", textMargin, yPosition, 10);
+      yPosition += 15;
+      yPosition += addText(`${fullData.qc?.id_pegawai || "N/A"} - ${fullData.qc?.nama || "Unknown"}`, textMargin + 5, yPosition, 10);
 
-    if (yPosition + 30 > pageHeight - margin) {
-      pdf.addPage();
-      yPosition = margin;
+      const contentHeight = yPosition - margin + 10;
+      pdf.setLineWidth(0.5);
+      pdf.rect(margin, margin, halfWidth - margin, contentHeight, "S");
+
+      const pdfBlob = pdf.output("blob");
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, "_blank");
+      saveAs(pdfBlob, `nota-${fullData.id_penitipan}.pdf`);
+      setShowDialog(false);
+      toast.success("Nota berhasil diunduh dan dibuka!");
+      navigate("/pegawai/Gudang/kelolaPenitipanBarang");
+    } catch (err) {
+      console.error("Error di handlePrintNota:", err);
+      toast.error(err.message || "Gagal mencetak nota.");
     }
-    yPosition += addText("Diterima dan QC oleh:", textMargin, yPosition, 10);
-    yPosition += 15;
-    yPosition += addText(`${fullData.qc?.id_pegawai || "N/A"} - ${fullData.qc?.nama || "Unknown"}`, textMargin + 5, yPosition, 10); // Indentasi lebih untuk bagian ini
-
-    const contentHeight = yPosition - margin + 10;
-    pdf.setLineWidth(0.5);
-    pdf.rect(margin, margin, halfWidth - margin, contentHeight, "S");
-
-    const pdfBlob = pdf.output("blob");
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    window.open(pdfUrl, "_blank");
-    saveAs(pdfBlob, `nota-${fullData.id_penitipan}.pdf`);
-    setShowDialog(false);
-    toast.success("Nota berhasil diunduh dan dibuka!");
-    navigate("/pegawai/Gudang/kelolaPenitipanBarang");
-  } catch (err) {
-    console.error("Error di handlePrintNota:", err);
-    toast.error(err.message || "Gagal mencetak nota.");
-  }
-};
+  };
 
   const prevForm = () => {
     setCurrentFormIndex((prev) => Math.max(0, prev - 1));
@@ -338,7 +351,7 @@ const TambahPenitipanBarangPage = () => {
           <h4 className="mt-4 mb-4 fw-bold">Daftar Barang</h4>
           <Row className="justify-content-center">
             <Col md={10}>
-              <div style={{ position: "relative", minHeight: "550px" }}>
+              <div style={{ position: "relative", minHeight: "650px" }}>
                 <Card style={{ border: "1px solid #535353", padding: "25px", boxShadow: "0 2px 5px rgba(0,0,0,0.1)" }}>
                   <Card.Body>
                     <Row>
@@ -376,19 +389,6 @@ const TambahPenitipanBarangPage = () => {
                       </Col>
                     </Row>
                     <Row>
-                      <Col md={6}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Stok Barang</Form.Label>
-                          <Form.Control
-                            type="number"
-                            name="stok_barang"
-                            min="1"
-                            value={formData.barang[currentFormIndex].stok_barang}
-                            onChange={(e) => handleChange(e, currentFormIndex)}
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
                       <Col md={6}>
                         <Form.Group className="mb-3">
                           <Form.Label>Harga Barang</Form.Label>
@@ -443,27 +443,68 @@ const TambahPenitipanBarangPage = () => {
                       </Col>
                     </Row>
                     <Row>
-                      <Col md={6}>
+                      <Col md={4}>
                         <Form.Group className="mb-3">
-                          <Form.Label>Upload Foto Barang</Form.Label>
+                          <Form.Label>Upload Foto Barang Utama</Form.Label>
                           <Form.Control
                             type="file"
                             name="foto_barang"
-                            onChange={(e) => handleFileChange(e, currentFormIndex)}
+                            onChange={(e) => handleFileChange(e, currentFormIndex, "foto_barang")}
                             accept="image/*"
                             required
                           />
                           {formData.barang[currentFormIndex].foto_preview && (
                             <Image
                               src={formData.barang[currentFormIndex].foto_preview}
-                              alt="Preview"
+                              alt="Preview Utama"
                               className="mt-2 rounded"
-                              style={{ maxWidth: "100%", maxHeight: "150px" }}
+                              style={{ maxWidth: "100%", maxHeight: "100px" }}
                             />
                           )}
                         </Form.Group>
                       </Col>
-                      <Col md={6} className="d-flex align-items-end justify-content-end">
+                      <Col md={4}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>Upload Foto Barang Kedua</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="foto_barang2"
+                            onChange={(e) => handleFileChange(e, currentFormIndex, "foto_barang2")}
+                            accept="image/*"
+                            required
+                          />
+                          {formData.barang[currentFormIndex].foto_preview2 && (
+                            <Image
+                              src={formData.barang[currentFormIndex].foto_preview2}
+                              alt="Preview Kedua"
+                              className="mt-2 rounded"
+                              style={{ maxWidth: "100%", maxHeight: "100px" }}
+                            />
+                          )}
+                        </Form.Group>
+                      </Col>
+                      <Col md={4}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>Upload Foto Barang Ketiga (Opsional)</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="foto_barang3"
+                            onChange={(e) => handleFileChange(e, currentFormIndex, "foto_barang3")}
+                            accept="image/*"
+                          />
+                          {formData.barang[currentFormIndex].foto_preview3 && (
+                            <Image
+                              src={formData.barang[currentFormIndex].foto_preview3}
+                              alt="Preview Ketiga"
+                              className="mt-2 rounded"
+                              style={{ maxWidth: "100%", maxHeight: "100px" }}
+                            />
+                          )}
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md={12} className="d-flex justify-content-end">
                         {formData.barang.length > 1 && (
                           <Button variant="danger" onClick={() => removeBarang(currentFormIndex)} style={{ width: "150px" }}>
                             Hapus Barang
@@ -480,7 +521,7 @@ const TambahPenitipanBarangPage = () => {
                       onClick={prevForm}
                       style={{ width: "45px", height: "45px", borderRadius: "50%", fontSize: "1.3rem" }}
                     >
-                      &lt;
+                      {"<"}
                     </Button>
                   )}
                 </div>
@@ -491,7 +532,7 @@ const TambahPenitipanBarangPage = () => {
                       onClick={nextForm}
                       style={{ width: "45px", height: "45px", borderRadius: "50%", fontSize: "1.3rem" }}
                     >
-                      &gt;
+                      {">"}
                     </Button>
                   ) : (
                     <Button

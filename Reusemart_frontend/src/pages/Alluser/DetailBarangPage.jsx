@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Card, Col, Container, Form, Row, Spinner } from "react-bootstrap";
+import { Alert, Button, Card, Col, Container, Form, Row, Spinner, Carousel, Image } from "react-bootstrap";
 import { BsPatchCheckFill } from "react-icons/bs";
-import { FaRegCommentDots } from 'react-icons/fa';
+import { FaRegCommentDots } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getRole } from "../../api/apiAuth";
 import { GetBarangById } from "../../api/apiBarang";
 import { GetDiskusiByIdBarang, TambahDiskusi } from "../../api/apiDiskusi";
 import { GetPenitipById } from "../../api/apiPenitip";
-
 import { TambahKeranjang, HandleCheckoutDariBarang } from "../../api/apiKeranjang";
 import { useKeranjang } from "../../context/KeranjangContext";
 
 import logo from "../../assets/images/logoreuse.png";
-import badgeIcon from "../../assets/images/iconbadge.png"; // Impor di awal file
+import badgeIcon from "../../assets/images/iconbadge.png";
 
 const DetailBarangPage = () => {
   const { id } = useParams();
@@ -24,12 +23,11 @@ const DetailBarangPage = () => {
   const [loadingDiskusi, setLoadingDiskusi] = useState(true);
   const [isPending, setIsPending] = useState(false);
   const [userType, setUserType] = useState("");
-
   const [isPendingKeranjang, setIsPendingKeranjang] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const { fetchKeranjang } = useKeranjang();
-
   const navigate = useNavigate();
 
   const [diskusiInput, setDiskusiInput] = useState({
@@ -81,12 +79,10 @@ const DetailBarangPage = () => {
     } finally {
       setLoadingDiskusi(false);
     }
-  }
+  };
 
   const fetchRole = async () => {
     setIsPending(true);
-    const token = sessionStorage.getItem("token");
-
     try {
       const res = await getRole();
       setUserType(res.user_type);
@@ -100,7 +96,6 @@ const DetailBarangPage = () => {
     }
   };
 
-  // buat keranjang
   const [keranjangInput, setKeranjangInput] = useState({
     id_barang: id,
     harga_barang: null,
@@ -115,7 +110,6 @@ const DetailBarangPage = () => {
     if (!tokenDariSS) {
       navigate("/login");
       toast.error("Silahkan login terlebih dahulu!");
-      navigate("/login");
       return;
     } else {
       fetchRole();
@@ -131,9 +125,9 @@ const DetailBarangPage = () => {
       .catch((err) => {
         console.log(err);
         fetchKeranjang();
-        if (err.message == "Unauthenticated.") {
+        if (err.message === "Unauthenticated.") {
           toast.error("Hanya pembeli yang bisa menambah keranjang!");
-        } else if (err.message == "Maaf, Barang sudah habis") {
+        } else if (err.message === "Maaf, Barang sudah habis") {
           toast.error(err.message);
           navigate("/kategori");
         } else {
@@ -144,7 +138,6 @@ const DetailBarangPage = () => {
       });
   };
 
-  // buat checkout
   const handleCheckout = () => {
     setIsDisabled(true);
     setIsPendingKeranjang(true);
@@ -154,7 +147,6 @@ const DetailBarangPage = () => {
     if (!tokenDariSS) {
       navigate("/login");
       toast.error("Silahkan login terlebih dahulu!");
-      navigate("/login");
       return;
     } else {
       fetchRole();
@@ -170,9 +162,9 @@ const DetailBarangPage = () => {
       .catch((err) => {
         console.log(err);
         fetchKeranjang();
-        if (err.message == "Unauthenticated.") {
+        if (err.message === "Unauthenticated.") {
           toast.error("Hanya pembeli yang bisa melakukan checkout!");
-        } else if (err.message == "Maaf, Barang sudah habis") {
+        } else if (err.message === "Maaf, Barang sudah habis") {
           toast.error(err.message);
           navigate("/kategori");
         } else {
@@ -181,8 +173,7 @@ const DetailBarangPage = () => {
         setIsPendingKeranjang(false);
         setIsDisabled(false);
       });
-
-  }
+  };
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -198,8 +189,8 @@ const DetailBarangPage = () => {
         setBarang(barangData);
         setKeranjangInput({ ...keranjangInput, harga_barang: barangData.barang.harga_barang });
 
-        const penitipData = await GetPenitipById(barangData.barang.id_penitip); // <--- perhatikan di sini
-        setPenitip({ ...penitipData, jumlahTerjual: barangData.jumlah_barang_terjual }); // ← Tambahkan properti ini
+        const penitipData = await GetPenitipById(barangData.barang.id_penitip);
+        setPenitip({ ...penitipData, jumlahTerjual: barangData.jumlah_barang_terjual });
       } catch (err) {
         console.error(err);
       } finally {
@@ -210,7 +201,6 @@ const DetailBarangPage = () => {
     fetchData();
     fetchDiskusi();
   }, [id]);
-
 
   if (loading) {
     return (
@@ -229,18 +219,165 @@ const DetailBarangPage = () => {
     );
   }
 
+  // Prepare photos for carousel
+  const photos = [
+    {
+      src: barang.barang.foto_barang
+        ? `http://127.0.0.1:8000/storage/foto_barang/${barang.barang.foto_barang}`
+        : null,
+      alt: "Foto Utama",
+    },
+    {
+      src: barang.barang.foto_barang2
+        ? `http://127.0.0.1:8000/storage/foto_barang/${barang.barang.foto_barang2}`
+        : null,
+      alt: "Foto Kedua",
+    },
+    {
+      src: barang.barang.foto_barang3
+        ? `http://127.0.0.1:8000/storage/foto_barang/${barang.barang.foto_barang3}`
+        : null,
+      alt: "Foto Ketiga",
+    },
+  ].filter((photo) => photo.src);
+
+  // Fallback image for broken links
+  const fallbackImage = "https://via.placeholder.com/400x400?text=Tidak+Ada+Gambar";
+
+  const handleSelect = (selectedIndex) => {
+    setActiveIndex(selectedIndex);
+  };
+
   return (
     <Container className="my-5">
       <Row className="g-4">
-        {/* Foto Utama */}
+        {/* Carousel Foto Barang dengan Thumbnail */}
         <Col md={4}>
-          <Card>
-            <Card.Img
-              variant="top"
-              src={`http://127.0.0.1:8000/storage/foto_barang/${barang.barang.foto_barang}`}
-              alt={barang.barang.nama_barang}
-              style={{ maxHeight: "400px", objectFit: "contain" }}
-            />
+          <Card className="border-0 shadow-sm" style={{ borderRadius: "12px", overflow: "hidden" }}>
+            {photos.length > 0 ? (
+              <>
+                <Carousel
+                  activeIndex={activeIndex}
+                  onSelect={handleSelect}
+                  indicators={true}
+                  prevIcon={
+                    <span
+                      className="carousel-control-prev-icon"
+                      style={{
+                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                        borderRadius: "50%",
+                        padding: "15px",
+                        transition: "opacity 0.2s ease, transform 0.2s",
+                        opacity: 0,
+                      }}
+                      onMouseEnter={(e) => (e.target.style.opacity = 1)}
+                      onMouseLeave={(e) => (e.target.style.opacity = 0)}
+                      aria-label="Foto Sebelumnya"
+                    />
+                  }
+                  nextIcon={
+                    <span
+                      className="carousel-control-next-icon"
+                      style={{
+                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                        borderRadius: "50%",
+                        padding: "15px",
+                        transition: "opacity 0.2s ease, transform 0.2s",
+                        opacity: 0,
+                      }}
+                      onMouseEnter={(e) => (e.target.style.opacity = 1)}
+                      onMouseLeave={(e) => (e.target.style.opacity = 0)}
+                      aria-label="Foto Berikutnya"
+                    />
+                  }
+                  interval={null}
+                  style={{ transition: "transform 0.2s ease" }} // Faster transition
+                >
+                  {photos.map((photo, index) => (
+                    <Carousel.Item key={index}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: "clamp(300px, 50vw, 400px)",
+                          transition: "transform 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                      >
+                        <Image
+                          src={photo.src}
+                          alt={photo.alt}
+                          onError={(e) => (e.target.src = fallbackImage)}
+                          style={{
+                            maxHeight: "100%",
+                            maxWidth: "100%",
+                            objectFit: "contain",
+                            borderRadius: "12px",
+                            boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
+                          }}
+                          aria-label={photo.alt}
+                        />
+                      </div>
+                    </Carousel.Item>
+                  ))}
+                </Carousel>
+                {/* Thumbnail Navigation */}
+                <div
+                  className="d-flex justify-content-center gap-2 mt-1 flex-wrap"
+                  style={{ padding: "5px" }} // Reduced margin
+                >
+                  {photos.map((photo, index) => (
+                    <Button
+                      key={index}
+                      variant="link"
+                      onClick={() => setActiveIndex(index)}
+                      style={{
+                        padding: 0,
+                        border: activeIndex === index ? "2px solid #047902" : "1px solid #dee2e6",
+                        borderRadius: "6px",
+                        overflow: "hidden",
+                        transition: "border-color 0.2s ease, transform 0.2s",
+                        transform: activeIndex === index ? "scale(1.1)" : "scale(1)",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = activeIndex === index ? "scale(1.1)" : "scale(1)")}
+                      aria-label={`Pilih ${photo.alt}`}
+                    >
+                      <Image
+                        src={photo.src}
+                        alt={`Thumbnail ${photo.alt}`}
+                        onError={(e) => (e.target.src = fallbackImage)}
+                        style={{
+                          width: "60px",
+                          height: "60px",
+                          objectFit: "cover",
+                          borderRadius: "4px",
+                        }}
+                      />
+                    </Button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "clamp(300px, 50vw, 400px)",
+                  borderRadius: "12px",
+                  textAlign: "center",
+                  color: "#6c757d",
+                  fontSize: "1.2rem",
+                  border: "1px solid #dee2e6",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                Tidak ada foto tersedia
+              </div>
+            )}
           </Card>
         </Col>
 
@@ -250,13 +387,14 @@ const DetailBarangPage = () => {
             <Col md={8}>
               <h2>{barang.barang.nama_barang}</h2>
               <p className="text-success">
-                {barang.barang.status_barang} - {
-                  barang.barang.tanggal_garansi
-                    ? new Date(barang.barang.tanggal_garansi) > new Date()
-                      ? "Bergaransi"
-                      : "Tidak Bergaransi"
+                {barang.barang.status_barang} -{" "}
+                {barang.barang.tanggal_garansi
+                  ? new Date(barang.barang.tanggal_garansi) > new Date()
+                    ? "Bergaransi"
                     : "Tidak Bergaransi"
-                } - {barang.barang.berat_barang} Kg              </p>
+                  : "Tidak Bergaransi"}{" "}
+                - {barang.barang.berat_barang} Kg
+              </p>
               <h3>Rp {Number(barang.barang.harga_barang).toLocaleString("id-ID")}</h3>
             </Col>
             <Col md={4}>
@@ -273,18 +411,14 @@ const DetailBarangPage = () => {
                     <div className="d-flex align-items-center">
                       {penitip?.is_top === "Ya" && (
                         <img
-                          src={badgeIcon} // Gunakan variabel yang diimpor
+                          src={badgeIcon}
                           alt="Top Seller Badge"
                           style={{ width: "24px", height: "24px", marginRight: "8px" }}
                         />
                       )}
-                      <h5 className="fw-bold mb-0">
-                        {penitip?.nama}
-                      </h5>
+                      <h5 className="fw-bold mb-0">{penitip?.nama}</h5>
                     </div>
-                    {penitip?.is_top === "Ya" && (
-                      <p className="text-success">Top Seller</p>
-                    )}
+                    {penitip?.is_top === "Ya" && <p className="text-success">Top Seller</p>}
                     <p className="text-muted mb-1">Rating Penjual: ⭐ {penitip?.rating_penitip}</p>
                     <p className="text-muted">Barang Terjual: {penitip?.jumlahTerjual ?? 0}</p>
                   </Col>
@@ -304,14 +438,18 @@ const DetailBarangPage = () => {
       <Row className="my-4">
         <Col md={12} className="d-flex justify-content-end">
           <div className="d-flex gap-2 w-50">
-            <button className="btn btn-outline-success w-50" onClick={() => submitTambahKeranjang()} disabled={isDisabled}>
+            <button
+              className="btn btn-outline-success w-50"
+              onClick={submitTambahKeranjang}
+              disabled={isDisabled}
+            >
               {isPendingKeranjang ? (
                 <Spinner animation="border" size="sm" variant="success" className="me-2" />
               ) : (
                 <span>+ Keranjang</span>
               )}
             </button>
-            <button className="btn btn-success w-50" disabled={isDisabled} onClick={() => handleCheckout()}>
+            <button className="btn btn-success w-50" disabled={isDisabled} onClick={handleCheckout}>
               {isPendingKeranjang ? (
                 <Spinner animation="border" size="sm" className="me-2" />
               ) : (
@@ -327,17 +465,20 @@ const DetailBarangPage = () => {
       <h4 className="text-success text-decoration-underline">Diskusi Produk</h4>
 
       <div className="border rounded p-4">
-        {/* Input Diskusi */}
         {!loadingDiskusi || !isPending ? (
           <>
             {diskusiList.length > 0 ? (
               diskusiList.map((diskusi, index) => (
-                <div key={index} className="border bg-light rounded p-2 mb-3 d-flex align-items-center px-3">
+                <div
+                  key={index}
+                  className="border bg-light rounded p-2 mb-3 d-flex align-items-center px-3"
+                >
                   <img
-                    src={diskusi.id_pegawai ? (logo
-                    ) : (
-                      `http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`
-                    )}
+                    src={
+                      diskusi.id_pegawai
+                        ? logo
+                        : `http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`
+                    }
                     alt="icon user"
                     width={35}
                     height={35}
@@ -347,11 +488,12 @@ const DetailBarangPage = () => {
                     <div>
                       <strong>
                         {diskusi.nama_pembeli || diskusi.nama_pegawai}
-                        {diskusi.id_pegawai &&
+                        {diskusi.id_pegawai && (
                           <>
-                            <span className="ms-1 hijau">(Customer Service)</span> <BsPatchCheckFill className="hijau ms-1" />
+                            <span className="ms-1 hijau">(Customer Service)</span>{" "}
+                            <BsPatchCheckFill className="hijau ms-1" />
                           </>
-                        }
+                        )}
                       </strong>
                       <p className="mb-0">{diskusi.komentar}</p>
                     </div>
@@ -378,7 +520,9 @@ const DetailBarangPage = () => {
                 required
                 value={diskusiInput.komentar}
               />
-              <Button variant="outline-success" type="submit" disabled={isDisabled} >Kirim</Button>
+              <Button variant="outline-success" type="submit" disabled={isDisabled}>
+                Kirim
+              </Button>
             </Form>
           </>
         ) : (
@@ -388,9 +532,7 @@ const DetailBarangPage = () => {
           </div>
         )}
       </div>
-
     </Container>
-
   );
 };
 
