@@ -17,13 +17,19 @@ const EditPenitipanBarangForm = ({ onSuccess }) => {
     id_kategori: "",
     id_penitip: "",
     foto_barang: null,
+    foto_barang2: null,
+    foto_barang3: null,
     id_qc: "",
     id_hunter: "",
     perpanjangan: "",
     status_penitipan: "",
   });
   const [originalData, setOriginalData] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = useState({
+    foto_barang: null,
+    foto_barang2: null,
+    foto_barang3: null,
+  });
   const [kategoris, setKategoris] = useState([]);
   const [penitips, setPenitips] = useState([]);
   const [qcs, setQcs] = useState([]);
@@ -57,18 +63,10 @@ const EditPenitipanBarangForm = ({ onSuccess }) => {
         const data = await GetPenitipanBarangById(id_barang);
         const d = data.data;
         console.log("Data barang dari API:", d);
-        console.log("id_qc:", d.rincian_penitipan?.penitipan?.id_qc);
-        console.log("id_hunter:", d.rincian_penitipan?.penitipan?.id_hunter);
-        console.log("perpanjangan:", d.rincian_penitipan?.perpanjangan);
-        console.log("status_penitipan:", d.rincian_penitipan?.status_penitipan);
 
-        // Periksa apakah id_qc dan id_hunter ada di qcs dan hunters
         const qcExists = qcs.find(qc => qc.id_pegawai === d.rincian_penitipan?.penitipan?.id_qc);
         const hunterExists = hunters.find(hunter => hunter.id_pegawai === d.rincian_penitipan?.penitipan?.id_hunter);
-        console.log("QC exists in qcs:", qcExists);
-        console.log("Hunter exists in hunters:", hunterExists);
 
-        // Jika rincian_penitipan tidak ada, tampilkan peringatan
         if (!d.rincian_penitipan) {
           toast.warn("Data penitipan tidak ditemukan untuk barang ini. Silakan isi data penitipan.");
         }
@@ -82,6 +80,8 @@ const EditPenitipanBarangForm = ({ onSuccess }) => {
           id_kategori: d.id_kategori ? String(d.id_kategori) : "",
           id_penitip: d.id_penitip || "",
           foto_barang: null,
+          foto_barang2: null,
+          foto_barang3: null,
           id_qc: d.rincian_penitipan && qcExists ? d.rincian_penitipan.penitipan?.id_qc || "" : "",
           id_hunter: d.rincian_penitipan && hunterExists ? d.rincian_penitipan.penitipan?.id_hunter || "" : "",
           perpanjangan: d.rincian_penitipan ? (d.rincian_penitipan.perpanjangan == 1 ? "Ya" : "Tidak") : "Tidak",
@@ -100,9 +100,11 @@ const EditPenitipanBarangForm = ({ onSuccess }) => {
           perpanjangan: d.rincian_penitipan ? (d.rincian_penitipan.perpanjangan == 1 ? "Ya" : "Tidak") : "Tidak",
           status_penitipan: d.rincian_penitipan ? d.rincian_penitipan.status_penitipan || "" : "",
         });
-        if (d.foto_barang) {
-          setPreview(`http://127.0.0.1:8000/storage/foto_barang/${d.foto_barang}`);
-        }
+        setPreview({
+          foto_barang: d.foto_barang ? `http://127.0.0.1:8000/storage/foto_barang/${d.foto_barang}` : null,
+          foto_barang2: d.foto_barang2 ? `http://127.0.0.1:8000/storage/foto_barang/${d.foto_barang2}` : null,
+          foto_barang3: d.foto_barang3 ? `http://127.0.0.1:8000/storage/foto_barang/${d.foto_barang3}` : null,
+        });
       } catch (error) {
         setError(`Gagal mengambil data barang: ${error.message || "Terjadi kesalahan"}`);
       } finally {
@@ -115,7 +117,10 @@ const EditPenitipanBarangForm = ({ onSuccess }) => {
   useEffect(() => {
     if (!originalData) return;
     const changed = Object.keys(formData).some(
-      key => formData[key] !== originalData[key] && !(key === "foto_barang" && formData[key] === null)
+      key => formData[key] !== originalData[key] && 
+      !(key === "foto_barang" && formData[key] === null) &&
+      !(key === "foto_barang2" && formData[key] === null) &&
+      !(key === "foto_barang3" && formData[key] === null)
     );
     setIsChanged(changed);
   }, [formData, originalData]);
@@ -125,10 +130,13 @@ const EditPenitipanBarangForm = ({ onSuccess }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e, field) => {
     const file = e.target.files[0];
-    setFormData((prev) => ({ ...prev, foto_barang: file || null }));
-    setPreview(file ? URL.createObjectURL(file) : preview);
+    setFormData((prev) => ({ ...prev, [field]: file || null }));
+    setPreview((prev) => ({
+      ...prev,
+      [field]: file ? URL.createObjectURL(file) : prev[field],
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -143,7 +151,7 @@ const EditPenitipanBarangForm = ({ onSuccess }) => {
 
     const sendData = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
-      if (key === "foto_barang") {
+      if (key === "foto_barang" || key === "foto_barang2" || key === "foto_barang3") {
         if (value instanceof File) {
           sendData.append(key, value);
         }
@@ -294,14 +302,58 @@ const EditPenitipanBarangForm = ({ onSuccess }) => {
                     onChange={handleChange}
                   />
                 </Form.Group>
+              </Col>
+            </Row>
 
+            <Row>
+              <Col md={4}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Foto Barang</Form.Label>
-                  <Form.Control type="file" accept="image/*" onChange={handleFileChange} />
-                  {preview && (
+                  <Form.Label>Foto Barang Utama</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, "foto_barang")}
+                  />
+                  {preview.foto_barang && (
                     <img
-                      src={preview}
-                      alt="Preview"
+                      src={preview.foto_barang}
+                      alt="Preview Utama"
+                      className="mt-2 rounded"
+                      style={{ maxWidth: "100%", maxHeight: "150px" }}
+                    />
+                  )}
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Foto Barang Kedua</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, "foto_barang2")}
+                  />
+                  {preview.foto_barang2 && (
+                    <img
+                      src={preview.foto_barang2}
+                      alt="Preview Kedua"
+                      className="mt-2 rounded"
+                      style={{ maxWidth: "100%", maxHeight: "150px" }}
+                    />
+                  )}
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Foto Barang Ketiga (Opsional)</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, "foto_barang3")}
+                  />
+                  {preview.foto_barang3 && (
+                    <img
+                      src={preview.foto_barang3}
+                      alt="Preview Ketiga"
                       className="mt-2 rounded"
                       style={{ maxWidth: "100%", maxHeight: "150px" }}
                     />

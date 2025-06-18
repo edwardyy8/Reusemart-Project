@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class RincianPenitipanController extends Controller
 {
@@ -21,8 +22,8 @@ class RincianPenitipanController extends Controller
 
         try {
             // Log request data
-            \Log::info('Request data:', $request->all());
-            \Log::info('Request files:', $request->allFiles());
+            Log::info('Request data:', $request->all());
+            Log::info('Request files:', $request->allFiles());
 
             // Validate request
             $request->validate([
@@ -38,6 +39,8 @@ class RincianPenitipanController extends Controller
                 'barang.*.berat_barang' => 'required|numeric|min:0',
                 'barang.*.tanggal_garansi' => 'nullable|date',
                 'barang.*.foto_barang' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                'barang.*.foto_barang2' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                'barang.*.foto_barang3' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
             // Generate ID Penitipan
@@ -62,16 +65,39 @@ class RincianPenitipanController extends Controller
                 // Generate ID Barang
                 $id_barang = $this->generateBarangId();
 
-                // Process photo upload
+                // Process photo uploads
                 $namaFoto = null;
+                $namaFoto2 = null;
+                $namaFoto3 = null;
+
+                // Foto Barang (Required)
                 if ($request->hasFile("barang.$index.foto_barang")) {
                     $file = $request->file("barang.$index.foto_barang");
-                    \Log::info("File received for barang[$index][foto_barang]: " . $file->getClientOriginalName());
-                    $namaFoto = time() . '_' . $file->getClientOriginalName();
+                    Log::info("File received for barang[$index][foto_barang]: " . $file->getClientOriginalName());
+                    $namaFoto = time() . '_1_' . $file->getClientOriginalName();
                     $file->storeAs('foto_barang', $namaFoto, 'public');
                 } else {
-                    \Log::error("File not found for barang[$index][foto_barang]");
-                    throw new \Exception("Foto barang untuk indeks $index tidak ditemukan.");
+                    Log::error("File not found for barang[$index][foto_barang]");
+                    throw new \Exception("Foto barang utama untuk indeks $index tidak ditemukan.");
+                }
+
+                // Foto Barang 2 (Required)
+                if ($request->hasFile("barang.$index.foto_barang2")) {
+                    $file = $request->file("barang.$index.foto_barang2");
+                    Log::info("File received for barang[$index][foto_barang2]: " . $file->getClientOriginalName());
+                    $namaFoto2 = time() . '_2_' . $file->getClientOriginalName();
+                    $file->storeAs('foto_barang', $namaFoto2, 'public');
+                } else {
+                    Log::error("File not found for barang[$index][foto_barang2]");
+                    throw new \Exception("Foto barang kedua untuk indeks $index tidak ditemukan.");
+                }
+
+                // Foto Barang 3 (Nullable)
+                if ($request->hasFile("barang.$index.foto_barang3")) {
+                    $file = $request->file("barang.$index.foto_barang3");
+                    Log::info("File received for barang[$index][foto_barang3]: " . $file->getClientOriginalName());
+                    $namaFoto3 = time() . '_3_' . $file->getClientOriginalName();
+                    $file->storeAs('foto_barang', $namaFoto3, 'public');
                 }
 
                 // Create Barang
@@ -89,8 +115,9 @@ class RincianPenitipanController extends Controller
                     'tanggal_masuk' => $tanggal_masuk,
                     'berat_barang' => $barang['berat_barang'],
                     'foto_barang' => $namaFoto,
+                    'foto_barang2' => $namaFoto2,
+                    'foto_barang3' => $namaFoto3,
                 ]);
-
 
                 // Calculate tanggal_akhir and batas_akhir
                 $tanggal_akhir = $tanggal_masuk->copy()->addDays(30);
@@ -115,7 +142,7 @@ class RincianPenitipanController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error saat menyimpan penitipan: ' . $e->getMessage());
+            Log::error('Error saat menyimpan penitipan: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Gagal menyimpan penitipan.',
                 'error' => $e->getMessage()
@@ -219,100 +246,128 @@ class RincianPenitipanController extends Controller
     }
 
     public function editPenitipanBarang(Request $request, $id)
-{
-    $request->validate([
-        'nama_barang' => 'nullable|string|max:255',
-        'harga_barang' => 'nullable|numeric',
-        'deskripsi' => 'nullable|string',
-        'berat_barang' => 'nullable|numeric',
-        'tanggal_garansi' => 'nullable|date',
-        'id_kategori' => 'nullable|exists:kategori,id_kategori',
-        'id_penitip' => 'nullable|exists:penitip,id_penitip',
-        'id_qc' => 'nullable|exists:pegawai,id_pegawai',
-        'id_hunter' => 'nullable|exists:pegawai,id_pegawai',
-        'foto_barang' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        'perpanjangan' => 'nullable|in:0,1',
-        'status_penitipan' => 'nullable|in:Sedang Dititipkan,Barang Untuk Donasi,Diambil Kembali',
-    ]);
+    {
+        $request->validate([
+            'nama_barang' => 'nullable|string|max:255',
+            'harga_barang' => 'nullable|numeric',
+            'deskripsi' => 'nullable|string',
+            'berat_barang' => 'nullable|numeric',
+            'tanggal_garansi' => 'nullable|date',
+            'id_kategori' => 'nullable|exists:kategori,id_kategori',
+            'id_penitip' => 'nullable|exists:penitip,id_penitip',
+            'id_qc' => 'nullable|exists:pegawai,id_pegawai',
+            'id_hunter' => 'nullable|exists:pegawai,id_pegawai',
+            'foto_barang' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto_barang2' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto_barang3' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'perpanjangan' => 'nullable|in:0,1',
+            'status_penitipan' => 'nullable|in:Sedang Dititipkan,Barang Untuk Donasi,Diambil Kembali',
+        ]);
 
-    $barang = Barang::findOrFail($id);
+        $barang = Barang::findOrFail($id);
 
-    // Update tabel barang
-    if ($request->filled('nama_barang')) {
-        $barang->nama_barang = $request->nama_barang;
-    }
+        // Update tabel barang
+        if ($request->filled('nama_barang')) {
+            $barang->nama_barang = $request->nama_barang;
+        }
 
-    if ($request->filled('harga_barang')) {
-        $barang->harga_barang = $request->harga_barang;
-    }
+        if ($request->filled('harga_barang')) {
+            $barang->harga_barang = $request->harga_barang;
+        }
 
-    if ($request->filled('deskripsi')) {
-        $barang->deskripsi = $request->deskripsi;
-    }
+        if ($request->filled('deskripsi')) {
+            $barang->deskripsi = $request->deskripsi;
+        }
 
-    if ($request->filled('berat_barang')) {
-        $barang->berat_barang = $request->berat_barang;
-    }
+        if ($request->filled('berat_barang')) {
+            $barang->berat_barang = $request->berat_barang;
+        }
 
-    if ($request->filled('tanggal_garansi')) {
-        $barang->tanggal_garansi = $request->tanggal_garansi;
-    }
+        if ($request->filled('tanggal_garansi')) {
+            $barang->tanggal_garansi = $request->tanggal_garansi;
+        }
 
-    if ($request->filled('id_kategori')) {
-        $barang->id_kategori = $request->id_kategori;
-    }
+        if ($request->filled('id_kategori')) {
+            $barang->id_kategori = $request->id_kategori;
+        }
 
-    if ($request->filled('id_penitip')) {
-        $barang->id_penitip = $request->id_penitip;
-    }
+        if ($request->filled('id_penitip')) {
+            $barang->id_penitip = $request->id_penitip;
+        }
 
-    if ($request->hasFile('foto_barang')) {
-        if ($barang->foto_barang) {
-            $oldPath = 'foto_barang/' . $barang->foto_barang;
-            if (Storage::disk('public')->exists($oldPath)) {
-                Storage::disk('public')->delete($oldPath);
+        // Process foto_barang
+        if ($request->hasFile('foto_barang')) {
+            if ($barang->foto_barang) {
+                $oldPath = 'foto_barang/' . $barang->foto_barang;
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+            $image = $request->file('foto_barang');
+            $image_uploaded_path = $image->store('foto_barang', 'public');
+            $barang->foto_barang = basename($image_uploaded_path);
+        }
+
+        // Process foto_barang2
+        if ($request->hasFile('foto_barang2')) {
+            if ($barang->foto_barang2) {
+                $oldPath = 'foto_barang/' . $barang->foto_barang2;
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+            $image = $request->file('foto_barang2');
+            $image_uploaded_path = $image->store('foto_barang', 'public');
+            $barang->foto_barang2 = basename($image_uploaded_path);
+        }
+
+        // Process foto_barang3
+        if ($request->hasFile('foto_barang3')) {
+            if ($barang->foto_barang3) {
+                $oldPath = 'foto_barang/' . $barang->foto_barang3;
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+            $image = $request->file('foto_barang3');
+            $image_uploaded_path = $image->store('foto_barang', 'public');
+            $barang->foto_barang3 = basename($image_uploaded_path);
+        }
+
+        $barang->save();
+
+        // Update tabel penitipan melalui rincian_penitipan
+        if ($request->filled('id_qc') || $request->filled('id_hunter') || $request->filled('perpanjangan') || $request->filled('status_penitipan')) {
+            $rincianPenitipan = $barang->rincian_penitipan;
+            if ($rincianPenitipan) {
+                $penitipan = Penitipan::find($rincianPenitipan->id_penitipan);
+                if ($penitipan) {
+                    if ($request->filled('id_qc')) {
+                        $penitipan->id_qc = $request->id_qc;
+                    }
+                    if ($request->filled('id_hunter')) {
+                        $penitipan->id_hunter = $request->id_hunter;
+                    }
+                    $penitipan->save();
+                }
+
+                // Update rincian_penitipan untuk perpanjangan dan status
+                if ($request->filled('perpanjangan')) {
+                    $rincianPenitipan->perpanjangan = $request->perpanjangan;
+                }
+                if ($request->filled('status_penitipan')) {
+                    $rincianPenitipan->status_penitipan = $request->status_penitipan;
+                }
+                $rincianPenitipan->save();
             }
         }
-        $uploadFolder = 'foto_barang';
-        $image = $request->file('foto_barang');
-        $image_uploaded_path = $image->store($uploadFolder, 'public');
-        $barang->foto_barang = basename($image_uploaded_path);
+
+        return response()->json([
+            'message' => 'Data barang dan penitipan berhasil diperbarui.',
+            'barang' => $barang,
+        ]);
     }
-
-    $barang->save();
-
-    // Update tabel penitipan melalui rincian_penitipan
-    if ($request->filled('id_qc') || $request->filled('id_hunter') || $request->filled('perpanjangan') || $request->filled('status_penitipan')) {
-        $rincianPenitipan = $barang->rincian_penitipan;
-        if ($rincianPenitipan) {
-            $penitipan = Penitipan::find($rincianPenitipan->id_penitipan);
-            if ($penitipan) {
-                if ($request->filled('id_qc')) {
-                    $penitipan->id_qc = $request->id_qc;
-                }
-                if ($request->filled('id_hunter')) {
-                    $penitipan->id_hunter = $request->id_hunter;
-                }
-                $penitipan->save();
-            }
-
-            // Update rincian_penitipan untuk perpanjangan dan status
-            if ($request->filled('perpanjangan')) {
-                $rincianPenitipan->perpanjangan = $request->perpanjangan;
-            }
-            if ($request->filled('status_penitipan')) {
-                $rincianPenitipan->status_penitipan = $request->status_penitipan;
-            }
-            $rincianPenitipan->save();
-        }
-    }
-
-    return response()->json([
-        'message' => 'Data barang dan penitipan berhasil diperbarui.',
-        'barang' => $barang,
-    ]);
-}
-
+    
     public function getAllPenitipanBarang()
     {
         $barang = Barang::with(['rincian_penitipan.penitipan', 'penitip', 'donasi', 'kategori'])->get();
