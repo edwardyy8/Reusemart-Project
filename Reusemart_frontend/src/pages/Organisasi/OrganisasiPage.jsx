@@ -79,10 +79,10 @@ const OrganisasiPage = () => {
   }
 
   return (
-    <Container className="mt-5 pt-5">
+    <Container className="mt-5">
         <div className="text-center mb-4 d-flex flex-row justify-content-center align-items-center gap-3">
-            <img src={reusemart} alt="ReuseMart" height="50" />
-            <h1 className="mt-1 hijau">O R G A N I S A S I</h1>
+          <img src={`http://127.0.0.1:8000/storage/foto_profile/${profileData?.foto_profile}`} 
+                className="rounded-circle" style={{border: "1px black solid"}} alt="Profile penitips" height="100" />
         </div>
 
         <h3 className="text-center text-muted">@{profileData?.nama}</h3>
@@ -149,7 +149,7 @@ const OrganisasiPage = () => {
           </Tab>
 
 
-          <Tab eventKey="profile" title="Profil Saya">
+          <Tab eventKey="profil" title="Profil Saya">
             <Container className="mt-5 mb-0 p-5 rounded-3 w-50" style={{ border: '1px solid rgb(122, 122, 122)', backgroundColor: 'rgb(255, 255, 255)' }}>
               <h4>Nama Organisasi</h4>
               <InputFloatingForm

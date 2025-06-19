@@ -79,7 +79,7 @@ const DonationPage = () => {
                 </div>
             </Container>
 
-            <Container fluid className="px-5 mb-5" >
+            <Container fluid className="px-5 mb-5" style={{height: '100vh'}}>
 
                 {isLoading ? (
                     <div className="text-center d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
@@ -154,7 +154,7 @@ const DonationPage = () => {
                                 )}
                             </>
                         ) : (
-                            <Alert variant="success" className="mt-3 text-center">
+                            <Alert variant="success" className="mt-3 text-center" >
                                 Belum ada Histori Donasi!
                             </Alert>
                         )}
