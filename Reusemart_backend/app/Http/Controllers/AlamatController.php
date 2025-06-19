@@ -85,6 +85,13 @@ class AlamatController extends Controller
                 ], 404);
             }
 
+            if ($alamat->is_default) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Alamat default tidak boleh dihapus',
+                ], 404);
+            }
+
             $alamat->delete();
 
             return response()->json([
