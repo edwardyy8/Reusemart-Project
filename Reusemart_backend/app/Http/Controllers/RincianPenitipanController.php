@@ -63,7 +63,7 @@ class RincianPenitipanController extends Controller
 
             foreach ($barang_list as $index => $barang) {
                 // Generate ID Barang
-                $id_barang = $this->generateBarangId();
+                $id_barang = $this->generateBarangId($barang['nama_barang']);
 
                 // Process photo uploads
                 $namaFoto = null;
@@ -213,20 +213,24 @@ class RincianPenitipanController extends Controller
         return $prefix . '.' . $newIncrement;
     }
 
-    private function generateBarangId()
+    private function generateBarangId($nama)
     {
+        $huruf = strtoupper(substr($nama, 0, 1));
+
         $lastBarang = Barang::select('id_barang')
+            ->where('nama_barang', 'LIKE', $huruf . '%')
             ->orderByRaw('CAST(SUBSTRING(id_barang, 2) AS UNSIGNED) DESC')
             ->first();
+            
 
         if (!$lastBarang) {
-            return 'T1';
+            return $huruf . '1';
         }
 
         $lastIdNumber = (int) substr($lastBarang->id_barang, 1);
         $newIdNumber = $lastIdNumber + 1;
 
-        return 'T' . $newIdNumber;
+        return $huruf . $newIdNumber;
     }
 
     private function generateRincianPenitipanId()
