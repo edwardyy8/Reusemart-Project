@@ -211,6 +211,8 @@ const CheckoutPage = () => {
         navigate('/pembeli/keranjang');
         toast.error("Tidak ada barang yang dipilih!"); 
         return;
+    }else{
+        toast.success("Silakan melanjutkan proses pemesanan Anda.");
     }
 
 

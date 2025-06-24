@@ -17,7 +17,12 @@ const SignUp = async (data) => {
 };
 const SignIn = async (data) => {
     try {
-        const response = await useAxios.post("/login", data); return response.data;
+        const response = await useAxios.post("/login", data, {
+            headers: {
+                "Accept": "application/json",
+            },
+        }); 
+        return response.data;
     } catch (error) {
         throw error.response.data;
     }

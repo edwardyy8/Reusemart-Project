@@ -217,7 +217,7 @@ const UbahAlamatPage = () => {
                                         <p className="h5 fw-bold me-2 mb-0">{alamat.nama_penerima}</p>
                                         <p className="text-muted mb-0">({alamat.label_alamat})</p>
                                     </div>
-                                    {alamat.is_default ? ( 
+                                    {alamat.is_default == 1 ? ( 
                                         <Badge className="ms-auto p-2 defaultBadge"><p className="mb-0 h6">Default</p></Badge>
                                       ) : null
                                     }

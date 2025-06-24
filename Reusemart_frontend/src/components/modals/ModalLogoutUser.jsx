@@ -16,6 +16,7 @@ const ModalLogoutUser = ({show, onClose }) => {
         try {
             const res = await LogOut();
             sessionStorage.removeItem("token");
+            sessionStorage.removeItem("id_pegawai");
             toast.success("Berhasil logout.");
             setTimeout(() => {
                 navigate(0);

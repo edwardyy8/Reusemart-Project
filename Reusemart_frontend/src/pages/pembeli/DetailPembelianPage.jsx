@@ -17,6 +17,13 @@ const DetailPembelianPage = () => {
     const [rating, setRating] = useState(0);
     const navigate = useNavigate();
 
+    const cleanRupiah = (value) => {
+        if (typeof value === 'string') {
+            return parseFloat(value.replace(/[^0-9]/g, ''));
+        }
+        return Number(value); 
+    };
+
     const fetchPembelianData = async () => {
         try {
             setLoading(true);
@@ -38,7 +45,7 @@ const DetailPembelianPage = () => {
                 return sum + item.barang.harga_barang;
             }, 0);
 
-            const total = totalHarga + data.ongkos - diskon;
+            const total = cleanRupiah(totalHarga) + cleanRupiah(data.ongkos) - cleanRupiah(diskon);
             setTotalPembayaran(total);
 
             data.total_harga_sum = totalHarga;

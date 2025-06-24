@@ -41,6 +41,8 @@ const FormLupaPass = () => {
       .catch((err) => {
         console.log(err);
         toast.error(err.message);
+        setIsLoading(false);
+        setIsDisabled(false);
       });
   };
 

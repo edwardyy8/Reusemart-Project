@@ -89,7 +89,7 @@ const KeranjangPage = () => {
                                         <Card key={item.id_barang} className="border-1 border-dark rounded-3 p-2 mb-4">
                                             <Card.Body className="d-flex align-items-center">
                                                 <input type="checkbox" className="checkHijau" 
-                                                    checked={item.is_selected} 
+                                                    checked={item.is_selected == 1} 
                                                     onChange={() => submitCheckbox(item.id_keranjang)}
                                                 />
                                                 <div className="d-flex align-items-center ms-3">
