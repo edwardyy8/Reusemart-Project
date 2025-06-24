@@ -79,11 +79,11 @@ const KategoriUtamaPage = () => {
                                             style={{ cursor: "pointer" }}
                                         >
                                             <Card.Img
-  variant="top"
-  src={`http://127.0.0.1:8000/storage/foto_barang/${barang.foto_barang}`}
-  alt={barang.nama_barang}
-  style={{ maxHeight: "400px", objectFit: "contain" }}
-/>
+                                            variant="top"
+                                            src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${barang.foto_barang}`}
+                                            alt={barang.nama_barang}
+                                            style={{ maxHeight: "400px", objectFit: "contain" }}
+                                            />
                                             <Card.Body>
                                                 <Card.Title>{barang.nama_barang}</Card.Title>
                                             </Card.Body>

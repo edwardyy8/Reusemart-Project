@@ -154,7 +154,7 @@ const BalasDiskusiPage = () => {
                   <div className="border-bottom border-dark mb-1"></div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <img
-                      src={`http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`}
+                      src={`https://laraveledwardy.barioth.web.id/storage/foto_profile/${diskusi.foto_profile_pembeli}`}
                       alt="icon user"
                       width={35}
                       height={35}
@@ -252,7 +252,7 @@ const BalasDiskusiPage = () => {
                 </Col>
                 <Col ms={6} className="d-flex flex-column align-items-end mt-5">
                   <img 
-                    src={`http://127.0.0.1:8000/storage/foto_barang/${selectedDiskusi.barang.foto_barang}`}
+                    src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${selectedDiskusi.barang.foto_barang}`}
                     alt="Foto Barang" 
                     style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
                   />  
@@ -269,7 +269,7 @@ const BalasDiskusiPage = () => {
                             <img
                               src={diskusi.id_pegawai ? ( logo
                                 ) : (
-                                `http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`
+                                `https://laraveledwardy.barioth.web.id/storage/foto_profile/${diskusi.foto_profile_pembeli}`
                               )}
                               alt="icon user"
                               width={35}

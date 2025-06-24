@@ -139,7 +139,7 @@ const KelolaMerchandisePage = () => {
                                         <td>{merchandise.id_merchandise}</td>
                                         <td>{merchandise.foto_merchandise ? (
                                                 <img
-                                                    src={`http://127.0.0.1:8000/storage/foto_barang/${merchandise.foto_merchandise}`}
+                                                    src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${merchandise.foto_merchandise}`}
                                                     alt={merchandise.nama_merchandise}
                                                     style={{ width: "50px", height: "50px", objectFit: "cover" }}
                                                 />

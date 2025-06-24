@@ -309,15 +309,15 @@ const KelolaPengirimanPage = () => {
                       {selectedPemesanan.rincian_pemesanan?.map((pemesanan, index) => {
                         const images = [
                           {
-                            img: `http://127.0.0.1:8000/storage/foto_barang/${pemesanan.barang.foto_barang}` ?? null,
+                            img: `https://laraveledwardy.barioth.web.id/storage/foto_barang/${pemesanan.barang.foto_barang}` ?? null,
                             title: 'Foto Barang 1',
                           },
                           {
-                            img: `http://127.0.0.1:8000/storage/foto_barang/${pemesanan.barang.foto_barang2}` ?? null,
+                            img: `https://laraveledwardy.barioth.web.id/storage/foto_barang/${pemesanan.barang.foto_barang2}` ?? null,
                             title: 'Foto Barang 2',
                           },
                           {
-                            img: `http://127.0.0.1:8000/storage/foto_barang/${pemesanan.barang.foto_barang3}` ?? null,
+                            img: `https://laraveledwardy.barioth.web.id/storage/foto_barang/${pemesanan.barang.foto_barang3}` ?? null,
                             title: 'Foto Barang 3',
                           },
                         ];

@@ -101,9 +101,9 @@ const EditPenitipanBarangForm = ({ onSuccess }) => {
           status_penitipan: d.rincian_penitipan ? d.rincian_penitipan.status_penitipan || "" : "",
         });
         setPreview({
-          foto_barang: d.foto_barang ? `http://127.0.0.1:8000/storage/foto_barang/${d.foto_barang}` : null,
-          foto_barang2: d.foto_barang2 ? `http://127.0.0.1:8000/storage/foto_barang/${d.foto_barang2}` : null,
-          foto_barang3: d.foto_barang3 ? `http://127.0.0.1:8000/storage/foto_barang/${d.foto_barang3}` : null,
+          foto_barang: d.foto_barang ? `https://laraveledwardy.barioth.web.id/storage/foto_barang/${d.foto_barang}` : null,
+          foto_barang2: d.foto_barang2 ? `https://laraveledwardy.barioth.web.id/storage/foto_barang/${d.foto_barang2}` : null,
+          foto_barang3: d.foto_barang3 ? `https://laraveledwardy.barioth.web.id/storage/foto_barang/${d.foto_barang3}` : null,
         });
       } catch (error) {
         setError(`Gagal mengambil data barang: ${error.message || "Terjadi kesalahan"}`);

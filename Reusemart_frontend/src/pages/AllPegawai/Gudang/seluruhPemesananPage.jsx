@@ -232,7 +232,7 @@ const SeluruhPemesananPage = () => {
                         <li key={index} className="mb-1">
                           <div className="d-flex gap-2">
                             <img
-                                src={`http://127.0.0.1:8000/storage/foto_barang/${pemesanan.barang?.foto_barang}`}
+                                src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${pemesanan.barang?.foto_barang}`}
                                 alt="Foto Barang"
                                 height={100}
                                 className="rounded-2 mb-1"

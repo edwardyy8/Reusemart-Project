@@ -81,7 +81,7 @@ const OrganisasiPage = () => {
   return (
     <Container className="mt-5">
         <div className="text-center mb-4 d-flex flex-row justify-content-center align-items-center gap-3">
-          <img src={`http://127.0.0.1:8000/storage/foto_profile/${profileData?.foto_profile}`} 
+          <img src={`https://laraveledwardy.barioth.web.id/storage/foto_profile/${profileData?.foto_profile}`} 
                 className="rounded-circle" style={{border: "1px black solid"}} alt="Profile penitips" height="100" />
         </div>
 

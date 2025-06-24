@@ -116,7 +116,7 @@ const DetailPenjualanPage = () => {
                     <Card>
                         <Card.Body>
                             <div className="mb-3 d-flex gap-3">
-                                <img src={`http://127.0.0.1:8000/storage/foto_barang/${rincianData.barang.foto_barang}`} 
+                                <img src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${rincianData.barang.foto_barang}`} 
                                       alt="Foto Barang" 
                                       height={100}
                                       className="rounded-2"/>

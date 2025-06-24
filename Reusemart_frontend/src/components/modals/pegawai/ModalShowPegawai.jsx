@@ -30,7 +30,7 @@ const ModalShowPegawai = ({ pegawai }) => {
                         </Col>
                         <Col md={4} className="d-flex justify-content-center align-items-center">
                             <img
-                                src={`http://127.0.0.1:8000/storage/foto_profile/${pegawai.foto_profile}`}
+                                src={`https://laraveledwardy.barioth.web.id/storage/foto_profile/${pegawai.foto_profile}`}
                                 alt="Profile"
                                 style={{ width: "150px", height: "150px", objectFit: "cover" }}
                             />

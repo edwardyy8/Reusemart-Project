@@ -223,19 +223,19 @@ const DetailBarangPage = () => {
   const photos = [
     {
       src: barang.barang.foto_barang
-        ? `http://127.0.0.1:8000/storage/foto_barang/${barang.barang.foto_barang}`
+        ? `https://laraveledwardy.barioth.web.id/storage/foto_barang/${barang.barang.foto_barang}`
         : null,
       alt: "Foto Utama",
     },
     {
       src: barang.barang.foto_barang2
-        ? `http://127.0.0.1:8000/storage/foto_barang/${barang.barang.foto_barang2}`
+        ? `https://laraveledwardy.barioth.web.id/storage/foto_barang/${barang.barang.foto_barang2}`
         : null,
       alt: "Foto Kedua",
     },
     {
       src: barang.barang.foto_barang3
-        ? `http://127.0.0.1:8000/storage/foto_barang/${barang.barang.foto_barang3}`
+        ? `https://laraveledwardy.barioth.web.id/storage/foto_barang/${barang.barang.foto_barang3}`
         : null,
       alt: "Foto Ketiga",
     },
@@ -402,7 +402,7 @@ const DetailBarangPage = () => {
                 <Row>
                   <Col md={4}>
                     <img
-                      src={`http://127.0.0.1:8000/storage/foto_profile/${penitip?.foto_profile}`}
+                      src={`https://laraveledwardy.barioth.web.id/storage/foto_profile/${penitip?.foto_profile}`}
                       alt="Penitip"
                       className="img-fluid rounded"
                     />
@@ -477,7 +477,7 @@ const DetailBarangPage = () => {
                     src={
                       diskusi.id_pegawai
                         ? logo
-                        : `http://127.0.0.1:8000/storage/foto_profile/${diskusi.foto_profile_pembeli}`
+                        : `https://laraveledwardy.barioth.web.id/storage/foto_profile/${diskusi.foto_profile_pembeli}`
                     }
                     alt="icon user"
                     width={35}

@@ -330,7 +330,7 @@ const CheckoutPage = () => {
                                                     <Card key={item.id_barang} className="border-1 border-dark rounded-3 p-2 mb-4">
                                                         <Card.Body className="d-flex align-items-center">
                                                             <div className="d-flex align-items-center ms-3">
-                                                                <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.barang.foto_barang}`} 
+                                                                <img src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${item.barang.foto_barang}`} 
                                                                     alt={item.nama_barang} style={{ width: "80px", height: "80px", borderRadius: "5px" }} className="me-3" />
                                                                 <div>
                                                                     <h5 className="">{item.barang.nama_barang}</h5>

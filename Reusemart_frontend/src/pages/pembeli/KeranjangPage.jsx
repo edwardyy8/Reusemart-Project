@@ -93,7 +93,7 @@ const KeranjangPage = () => {
                                                     onChange={() => submitCheckbox(item.id_keranjang)}
                                                 />
                                                 <div className="d-flex align-items-center ms-3">
-                                                    <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.barang.foto_barang}`} 
+                                                    <img src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${item.barang.foto_barang}`} 
                                                         alt={item.nama_barang} style={{ width: "80px", height: "80px", borderRadius: "5px" }} className="me-3" />
                                                     <div>
                                                         <h5 className="">{item.barang.nama_barang}</h5>
@@ -153,7 +153,7 @@ const KeranjangPage = () => {
                                         <li key={item.id_barang} className="list-group-item">
                                             <Card.Body key={item.id_barang} className="d-flex align-items-center">
                                                 <div className="d-flex align-items-center ms-3">
-                                                    <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.barang.foto_barang}`} 
+                                                    <img src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${item.barang.foto_barang}`} 
                                                         alt={item.nama_barang} style={{ width: "80px", height: "80px", borderRadius: "5px", opacity: "80%" }} className="me-3" />
                                                     <div>
                                                         <h5 className="text-muted">{item.barang.nama_barang}</h5>

@@ -106,7 +106,7 @@ const DonationPage = () => {
                                                     <Col xs={12} md={4} className="d-flex align-items-center">
                                                         <div className="d-flex flex-row gap-3 align-items-center">
                                                             <img
-                                                                src={`http://127.0.0.1:8000/storage/foto_barang/${donasi.foto_barang}`}
+                                                                src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${donasi.foto_barang}`}
                                                                 height="60"
                                                                 className="d-inline-block"
                                                                 alt={donasi.nama_barang}

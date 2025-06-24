@@ -14,19 +14,19 @@ const ModalShowPenitipan = ({ barang }) => {
   const photos = [
     {
       src: barang.foto_barang
-        ? `http://127.0.0.1:8000/storage/foto_barang/${barang.foto_barang}`
+        ? `https://laraveledwardy.barioth.web.id/storage/foto_barang/${barang.foto_barang}`
         : null,
       caption: "Foto Utama",
     },
     {
       src: barang.foto_barang2
-        ? `http://127.0.0.1:8000/storage/foto_barang/${barang.foto_barang2}`
+        ? `https://laraveledwardy.barioth.web.id/storage/foto_barang/${barang.foto_barang2}`
         : null,
       caption: "Foto Kedua",
     },
     {
       src: barang.foto_barang3
-        ? `http://127.0.0.1:8000/storage/foto_barang/${barang.foto_barang3}`
+        ? `https://laraveledwardy.barioth.web.id/storage/foto_barang/${barang.foto_barang3}`
         : null,
       caption: "Foto Ketiga",
     },

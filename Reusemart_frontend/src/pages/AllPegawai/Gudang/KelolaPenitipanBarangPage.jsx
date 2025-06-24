@@ -237,7 +237,7 @@ const KelolaPenitipanBarangPage = () => {
                                         <td>
                                             {barang.foto_barang ? (
                                                 <img
-                                                    src={`http://127.0.0.1:8000/storage/foto_barang/${barang.foto_barang}`}
+                                                    src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${barang.foto_barang}`}
                                                     alt={barang.nama_barang}
                                                     style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                                                 />

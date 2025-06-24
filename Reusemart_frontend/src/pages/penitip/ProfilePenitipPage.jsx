@@ -253,7 +253,7 @@ const ProfilePenitipPage = () => {
   return (
     <Container className="mt-5">
       <div className="text-center mb-4 d-flex flex-row justify-content-center align-items-center gap-3">
-        <img src={`http://127.0.0.1:8000/storage/foto_profile/${profileData?.foto_profile}`} 
+        <img src={`https://laraveledwardy.barioth.web.id/storage/foto_profile/${profileData?.foto_profile}`} 
               className="rounded-circle" style={{border: "1px black solid"}} alt="Profile penitips" height="100" />
       </div>
 
@@ -289,7 +289,7 @@ const ProfilePenitipPage = () => {
                           <h5 className="fw-bold mb-0">{item.barang.nama_barang}</h5>
                           </div>
                           <div>
-                            <img src={`http://127.0.0.1:8000/storage/foto_barang/${item.barang.foto_barang}`} 
+                            <img src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${item.barang.foto_barang}`} 
                                   alt="Foto Barang" 
                                   height={100}
                                   className="rounded-2"/>
@@ -387,7 +387,7 @@ const ProfilePenitipPage = () => {
                                 </div>
                                 <div>
                                   <img
-                                    src={`http://127.0.0.1:8000/storage/foto_barang/${titipan.barang.foto_barang}`}
+                                    src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${titipan.barang.foto_barang}`}
                                     alt="Foto Barang"
                                     height={100}
                                     className="rounded-2"
@@ -456,7 +456,7 @@ const ProfilePenitipPage = () => {
                   const photos = photoList
                     .filter((foto) => foto)
                     .map((foto, i) => ({
-                      src: `http://127.0.0.1:8000/storage/foto_barang/${foto}`,
+                      src: `https://laraveledwardy.barioth.web.id/storage/foto_barang/${foto}`,
                     }));
 
                   if (photos.length === 0) {
@@ -538,7 +538,7 @@ const ProfilePenitipPage = () => {
               </Col>
               <Col ms={6} className="d-flex flex-column align-items-end mt-5">
                 <img 
-                  src={`http://127.0.0.1:8000/storage/foto_barang/${selectedPenitipan.barang.foto_barang}`}
+                  src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${selectedPenitipan.barang.foto_barang}`}
                   alt="Foto barang" 
                   style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
                 />
@@ -597,7 +597,7 @@ const ProfilePenitipPage = () => {
               </Col>
               <Col ms={6} className="d-flex flex-column align-items-end mt-5">
                 <img 
-                  src={`http://127.0.0.1:8000/storage/foto_barang/${selectedPenitipan.barang.foto_barang}`}
+                  src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${selectedPenitipan.barang.foto_barang}`}
                   alt="Foto barang" 
                   style={{ maxWidth: "100%", maxHeight: "300px", borderRadius: "8px" }} 
                 />

@@ -43,7 +43,7 @@ const SwiperPemesanan = ({ selectedPemesanan, swiperRef }) => {
                 }}>
 
                 <img 
-                    src={`http://127.0.0.1:8000/storage/foto_barang/${item.barang.foto_barang}`} 
+                    src={`https://laraveledwardy.barioth.web.id/storage/foto_barang/${item.barang.foto_barang}`} 
                     alt={item.barang.nama_barang}
                     style={{
                     maxHeight: "150px",
