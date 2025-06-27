@@ -42,7 +42,7 @@ const DetailPembelianPage = () => {
             setDiskonPoin(diskon);
 
             const totalHarga = data.rincian_pemesanan.reduce((sum, item) => {
-                return sum + item.barang.harga_barang;
+                return sum + cleanRupiah(item.barang.harga_barang);
             }, 0);
 
             const total = cleanRupiah(totalHarga) + cleanRupiah(data.ongkos) - cleanRupiah(diskon);

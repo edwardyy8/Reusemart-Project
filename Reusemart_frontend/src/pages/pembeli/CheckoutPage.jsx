@@ -32,6 +32,7 @@ const CheckoutPage = () => {
     const [idPemesanan, setIdPemesanan] = useState(null);
     const [showModalKonfirmasi, setShowModalKonfirmasi] = useState(false);
     const [isCheckout, setIsCheckout] = useState(false);
+    const [isProfile, setIsProfile] = useState(false);
 
     const { 
         fetchKeranjang, totalHargaBarang, 
@@ -40,7 +41,7 @@ const CheckoutPage = () => {
 
     const [data, setData] = useState({
         metode_pengiriman: "kurir",
-        id_pembeli: null,
+        id_pembeli: 0,
         id_alamat: location.state?.alamat.id_alamat || 0,
         poin_digunakan: 0,
         poin_didapatkan: Math.floor(totalHargaBarang * 0.0001 + (totalHargaBarang >= 500000 ? (totalHargaBarang * 0.0001) * 0.2 : 0)),
@@ -62,6 +63,7 @@ const CheckoutPage = () => {
                 ...data,
                 id_pembeli: profile.id_pembeli,
             });
+            setIsProfile(true);
             
             if (!profile) {
                 return (
@@ -101,6 +103,15 @@ const CheckoutPage = () => {
     }
 
     useEffect(() => {
+        if (isLoading) {
+            return (
+                <div className="d-flex justify-content-center align-items-center" style={{ height: "70vh" }}>
+                    <Spinner as="span" animation="border" variant="success" size="lg" role="status" aria-hidden="true"/>
+                    <p className="mb-0"> Loading...</p>
+                </div>
+            );
+        }
+
         fetchKeranjang();
         fetchDefaultAlamat();
         fetchProfile();
@@ -180,6 +191,10 @@ const CheckoutPage = () => {
         setIsLoading(true);
     
         try {
+            while (isProfile === false) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
             const finalData = {
                 ...data,
                 id_alamat: alamatData?.id_alamat, 
@@ -211,8 +226,6 @@ const CheckoutPage = () => {
         navigate('/pembeli/keranjang');
         toast.error("Tidak ada barang yang dipilih!"); 
         return;
-    }else{
-        toast.success("Silakan melanjutkan proses pemesanan Anda.");
     }
 
 

@@ -17,6 +17,13 @@ const DetailPenjualanPage = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    const cleanRupiah = (value) => {
+        if (typeof value === 'string') {
+            return parseFloat(value.replace(/[^0-9]/g, ''));
+        }
+        return Number(value); 
+    };
+
     const fetchPenjualanData = async () => {
         try {
             setLoading(true);
@@ -41,7 +48,7 @@ const DetailPenjualanPage = () => {
             }
             setPenjualanData(penjualan.data);
 
-            setTotalPendapatan(rincian.data.harga_barang + rincian.data.bonus_penitip - rincian.data.komisi_reusemart - rincian.data.komisi_hunter);
+            setTotalPendapatan(cleanRupiah(rincian.data.harga_barang) + cleanRupiah(rincian.data.bonus_penitip) - cleanRupiah(rincian.data.komisi_reusemart) - cleanRupiah(rincian.data.komisi_hunter));
         } catch (err) {
             console.log(err);
             setError(err?.response?.data?.message || err.message || "Gagal memuat data");

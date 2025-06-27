@@ -173,6 +173,7 @@ const OrganisasiPage = () => {
               />
               <h4>Password</h4>
               <InputFloatingForm
+                type="password"
                 value={profileData?.password}
                 disabled
               />

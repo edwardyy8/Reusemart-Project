@@ -147,7 +147,7 @@ const UbahAlamatPage = () => {
             <Container className="mt-5">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h4 className="hijau mb-0">Silahkan pilih alamat yang ingin dipakai</h4>
-                    <Button variant="secondary" className="mt-3 border-0 btn-lg shadow-sm" onClick={() => navigate(-1)}>
+                    <Button variant="secondary" className="mt-3 border-0 btn-lg shadow-sm" onClick={() => navigate('/pembeli/checkout')}>
                         Batal pilih
                     </Button>
                 </div>
